@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "ts-lint": "tsc --noEmit",
-    "prepare": "cd .. && husky install client/.husky"
+    "prepare": "cd .. && husky ./client/.husky"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.0",
@@ -46,5 +46,8 @@
     "hooks": {
       "pre-commit": "npm run lint && npm run ts-lint"
     }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,md}": "prettier --write"
   }
 }
