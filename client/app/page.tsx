@@ -1,5 +1,5 @@
 export default function Home() {
-  const test = "test";
+  const newTest = "test";
 
   return <div className="container mx-auto">matcha</div>;
 }
