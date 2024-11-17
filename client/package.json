@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "ts-lint": "tsc --noEmit",
-    "prepare": "cd .. && husky ./client/.husky"
+    "prepare": "cd ../ && husky install ./client/.husky"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.0",
@@ -32,7 +32,7 @@
     "eslint-config-next": "15.0.3",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-prettier": "^5.2.1",
-    "husky": "^8.0.0",
+    "husky": "^8.0.3",
     "lint-staged": "^15.2.10",
     "postcss": "^8",
     "prettier": "3.3.3",
