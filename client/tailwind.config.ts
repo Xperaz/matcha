@@ -10,11 +10,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#FF6363",
-        secondary: {
-          100: "#E2E2D5",
-          200: "#888883",
-        },
+        primary: "#E51A5C",
+        secondary: "#F5F0F2",
+        "primary-foreground": "#FFFFFF",
+        "secondary-foreground": "#171212",
+        destructive: "#FF4D4D",
+        "destructive-foreground": "#FFFFFF",
       },
     },
   },
