@@ -1,13 +1,29 @@
+/* eslint-disable */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@layer base {
+.primary-gradient {
+  background: radial-gradient(
+    934px at 6% 39.5%,
+    rgb(255, 35, 90) 0.2%,
+    rgb(255, 35, 144) 54.8%,
+    rgb(250, 99, 160) 93.4%
+  );
 }
 
-@layer base {
+.primary-gradient:hover {
+  background: radial-gradient(
+    1200px at 10% 50%,
+    rgb(255, 35, 90) 0.2%,
+    rgb(255, 35, 144) 54.8%,
+    rgb(250, 99, 160) 93.4%
+  );
+  transform: scale(1.01);
 }
