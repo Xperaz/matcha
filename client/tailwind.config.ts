@@ -17,6 +17,9 @@ export default {
         destructive: "#FF4D4D",
         "destructive-foreground": "#FFFFFF",
       },
+      fontFamily: {
+        readex_pro: ["var(--font-readex-pro)"],
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
