@@ -1,4 +1,3 @@
-/* eslint-disable */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -26,4 +25,20 @@
     rgb(250, 99, 160) 93.4%
   );
   transform: scale(1.01);
+}
+
+.overlay {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.7) 0%,
+      rgba(0, 0, 0, 0) 100%
+    ),
+    url("../public/images/home.webp");
+  background-size: cover;
+  background-position: center;
+  z-index: -1;
+  background-repeat: no-repeat;
 }
