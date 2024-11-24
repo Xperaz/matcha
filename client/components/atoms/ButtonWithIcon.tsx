@@ -8,21 +8,24 @@ type variantType =
   | "destructive"
   | "secondary"
   | "ghost"
-  | "link";
+  | "link"
+  | "light";
 
 type ButtonWithIconProps = {
   children: ReactNode;
   variant?: variantType;
   onClick?: () => void;
+  className?: string;
 };
 
 export function ButtonWithIcon({
   children,
   variant,
   onClick,
+  className,
 }: ButtonWithIconProps) {
   return (
-    <Button variant={variant} onClick={onClick}>
+    <Button variant={variant} onClick={onClick} className={className}>
       {children}
     </Button>
   );

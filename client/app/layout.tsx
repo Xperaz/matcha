@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import ReactQueryProvider from "./utils/providers/ReactQueryProvider";
 import React from "react";
-
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
+import { readex_pro } from "./utils/fonts";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -22,8 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable}  antialiased`}>
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+      <body className={`${readex_pro} `}>
+        <ReactQueryProvider>
+          <main className="font-readex-pro">{children}</main>
+        </ReactQueryProvider>
       </body>
     </html>
   );
