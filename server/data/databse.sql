@@ -11,7 +11,6 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
-    status user_status NOT NULL DEFAULT 'OFFLINE',
     biography VARCHAR(500),
     gps_position POINT,
     fame_rating INT NOT NULL DEFAULT 0 CHECK (fame_rating >= 0 AND fame_rating <= 100),
