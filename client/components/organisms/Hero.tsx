@@ -1,5 +1,8 @@
+"use client";
 import React from "react";
 import { Button } from "../ui/button";
+import { ROUTES } from "@/constants/routes";
+import Link from "next/link";
 
 const isAuth = false; // TODO: replace with actual auth check
 
@@ -10,9 +13,11 @@ const Hero = () => {
         Swipe Right&#174;
       </h1>
       <div>
-        <Button className="primary-gradient primary-gradient:hover text-lg rounded-full">
-          {isAuth ? "Find Match" : "Create Account"}
-        </Button>
+        <Link href={ROUTES.register} className="leading-3 text-lg">
+          <Button className="primary-gradient primary-gradient:hover text-lg rounded-full">
+            {isAuth ? "Find Match" : "Create Account"}
+          </Button>
+        </Link>
       </div>
     </section>
   );
