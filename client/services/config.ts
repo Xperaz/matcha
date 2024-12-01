@@ -4,6 +4,25 @@ import Cookies from "js-cookie";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 /**
+ * Axios instance for public api calls
+ */
+
+export const axiosPublicInstance = axios.create();
+
+axiosPublicInstance.interceptors.request.use(undefined, (error) => {
+  const { config, response } = error;
+  const { method, url } = config;
+  const status = response ? response.status : "No response";
+
+  const errorMessage = `API request failed: ${method.toUpperCase()} ${url} returned status ${status}`;
+
+  // eslint-disable-next-line no-console
+  console.error(errorMessage);
+
+  return Promise.reject(error);
+});
+
+/**
  * Axios instance for authorized api calls
  */
 
