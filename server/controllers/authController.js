@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const db = require("../config/db"); // Fix the import
+const db = require("../config/db");
 const bcrypt = require("bcryptjs");
 
 const signToken = (id) => {
@@ -39,8 +39,8 @@ const signup = async (req, res) => {
     }
 
     // Check if a user already exists with the email
-    const emailCheckQuery = `SELECT * FROM users WHERE email = $1`;
-    const { rows } = await db.query(emailCheckQuery, [email]);
+    const emailCheckQuery = `SELECT * FROM users WHERE email = $1;`;
+    const rows  = await db.query(emailCheckQuery, [email]);
 
     if (rows.length > 0) {
       return res.status(400).json({
@@ -103,7 +103,6 @@ const signin = async (req, res) => {
         }
 
         // check the user
-
         const emailCheckQuery = `
             SELECT id, email, password FROM users WHERE email = $1;
         `
@@ -130,7 +129,7 @@ const signin = async (req, res) => {
           httpOnly: true,
           sameSite: "strict"
         });
-        
+
         res.status(200).json({
             success: true,
             message: "Signin successful"
