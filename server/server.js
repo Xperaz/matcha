@@ -1,21 +1,20 @@
-import express from "express";
-import dotenvt from "dotenv";
-import cookieParser from "cookie-parser";
-import swaggerUi from "swagger-ui-express";
-import path from "path";
-import fs from 'fs';
+const express = require("express");
+const dotenv = require("dotenv");
+const cookieParser = require("cookie-parser");
+const swaggerUi = require("swagger-ui-express");
+const path = require("path");
+const fs = require("fs");
 
-//routes
-import authRoutes from "./routes/authRoutes.js";
+dotenv.config();
 
-dotenvt.config();
+// routes
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 const port = process.env.SERVER_PORT || 5000;
 
-app.use(express.json()); //middelware to parse incoming requests
-app.use(cookieParser()); // for parssing cookies
-
+app.use(express.json()); // middleware to parse incoming requests
+app.use(cookieParser()); // for parsing cookies
 
 // adding swagger
 const swaggerDocument = JSON.parse(
@@ -23,7 +22,8 @@ const swaggerDocument = JSON.parse(
 );
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-
 app.use("/api/auth", authRoutes);
 
-app.listen(port, console.log("listening on port " + port ));
+app.listen(port, () => {
+    console.log("listening on port " + port);
+});

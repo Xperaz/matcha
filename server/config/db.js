@@ -1,7 +1,10 @@
-import pkg from "pg";
+const { Pool } = require("pg");
 
-
-const { Pool } = pkg;
+console.log("DB_USER:", process.env.DB_USER);
+console.log("DB_HOST:", process.env.DB_HOST);
+console.log("DB_NAME:", process.env.DB_NAME);
+console.log("DB_PASSWORD:", process.env.DB_PASSWORD);
+console.log("DB_PORT:", process.env.DB_PORT);
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -11,6 +14,6 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
-export default {
+module.exports = {
   query: (text, params) => pool.query(text, params),
 };
