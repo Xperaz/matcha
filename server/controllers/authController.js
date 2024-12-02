@@ -8,7 +8,12 @@ const signToken = (id) => {
   });
 };
 
+const matchPassword = async (password, match) => {
+    return await bcrypt.compare(password, match);
+};
+
 const signup = async (req, res) => {
+
   const { first_name, last_name, password, email, gender, age } = req.body;
 
   try {
@@ -54,6 +59,7 @@ const signup = async (req, res) => {
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING id;
     `;
+
     const values = [first_name, last_name, hashedPassword, email, gender, age];
     const result = await db.query(insertUserQuery, values);
 
@@ -74,17 +80,73 @@ const signup = async (req, res) => {
       message: "User created successfully",
     });
 
-    return res;
-
   } catch (ex) {
-    console.error("Error from signup:", ex);
-    res.status(500).json({
-      success: false,
-      message: "Error from signup",
-    });
+        console.error("Error from signup:", ex);
+        res.status(500).json({
+        success: false,
+        message: "Error from signup",
+        });
   }
+};
+
+
+const signin = async (req, res) => {
+
+    const {email, password} = req.body;
+
+    try{
+        if (!email || !password){
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+              });
+        }
+
+        // check the user
+
+        const emailCheckQuery = `
+            SELECT id, email, password FROM users WHERE email = $1;
+        `
+        const { rows } = await db.query(emailCheckQuery, [email]);
+
+        if (rows.length != 1){
+            return res.status(400).json({
+                success: false,
+                message: "invalid email"
+            });
+        }
+
+        if (!(await matchPassword(password, rows[0].password))){
+            return res.status(400).json({
+                success: false,
+                message: "invalid password"
+            });
+        }
+
+        const token = signToken(rows[0].id);
+
+        res.cookie("jwt", token, {
+          maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+          httpOnly: true,
+          sameSite: "strict"
+        });
+        
+        res.status(200).json({
+            success: true,
+            message: "Signin successful"
+        });
+
+
+    } catch(ex){
+        console.error("Error from signin:", ex);
+        res.status(500).json({
+        success: false,
+        message: "Error from signin"
+        });
+    }
 };
 
 module.exports = {
     signup,
+    signin
   };
