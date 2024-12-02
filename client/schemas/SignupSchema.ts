@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 // => I add this comment to disable the eslint warning for unused enum variables
 
+import exp from "constants";
 import * as z from "zod";
 
 export enum genderEnum {
@@ -25,4 +26,14 @@ export const signupSchema = z.object({
   }),
 });
 
+export const loginSchema = z.object({
+  email: z.string().email({
+    message: "Invalid email address",
+  }),
+  password: z.string().min(8, {
+    message: "Password must be at least 8 characters long",
+  }),
+});
+
 export type SignupSchemaType = z.infer<typeof signupSchema>;
+export type LoginSchemaType = z.infer<typeof loginSchema>;
