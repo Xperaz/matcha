@@ -26,6 +26,11 @@ export default function ResigterForm() {
   const { toast } = useToast();
   const form = useForm<SignupSchemaType>({
     resolver: zodResolver(signupSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
   });
 
   const onSubmit = async (data: SignupSchemaType) => {
