@@ -1,7 +1,7 @@
 -- Enum Types (unchanged)
 CREATE TYPE user_status AS ENUM ('ONLINE', 'OFFLINE');
 CREATE TYPE gender_enum AS ENUM ('MALE', 'FEMALE', 'NON_BINARY');
-CREATE TYPE preferences_enum AS ENUM ('MALE', 'FEMALE', 'NON_BINARY', 'ALL');
+CREATE TYPE preferences_enum AS ENUM ('MALE', 'FEMALE', 'OTHER');
 CREATE TYPE like_status AS ENUM ('PENDING', 'MATCHED', 'REJECTED');
 
 -- Users Table

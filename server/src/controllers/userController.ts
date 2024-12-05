@@ -3,7 +3,7 @@ import cloudinary  from "../config/cloudinary";
 import { Request, Response } from "express";
 
 
-export const completeProfile = async (req: Request, res: Response): Promise<void> => {
+export const completeProfile = async (req: Request, res: Response): Promise<Response> => {
 // TODO: update user data || maybe add another route for images upload
 // TODO: add a new variable to user db complete_signup: bool
 

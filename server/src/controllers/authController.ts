@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import { query } from "../config/db";
+import { userSignupRequest } from "../dtos/requests/userSignupRequest";
+import { userSigninRequest } from "../dtos/requests/userSigninRequest";
 
 const signToken = (id: number): string => {
   return jwt.sign({ id }, process.env.JWT_SECRET as string, {
@@ -15,26 +17,26 @@ const matchPassword = async (password: string, hashedPassword: string): Promise<
 
 
 export async function signup(req: Request, res: Response): Promise<Response> {
-
-  const { first_name, last_name, password, email, gender, age } = req.body;
+  
+  const userData: userSignupRequest = req.body;
 
   try {
     // Validate request data
-    if (!first_name || !last_name || !password || !email || !gender || !age) {
+    if (!userData.first_name || !userData.last_name || !userData.password || !userData.email || !userData.gender || !userData.age) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
       });
     }
 
-    if (password.length < 8) {
+    if (userData.password.length < 8) {
       return res.status(400).json({
         success: false,
         message: "Password must be at least 8 characters long",
       });
     }
 
-    if (age < 18) {
+    if (userData.age < 18) {
       return res.status(400).json({
         success: false,
         message: "You are under age",
@@ -42,7 +44,7 @@ export async function signup(req: Request, res: Response): Promise<Response> {
     }
 
     const emailCheckQuery = `SELECT email FROM users WHERE email = $1;`;
-    const { rows } = await query(emailCheckQuery, [email]);
+    const { rows } = await query(emailCheckQuery, [userData.email]);
 
     if (rows.length > 0) {
       return res.status(400).json({
@@ -51,14 +53,14 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
 
     const insertUserQuery = `
       INSERT INTO users (first_name, last_name, password, email, gender, age)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING id;
     `;
-    const values = [first_name, last_name, hashedPassword, email, gender, age];
+    const values = [userData.first_name, userData.last_name, hashedPassword, userData.email, userData.gender, userData.age];
     const result = await query(insertUserQuery, values);
 
     const user_id = result.rows[0].id;
@@ -85,10 +87,10 @@ export async function signup(req: Request, res: Response): Promise<Response> {
 
 export async function signin(req: Request, res: Response): Promise<Response> {
   
-  const { email, password } = req.body;
+  const userData: userSigninRequest = req.body;
 
   try {
-    if (!email || !password) {
+    if (!userData.email || !userData.password) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -96,9 +98,9 @@ export async function signin(req: Request, res: Response): Promise<Response> {
     }
 
     const emailCheckQuery = `SELECT id, email, password FROM users WHERE email = $1;`;
-    const { rows } = await query(emailCheckQuery, [email]);
+    const { rows } = await query(emailCheckQuery, [userData.email]);
 
-    if (rows.length !== 1 || !(await matchPassword(password, rows[0].password))) {
+    if (rows.length !== 1 || !(await matchPassword(userData.password, rows[0].password))) {
       return res.status(400).json({
         success: false,
         message: "Invalid credentials",
