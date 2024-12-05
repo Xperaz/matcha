@@ -20,7 +20,8 @@ CREATE TABLE users (
     gender gender_enum NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    is_active BOOLEAN DEFAULT FALSE
+    is_active BOOLEAN DEFAULT FALSE,
+    profile_completed BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE messages (
@@ -88,7 +89,6 @@ CREATE TABLE pictures (
     id BIGSERIAL PRIMARY KEY,
     user_id uuid,
     picture_url VARCHAR(255) NOT NULL,
-    is_profile_picture BOOLEAN NOT NULL DEFAULT FALSE,
     uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
