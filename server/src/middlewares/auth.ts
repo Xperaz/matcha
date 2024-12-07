@@ -7,7 +7,7 @@ import { AuthenticatedRequest } from "./ahthenticatedRequest";
 export const protectRoutes = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
     const token = req.cookies?.jwt;
-
+    
     if (!token) {
       res.status(401).json({
         success: false,
@@ -36,7 +36,7 @@ export const protectRoutes = async (req: AuthenticatedRequest, res: Response, ne
       });
       return;
     }
-
+    
     req.user = rows[0];
 
     next();

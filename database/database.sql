@@ -12,6 +12,7 @@ CREATE TABLE users (
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     biography VARCHAR(500),
+    profile_picture VARCHAR(500),
     gps_position POINT,
     fame_rating INT  DEFAULT 0,
     sexual_preferences preferences_enum,

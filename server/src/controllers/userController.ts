@@ -53,7 +53,7 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
             pictures_urls.push(imageUrl);
         }
 
-        await query("BEGIN");
+        // await query("BEGIN");
 
         const insertUserInfoQuery = `
           UPDATE users
@@ -64,7 +64,6 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
               profile_picture = $5
           WHERE id = $6;
         `;
-
         await query(insertUserInfoQuery, [
           userData.biography,
           userData.latitude,
@@ -78,19 +77,19 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
           INSERT INTO pictures (user_id, picture_url)
           VALUES ($1, unnest($2::text[]));
         `;
-
         await query(insertUserImagesQuery, [userId, pictures_urls]);
-    
+        
         const insertUserInterestsQuery = `
-          INSERT INTO user_interests (user_id, interest_id)
-          VALUES ($1, (
-            SELECT id FROM interest_tags WHERE tag = ANY($2::text[])
-          ));
+            INSERT INTO interests (user_id, interest_id)
+            SELECT $1, id
+            FROM interest_tags
+            WHERE tag = ANY($2::text[])
+            ON CONFLICT DO NOTHING;
         `;
         await query(insertUserInterestsQuery, [userId, userData.interests]);
-    
-        await query("COMMIT");
-    
+        
+        // await query("COMMIT");
+        
         return res.status(200).json({
           success: true,
           message: "Profile completed successfully",
@@ -99,7 +98,7 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
       } catch (ex) {
         console.error("Error completing profile:", ex);
     
-        await query("ROLLBACK");
+        // await query("ROLLBACK");
     
         return res.status(500).json({
           success: false,
