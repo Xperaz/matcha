@@ -3,13 +3,16 @@ export interface userSignupRequest {
     last_name: string,
     password: string,
     email: string,
-    gender: genderEnum,
+    gender: string,
     age: number
-    //TODO
 }
 
-enum genderEnum {
+enum Gender {
     MALE,
     FEMALE,
     OTHER
+}
+
+export function isValidGender(gender: string): boolean {
+    return Object.values(Gender).includes(gender as unknown as Gender);
 }
