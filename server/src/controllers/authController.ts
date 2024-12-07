@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import { query } from "../config/db";
-import { userSignupRequest } from "../dtos/requests/userSignupRequest";
+import { userSignupRequest, isValidGender } from "../dtos/requests/userSignupRequest";
 import { userSigninRequest } from "../dtos/requests/userSigninRequest";
 
 const signToken = (id: number): string => {
@@ -42,6 +42,13 @@ export async function signup(req: Request, res: Response): Promise<Response> {
         message: "You are under age",
       });
     }
+    
+    if (!isValidGender(userData.gender)){
+      return res.status(400).json({
+        success: false,
+        message: "invalid gender"
+      });
+    }
 
     const emailCheckQuery = `SELECT email FROM users WHERE email = $1;`;
     const { rows } = await query(emailCheckQuery, [userData.email]);
@@ -75,6 +82,7 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       success: true,
       message: "User created successfully",
     });
+
   } catch (error) {
     console.error("Error from signup:", error);
     return res.status(500).json({
@@ -117,6 +125,7 @@ export async function signin(req: Request, res: Response): Promise<Response> {
       success: true,
       message: "Signin successful",
     });
+    
   } catch (error) {
     console.error("Error from signin:", error);
     return res.status(500).json({
