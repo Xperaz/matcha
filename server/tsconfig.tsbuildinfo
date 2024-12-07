@@ -1,0 +1,1 @@
+{"root":["./src/server.ts","./src/config/cloudinary.ts","./src/config/db.ts","./src/controllers/authcontroller.ts","./src/controllers/usercontroller.ts","./src/middlewares/auth.ts","./src/routes/authroutes.ts","./src/routes/userroutes.ts"],"errors":true,"version":"5.7.2"}
