@@ -31,15 +31,22 @@ CREATE TABLE messages (
     content TEXT NOT NULL,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_read BOOLEAN NOT NULL DEFAULT FALSE,
-    FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE SET NULL,
-    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY (sender_id) REFERENCES users(id),
+    FOREIGN KEY (receiver_id) REFERENCES users(id)
 );
 
-CREATE TABLE tags (
+CREATE TABLE interest_tags (
     id BIGSERIAL PRIMARY KEY,
-    tag VARCHAR(255) NOT NULL,
-    user_id uuid NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+    tag VARCHAR(50) UNIQUE NOT NULL
+);
+
+-- User Interests Junction Table
+CREATE TABLE user_interests (
+    user_id UUID,
+    interest_id BIGINT,
+    PRIMARY KEY (user_id, interest_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (interest_id) REFERENCES interest_tags(id)
 );
 
 
@@ -49,8 +56,8 @@ CREATE TABLE likes (
     receiver_id uuid,
     status like_status NOT NULL DEFAULT 'PENDING',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (initiator_id) REFERENCES users(id) ON DELETE SET NULL,
-    FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY (initiator_id) REFERENCES users(id) ,
+    FOREIGN KEY (receiver_id) REFERENCES users(id) 
 );
 
 
@@ -60,8 +67,8 @@ CREATE TABLE reports (
     reported_id uuid,
     reporter_id uuid,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (reported_id) REFERENCES users(id) ON DELETE SET NULL,
-    FOREIGN KEY (reporter_id) REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY (reported_id) REFERENCES users(id) ,
+    FOREIGN KEY (reporter_id) REFERENCES users(id) 
 );
 
 
@@ -71,8 +78,8 @@ CREATE TABLE blocks (
     blocked_id uuid,
     blocker_id uuid,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (blocked_id) REFERENCES users(id) ON DELETE SET NULL,
-    FOREIGN KEY (blocker_id) REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY (blocked_id) REFERENCES users(id) ,
+    FOREIGN KEY (blocker_id) REFERENCES users(id) 
 );
 
 
@@ -81,8 +88,8 @@ CREATE TABLE visits (
     visitor_id uuid,
     visited_id uuid,
     visit_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (visitor_id) REFERENCES users(id) ON DELETE SET NULL,
-    FOREIGN KEY (visited_id) REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY (visitor_id) REFERENCES users(id) ,
+    FOREIGN KEY (visited_id) REFERENCES users(id) 
 );
 
 CREATE TABLE pictures (
@@ -90,12 +97,29 @@ CREATE TABLE pictures (
     user_id uuid,
     picture_url VARCHAR(255) NOT NULL,
     uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY (user_id) REFERENCES users(id) 
 );
 
 
 CREATE INDEX idx_messages_sender_receiver ON messages(sender_id, receiver_id);
 CREATE INDEX idx_likes_initiator_receiver ON likes(initiator_id, receiver_id);
-CREATE INDEX idx_user_tags_user ON tags(user_id);
+CREATE INDEX idx_user_interests_user ON user_interests(user_id);
 CREATE INDEX idx_visits_visitor_visited ON visits(visitor_id, visited_id);
 CREATE INDEX idx_pictures_user ON pictures(user_id);
+
+INSERT INTO interest_tags (tag) VALUES 
+    ('TRAVEL'),
+    ('MUSIC'),
+    ('GYM'),
+    ('SHOPPING'),
+    ('PROGRAMMING'),
+    ('FILMS'),
+    ('NIGHTLIFE'),
+    ('FOOTBALL'),
+    ('FOOD'),
+    ('DOGS'),
+    ('CATS'),
+    ('BOOKS'),
+    ('GAMING')
+;
+
