@@ -48,7 +48,6 @@ To run the application, please follow these steps:
 }
 ```
 
-
 ### Success Response
 
 - **Status Code: 200 OK**
@@ -59,3 +58,21 @@ To run the application, please follow these steps:
   "jwt": "<authentication_token>"
 }
 ```
+
+### 3. Complete profile
+- **URL**: `http://localhost:5000/api/user/complete-profile`
+- **Method**: `POST`
+
+```json
+{
+  "profile_picture": "string", // Base64-encoded image
+  "biography": "string",       
+  "preferences": "string",     // 'MALE', 'FEMALE', 'BOTH' 
+  "latitude" : "string",
+  "longtitude": "string",       
+  "pictures": ["string"],      // Array of Base64-encoded images
+  "interests": ["string"]      // Array of valid interest tags "TRAVEL", "MUSIC", "FOOD"
+}
+```
+
+
