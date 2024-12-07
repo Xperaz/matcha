@@ -41,7 +41,7 @@ CREATE TABLE interest_tags (
 );
 
 -- User Interests Junction Table
-CREATE TABLE user_interests (
+CREATE TABLE interests (
     user_id UUID,
     interest_id BIGINT,
     PRIMARY KEY (user_id, interest_id),
@@ -103,7 +103,7 @@ CREATE TABLE pictures (
 
 CREATE INDEX idx_messages_sender_receiver ON messages(sender_id, receiver_id);
 CREATE INDEX idx_likes_initiator_receiver ON likes(initiator_id, receiver_id);
-CREATE INDEX idx_user_interests_user ON user_interests(user_id);
+CREATE INDEX idx_user_interests_user ON interests(user_id);
 CREATE INDEX idx_visits_visitor_visited ON visits(visitor_id, visited_id);
 CREATE INDEX idx_pictures_user ON pictures(user_id);
 
