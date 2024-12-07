@@ -1,10 +1,8 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
+import { Response, NextFunction } from "express";
 import { query } from "../config/db";
+import { AuthenticatedRequest } from "./ahthenticatedRequest";
 
-interface AuthenticatedRequest extends Request {
-  user?: any; // TODO: Adjust `any` to your user type if defined
-}
 
 export const protectRoutes = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
