@@ -11,11 +11,25 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { useToast } from "@/hooks/use-toast";
 import { LoginSchemaType, loginSchema } from "@/schemas/SignupSchema";
+import { useMutation } from "@tanstack/react-query";
+import { userLogin } from "@/auth/login";
+import { useRouter } from "next/navigation";
+import { CustomError } from "@/auth/types";
 
 export default function LoginForm() {
-  const { toast } = useToast();
+  const router = useRouter();
+  const { mutate: loginMutation, error } = useMutation<
+    unknown,
+    CustomError,
+    LoginSchemaType
+  >({
+    mutationFn: userLogin,
+    onSuccess: () => {
+      router.push("/home");
+    },
+  });
+
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -26,19 +40,7 @@ export default function LoginForm() {
 
   // eslint-disable-next-line no-unused-vars
   const onSubmit = async (data: LoginSchemaType) => {
-    toast({
-      title: "Submitting...",
-      description: "Please wait while we submit the form.",
-      variant: "default",
-    });
-    // TODO: Submit the form data to the server
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      return;
-    } catch (error) {
-      return;
-    }
+    loginMutation(data);
   };
 
   return (
@@ -76,6 +78,8 @@ export default function LoginForm() {
             </FormItem>
           )}
         />
+
+        {error && <FormMessage>{error.response?.data?.message}</FormMessage>}
 
         <Button
           type="submit"

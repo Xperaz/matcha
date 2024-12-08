@@ -2,7 +2,10 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
 import { query } from "../config/db";
-import { userSignupRequest, isValidGender } from "../dtos/requests/userSignupRequest";
+import {
+  userSignupRequest,
+  isValidGender,
+} from "../dtos/requests/userSignupRequest";
 import { userSigninRequest } from "../dtos/requests/userSigninRequest";
 
 const signToken = (id: number): string => {
@@ -11,18 +14,26 @@ const signToken = (id: number): string => {
   });
 };
 
-const matchPassword = async (password: string, hashedPassword: string): Promise<boolean> => {
+const matchPassword = async (
+  password: string,
+  hashedPassword: string
+): Promise<boolean> => {
   return await bcrypt.compare(password, hashedPassword);
 };
 
-
 export async function signup(req: Request, res: Response): Promise<Response> {
-  
   const userData: userSignupRequest = req.body;
 
   try {
     // Validate request data
-    if (!userData.first_name || !userData.last_name || !userData.password || !userData.email || !userData.gender || !userData.age) {
+    if (
+      !userData.first_name ||
+      !userData.last_name ||
+      !userData.password ||
+      !userData.email ||
+      !userData.gender ||
+      !userData.age
+    ) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -42,13 +53,15 @@ export async function signup(req: Request, res: Response): Promise<Response> {
         message: "You are under age",
       });
     }
-    
-    if (!isValidGender(userData.gender)){
+
+    if (!isValidGender(userData.gender)) {
       return res.status(400).json({
         success: false,
-        message: "invalid gender"
+        message: "invalid gender",
       });
     }
+
+    console.log("Email:", userData.email, "Type:", typeof userData.email);
 
     const emailCheckQuery = `SELECT email FROM users WHERE email = $1;`;
     const { rows } = await query(emailCheckQuery, [userData.email]);
@@ -60,14 +73,25 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       });
     }
 
+    console.log("User Data:", userData.password);
+
     const hashedPassword = await bcrypt.hash(userData.password, 10);
+
+    console.log("Hashed Password:", hashedPassword);
 
     const insertUserQuery = `
       INSERT INTO users (first_name, last_name, password, email, gender, age)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING id;
     `;
-    const values = [userData.first_name, userData.last_name, hashedPassword, userData.email, userData.gender, userData.age];
+    const values = [
+      userData.first_name,
+      userData.last_name,
+      hashedPassword,
+      userData.email,
+      userData.gender,
+      userData.age,
+    ];
     const result = await query(insertUserQuery, values);
 
     const user_id = result.rows[0].id;
@@ -81,8 +105,8 @@ export async function signup(req: Request, res: Response): Promise<Response> {
     return res.status(201).json({
       success: true,
       message: "User created successfully",
+      accessToken: token,
     });
-
   } catch (error) {
     console.error("Error from signup:", error);
     return res.status(500).json({
@@ -90,11 +114,9 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       message: "Error from signup",
     });
   }
-};
-
+}
 
 export async function signin(req: Request, res: Response): Promise<Response> {
-  
   const userData: userSigninRequest = req.body;
 
   try {
@@ -108,7 +130,10 @@ export async function signin(req: Request, res: Response): Promise<Response> {
     const emailCheckQuery = `SELECT id, email, password FROM users WHERE email = $1;`;
     const { rows } = await query(emailCheckQuery, [userData.email]);
 
-    if (rows.length !== 1 || !(await matchPassword(userData.password, rows[0].password))) {
+    if (
+      rows.length !== 1 ||
+      !(await matchPassword(userData.password, rows[0].password))
+    ) {
       return res.status(400).json({
         success: false,
         message: "Invalid credentials",
@@ -124,8 +149,8 @@ export async function signin(req: Request, res: Response): Promise<Response> {
     return res.status(200).json({
       success: true,
       message: "Signin successful",
+      accessToken: token,
     });
-    
   } catch (error) {
     console.error("Error from signin:", error);
     return res.status(500).json({
@@ -133,4 +158,4 @@ export async function signin(req: Request, res: Response): Promise<Response> {
       message: "Error from signin",
     });
   }
-};
+}

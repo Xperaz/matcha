@@ -30,7 +30,7 @@ const axiosInstance = axios.create({
   baseURL: API_URL,
 });
 
-axiosInstance.defaults.adapter = require("axios/lib/adapters/http"); // Required for axios to work in the browser
+// axiosInstance.defaults.adapter = require("axios/lib/adapters/http"); // Required for axios to work in the browser
 
 axiosInstance.interceptors.request.use(
   async (config) => {
@@ -38,8 +38,7 @@ axiosInstance.interceptors.request.use(
       const accessToken = Cookies.get("access_token");
       if (accessToken) {
         config.headers = config.headers || {};
-        config.headers["Authorization"] = config.headers["Authorization"] =
-          `Bearer ${accessToken}`;
+        config.headers["Authorization"] = `Bearer ${accessToken}`;
       }
     } catch (error) {
       // eslint-disable-next-line no-console

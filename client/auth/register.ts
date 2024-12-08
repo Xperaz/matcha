@@ -1,7 +1,17 @@
-/* eslint-disable no-unused-vars */
 import { SignupSchemaType } from "@/schemas/SignupSchema";
+import { axiosPublicInstance } from "@/services/config";
+import { API_ENDPOINTS } from "@/services/endpoints";
+import Cookies from "js-cookie";
 
-const reisgter = async (data: SignupSchemaType) => {
-  // console.log(data);
-  // TODO: Submit the form data to the server
+export const registerUser = async (data: SignupSchemaType) => {
+  const res = await axiosPublicInstance.post(API_ENDPOINTS.register, {
+    ...data,
+  });
+
+  if (res.data.accessToken) {
+    const access_token = res.data.accessToken;
+    Cookies.set("access_token", access_token);
+  }
+
+  return res.data;
 };
