@@ -1,13 +1,17 @@
 import { LoginSchemaType } from "@/schemas/SignupSchema";
 import { axiosPublicInstance } from "@/services/config";
 import { API_ENDPOINTS } from "@/services/endpoints";
+import Cookies from "js-cookie";
 
 export const userLogin = async (data: LoginSchemaType) => {
   const res = await axiosPublicInstance.post(API_ENDPOINTS.login, {
     ...data,
   });
 
-  // TODO: add jwt to browser
+  if (res.data.accessToken) {
+    const access_token = res.data.accessToken;
+    Cookies.set("access_token", access_token);
+  }
 
   return res.data;
 };
