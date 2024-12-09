@@ -18,38 +18,44 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
-import { SignupSchemaType, signupSchema } from "@/schemas/SignupSchema";
+
+import {
+  SignupSchemaType,
+  genderEnum,
+  signupSchema,
+} from "@/schemas/SignupSchema";
+import { useMutation } from "@tanstack/react-query";
+import { registerUser } from "@/auth/register";
+import { formatGenderDisplay } from "@/helpers/formHelpers";
+import { useRouter } from "next/navigation";
+import { CustomError } from "@/auth/types";
 
 export default function ResigterForm() {
-  const { toast } = useToast();
+  const router = useRouter();
+  const { mutate: signUpMutation, error } = useMutation<
+    unknown,
+    CustomError,
+    SignupSchemaType
+  >({
+    mutationFn: registerUser,
+    onSuccess: () => {
+      router.push("/complete-registration");
+    },
+  });
+
   const form = useForm<SignupSchemaType>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
-      name: "",
+      first_name: "",
+      last_name: "",
       email: "",
       password: "",
+      age: 0,
     },
   });
 
   const onSubmit = async (data: SignupSchemaType) => {
-    // TODO: Submit the form data to the server
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>,
-      );
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Uh oh!, Something went wrong.",
-        description: "Failed to submit the form. Please try again.",
-      });
-    }
+    signUpMutation(data);
   };
 
   return (
@@ -60,12 +66,27 @@ export default function ResigterForm() {
       >
         <FormField
           control={form.control}
-          name="name"
+          name="first_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Full name</FormLabel>
+              <FormLabel>First name</FormLabel>
               <FormControl>
-                <Input placeholder="full name" type="" {...field} />
+                <Input placeholder="first name" type="" {...field} />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="last_name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Last name</FormLabel>
+              <FormControl>
+                <Input placeholder="last name" type="" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -102,6 +123,20 @@ export default function ResigterForm() {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="age"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Age</FormLabel>
+              <FormControl>
+                <Input type="number" placeholder="Age" {...field} />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
@@ -116,9 +151,15 @@ export default function ResigterForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent className=" bg-white border-[#E8CFD6] placeholder:text-[#994D66] outline-none">
-                  <SelectItem value="Male">Male</SelectItem>
-                  <SelectItem value="Female">Female</SelectItem>
-                  <SelectItem value="bio">Other</SelectItem>
+                  <SelectItem value={genderEnum.MALE}>
+                    {formatGenderDisplay(genderEnum.MALE)}
+                  </SelectItem>
+                  <SelectItem value={genderEnum.FEMALE}>
+                    {formatGenderDisplay(genderEnum.FEMALE)}
+                  </SelectItem>
+                  <SelectItem value={genderEnum.OTHER}>
+                    {formatGenderDisplay(genderEnum.OTHER)}
+                  </SelectItem>
                 </SelectContent>
               </Select>
 
@@ -126,25 +167,8 @@ export default function ResigterForm() {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="isAdult"
-          render={({ field }) => (
-            <div className="flex gap-2">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>I am at least 18 years old.</FormLabel>
+        {error && <FormMessage>{error?.response?.data?.message}</FormMessage>}
 
-                <FormMessage />
-              </div>
-            </div>
-          )}
-        />
         <Button
           type="submit"
           className="w-full rounded-full"

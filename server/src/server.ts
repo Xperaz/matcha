@@ -1,6 +1,7 @@
 import express, { Application } from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 
 dotenv.config();
 
@@ -10,6 +11,23 @@ import userRoutes from "./routes/userRoutes";
 const app: Application = express();
 const port: number = parseInt(process.env.SERVER_PORT || "5000", 10);
 
+// CORS setup - must be before routes
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: [
+      "Origin",
+      "X-Requested-With",
+      "Content-Type",
+      "Accept",
+      "Authorization",
+    ],
+  })
+);
+
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
 
