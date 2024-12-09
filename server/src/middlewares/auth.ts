@@ -2,7 +2,25 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { Response, NextFunction } from "express";
 import { query } from "../config/db";
 import { AuthenticatedRequest } from "./ahthenticatedRequest";
+import { UserDTO } from "../dtos/user/userDto";
 
+const mapUser = (dbResults: any): UserDTO => {
+  
+  const user: UserDTO = {
+    id: dbResults.id,
+    first_name: dbResults.first_name,
+    last_name: dbResults.last_name,
+    email: dbResults.email,
+    biography: dbResults.biography,
+    fame_rating: dbResults.fame_rating,
+    age: dbResults.age,
+    profile_completed: dbResults.profile_completed,
+    gender: dbResults.gender,
+    sexual_preferences: dbResults.sexual_preferences,
+  };
+
+  return user;
+};
 
 export const protectRoutes = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -36,8 +54,9 @@ export const protectRoutes = async (req: AuthenticatedRequest, res: Response, ne
       });
       return;
     }
-    
-    req.user = rows[0];
+
+    const user: UserDTO = mapUser(rows[0]);
+    req.user = user;
 
     next();
   } catch (error) {
