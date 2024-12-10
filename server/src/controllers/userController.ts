@@ -4,6 +4,10 @@ import { Response } from "express";
 import { completeProfileReqeuest, isValidInterest, isValidPreference } from "../dtos/requests/completeProfileRequest";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 
+// validate data
+// update it
+// upload images
+// save urls to database
 
 export const completeProfile = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
     
