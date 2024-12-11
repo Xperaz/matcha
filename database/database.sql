@@ -2,7 +2,7 @@
 CREATE TYPE user_status AS ENUM ('ONLINE', 'OFFLINE');
 CREATE TYPE gender_enum AS ENUM ('MALE', 'FEMALE', 'OTHER');
 CREATE TYPE preferences_enum AS ENUM ('MALE', 'FEMALE', 'BOTH');
-CREATE TYPE like_status AS ENUM ('LIKED', 'MATCH', 'DISLIKED', 'NON');
+CREATE TYPE like_status AS ENUM ('LIKED', 'MATCH', 'DISLIKED');
 
 -- Users Table
 CREATE TABLE users (
@@ -55,7 +55,7 @@ CREATE TABLE likes (
     id BIGSERIAL PRIMARY KEY,
     initiator_id uuid,
     receiver_id uuid,
-    status like_status DEFAULT 'NON',
+    status like_status,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (initiator_id) REFERENCES users(id) ,
     FOREIGN KEY (receiver_id) REFERENCES users(id) 
