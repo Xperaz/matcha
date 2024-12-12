@@ -1,9 +1,7 @@
-"use client";
-import withProtectedRoute from "@/auth/withProtectedRoute";
-import React from "react";
+import Home from "@/components/pages/Home";
 
 const page = () => {
-  return <div>page</div>;
+  return <Home />;
 };
 
-export default withProtectedRoute(page);
+export default page;

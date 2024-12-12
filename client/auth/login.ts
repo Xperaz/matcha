@@ -10,7 +10,7 @@ export const userLogin = async (data: LoginSchemaType) => {
 
   if (res.data.accessToken) {
     const access_token = res.data.accessToken;
-    Cookies.set("access_token", access_token);
+    Cookies.set("jwt", access_token);
   }
 
   return res.data;
