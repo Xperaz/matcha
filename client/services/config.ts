@@ -39,6 +39,7 @@ axiosInstance.interceptors.request.use(
       if (accessToken) {
         config.headers = config.headers || {};
         config.headers["Authorization"] = `Bearer ${accessToken}`;
+        config.withCredentials = true;
       }
     } catch (error) {
       // eslint-disable-next-line no-console

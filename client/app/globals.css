@@ -47,92 +47,60 @@ body {
   background-repeat: no-repeat;
 }
 
-/* Add appLayou styling */
-
-/* .appLayout {
-  height: 100vh;
-  display: grid;
-  grid-template: auto 1fr auto / auto 1fr auto;
+/* debugging styles */
+.db-red {
+  border: 1px solid red;
 }
 
-header,
-footer,
-.leftSideBar,
-main,
-.rightSidebar {
-  padding: 1rem;
+.db-blue {
+  border: 1px solid blue;
 }
 
-header {
-  grid-column: 1 / -1;
-  background-color: red;
+.db-all {
+  border: 1px solid red;
 }
 
-.leftSideBar {
-  grid-column: 1 / 2;
-  background-color: blue;
+.db-all * {
+  border: 1px solid blue;
 }
 
-main {
-  grid-column: 2 / 3;
-  background-color: green;
-}
-
-.rightSidebar {
-  grid-column: 3 / 4;
-  background-color: yellow;
-}
-
-footer {
-  grid-column: 1 / 4;
-  background-color: purple;
-  color: white;
-}
-
-
-@media (max-width: 768px) {
-  .appLayout {
-    grid-template: repeat(5, afr) / 1fr;
-  }
-
-  header,
-  footer,
-  .leftSideBar,
-  main,
-  .rightSidebar {
-    grid-column: 1/2;
-  }
-} */
+/* end debugging styles */
 
 .appLayout {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  grid-template-rows: repeat(14, 1fr);
+  grid-template-rows: 5rem repeat(13, 1fr);
   grid-column-gap: 0px;
   grid-row-gap: 0px;
   height: 100vh;
 }
 
-header {
-  grid-area: 1 / 1 / 2 / 9;
-  background-color: aquamarine;
+header,
+footer,
+nav {
+  padding: 1rem;
 }
-.leftSideBar {
+
+header {
+  grid-area: 1 / 1 / 1 / 9;
+}
+
+nav {
   grid-area: 2 / 1 / 15 / 2;
   background-color: bisque;
 }
+
 main {
-  grid-area: auto;
+  grid-area: 2 / 2 / 15 / 9;
   background-color: beige;
+  overflow: auto;
 }
 
-/* add responsive÷ */
-/* in small devise side bar should be in bottom */
-
+/* Responsive design for small devices */
 @media (max-width: 768px) {
   .appLayout {
     grid-template-columns: repeat(8, 1fr);
-    grid-template-rows: repeat(14, 1fr);
+    grid-template-rows: 4rem repeat(13, 1fr);
     grid-column-gap: 0px;
     grid-row-gap: 0px;
     height: 100vh;
@@ -140,20 +108,22 @@ main {
 
   header,
   footer,
-  .leftSideBar {
+  nav {
     padding: 1rem;
   }
 
   header {
     grid-area: 1 / 1 / 2 / 9;
-    background-color: aquamarine;
   }
-  .leftSideBar {
+
+  nav {
     grid-area: 15 / 1 / 15 / 9;
     background-color: rgb(64, 108, 211);
   }
+
   main {
-    grid-area: auto;
+    grid-area: 2 / 1 / 15 / 9;
     background-color: beige;
+    overflow: auto;
   }
 }
