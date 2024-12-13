@@ -46,3 +46,114 @@ body {
   z-index: -1;
   background-repeat: no-repeat;
 }
+
+/* Add appLayou styling */
+
+/* .appLayout {
+  height: 100vh;
+  display: grid;
+  grid-template: auto 1fr auto / auto 1fr auto;
+}
+
+header,
+footer,
+.leftSideBar,
+main,
+.rightSidebar {
+  padding: 1rem;
+}
+
+header {
+  grid-column: 1 / -1;
+  background-color: red;
+}
+
+.leftSideBar {
+  grid-column: 1 / 2;
+  background-color: blue;
+}
+
+main {
+  grid-column: 2 / 3;
+  background-color: green;
+}
+
+.rightSidebar {
+  grid-column: 3 / 4;
+  background-color: yellow;
+}
+
+footer {
+  grid-column: 1 / 4;
+  background-color: purple;
+  color: white;
+}
+
+
+@media (max-width: 768px) {
+  .appLayout {
+    grid-template: repeat(5, afr) / 1fr;
+  }
+
+  header,
+  footer,
+  .leftSideBar,
+  main,
+  .rightSidebar {
+    grid-column: 1/2;
+  }
+} */
+
+.appLayout {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(14, 1fr);
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  height: 100vh;
+}
+
+header {
+  grid-area: 1 / 1 / 2 / 9;
+  background-color: aquamarine;
+}
+.leftSideBar {
+  grid-area: 2 / 1 / 15 / 2;
+  background-color: bisque;
+}
+main {
+  grid-area: auto;
+  background-color: beige;
+}
+
+/* add responsive÷ */
+/* in small devise side bar should be in bottom */
+
+@media (max-width: 768px) {
+  .appLayout {
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(14, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    height: 100vh;
+  }
+
+  header,
+  footer,
+  .leftSideBar {
+    padding: 1rem;
+  }
+
+  header {
+    grid-area: 1 / 1 / 2 / 9;
+    background-color: aquamarine;
+  }
+  .leftSideBar {
+    grid-area: 15 / 1 / 15 / 9;
+    background-color: rgb(64, 108, 211);
+  }
+  main {
+    grid-area: auto;
+    background-color: beige;
+  }
+}

@@ -1,7 +1,9 @@
-import React from "react";
+"use client";
+import withProtectedRoute from "@/auth/withProtectedRoute";
+import withAppLayout from "../templates/layout/withAppLayout";
 
 const Home = () => {
-  return <div>Home</div>;
+  return <div>home page</div>;
 };
 
-export default Home;
+export default withAppLayout(withProtectedRoute(Home));
