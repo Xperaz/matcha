@@ -1,8 +1,8 @@
-import withProtectedRoute from "@/auth/withProtectedRoute";
+import CompleteProfile from "@/components/pages/CompleteProfile";
 import React from "react";
 
 const page = () => {
-  return <div>page</div>;
+  return <CompleteProfile />;
 };
 
-export default withProtectedRoute(page);
+export default page;
