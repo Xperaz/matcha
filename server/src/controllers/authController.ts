@@ -61,9 +61,9 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       });
     }
 
-    console.log("Email:", userData.email, "Type:", typeof userData.email);
 
     const emailCheckQuery = `SELECT email FROM users WHERE email = $1;`;
+    
     const { rows } = await query(emailCheckQuery, [userData.email]);
 
     if (rows.length > 0) {
@@ -73,11 +73,7 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       });
     }
 
-    console.log("User Data:", userData.password);
-
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-
-    console.log("Hashed Password:", hashedPassword);
 
     const insertUserQuery = `
       INSERT INTO users (first_name, last_name, password, email, gender, age)
@@ -92,9 +88,9 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       userData.gender,
       userData.age,
     ];
-    const result = await query(insertUserQuery, values);
+    const {rows: result}   = await query(insertUserQuery, values);
 
-    const user_id = result.rows[0].id;
+    const user_id = result[0].id;
 
     const token = signToken(user_id);
     res.cookie("jwt", token, {
@@ -107,6 +103,7 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       message: "User created successfully",
       accessToken: token,
     });
+
   } catch (error) {
     console.error("Error from signup:", error);
     return res.status(500).json({
@@ -151,6 +148,7 @@ export async function signin(req: Request, res: Response): Promise<Response> {
       message: "Signin successful",
       accessToken: token,
     });
+
   } catch (error) {
     console.error("Error from signin:", error);
     return res.status(500).json({

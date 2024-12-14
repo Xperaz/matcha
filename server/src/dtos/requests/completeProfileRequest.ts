@@ -2,8 +2,8 @@ export interface completeProfileReqeuest {
     profile_picture: string,
     biography: string,
     preferences: string,
-    latitude: string,
-    longtitude: string,
+    latitude: number,
+    longtitude: number,
     pictures: string[],
     interests: string[]
 }
