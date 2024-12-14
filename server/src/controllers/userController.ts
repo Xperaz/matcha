@@ -10,11 +10,13 @@ import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 // save urls to database
 
 export const completeProfile = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
+  
+  console.log(req.user);
     
-    const userData: completeProfileReqeuest = req.body;
-    const userId: any = req.user?.id;
+  try{ 
 
-    try{ 
+      const userData: completeProfileReqeuest = req.body;
+      const userId: any = req.user?.id;
 
         if (!userId) {
             return res.status(401).json({
@@ -62,7 +64,8 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
         const insertUserInfoQuery = `
           UPDATE users
           SET biography = $1,
-              gps_position = POINT($2, $3),
+              latitude = $2,
+              longtitude = $3,
               profile_completed = TRUE,
               sexual_preferences = $4,
               profile_picture = $5

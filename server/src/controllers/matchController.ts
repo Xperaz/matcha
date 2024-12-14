@@ -6,27 +6,33 @@ import { UserProfilesToSwipeDto } from "../dtos/user/userProfilesToSwipeDto";
 
 
 const mapUserMatches = (rows: any[]): UserMatchesDto[] => {
+
     return rows.map((row) => {
-        return {
+        const user: UserMatchesDto = {
             id: row.id,
             first_name: row.first_name,
             last_name: row.last_name,
             profile_picture: row.profile_picture,
-            gps_position: row.gps_position,
+            latitude: row.latitude,
+            longtitude: row.longtitude,
         };
+        return user;
     });
 };
 
 const mapUserProfilesToSwipe = (rows: any[]): UserProfilesToSwipeDto[] => {
+   
     return rows.map((row) => {
-        return {
+        const user: UserProfilesToSwipeDto = {
             id: row.id,
             first_name: row.first_name,
             last_name: row.last_name,
             profile_picture: row.profile_picture,
-            gps_position: row.gps_position,
+            latitude: row.latitude,
+            longtitude: row.longtitude,
             age: row.age,
         };
+        return user;
     });
 };
 
@@ -48,7 +54,7 @@ export const swipeLeft = async (req: AuthenticatedRequest, res: Response) => {
             SELECT initiator_id, receiver_id, status FROM likes
             WHERE initiator_id = $1 AND receiver_id = $2 AND status = 'DISLIKED';
         `;
-        const existingDislikeRows = await query(existingDislikeQuery, [userId, receiverId]);
+        const {rows: existingDislikeRows} = await query(existingDislikeQuery, [userId, receiverId]);
         
         if (existingDislikeRows.length > 0){
             return res.status(409).json({
@@ -99,8 +105,8 @@ export const swipeRight = async (req: AuthenticatedRequest, res: Response)  => {
             SELECT initiator_id, receiver_id, status FROM likes
             WHERE initiator_id = $1 AND receiver_id = $2 AND status = 'LIKED';
         `;
-        const existingLikeRows = await query(existingLikeQuery, [userId, receiverId]);
-        
+        const  {rows: existingLikeRows}  = await query(existingLikeQuery, [userId, receiverId]);
+
         if (existingLikeRows.length > 0){
             return res.status(409).json({
                 success: false,
@@ -113,7 +119,7 @@ export const swipeRight = async (req: AuthenticatedRequest, res: Response)  => {
             SELECT initiator_id, receiver_id, status FROM likes
             WHERE initiator_id = $2 AND receiver_id = $1 AND status = 'LIKED';
         `;
-        const mutualLikeRows = await query(mutualLike, [userId, receiverId]);
+        const {rows: mutualLikeRows} = await query(mutualLike, [userId, receiverId]);
 
         if (mutualLikeRows.length > 0){
             // create a match
@@ -165,7 +171,7 @@ export const getUserMatches = async (req: AuthenticatedRequest , res: Response) 
         }
 
         const getMatchesQuery: string = `
-            SELECT DISTINCT u.id, u.first_name, u.last_name, u.profile_picture, u.gps_position
+            SELECT DISTINCT u.id, u.first_name, u.last_name, u.profile_picture, u.latitude, u.longtitude
             FROM likes l
             JOIN users u 
                 ON (u.id = l.initiator_id AND l.receiver_id = $1)
@@ -173,12 +179,13 @@ export const getUserMatches = async (req: AuthenticatedRequest , res: Response) 
             WHERE l.status = 'MATCH';
         `;
 
-        const rows  = await query(getMatchesQuery, [userId]);
+        const { rows }  = await query(getMatchesQuery, [userId]);
 
         if (!rows){
-            return res.status(404).json({
-                success: false,
+            return res.status(200).json({
+                success: true,
                 message: "No matches found",
+                data: [],
             });
         }
 
@@ -231,7 +238,7 @@ export const getUsersProfile = async (req: AuthenticatedRequest, res: Response) 
         // and are not blocked by the user or blocking the user
 
         const getUsersQuery: string = `
-            SELECT u.id, u.first_name, u.last_name, u.profile_picture, u.age, u.gender, u.gps_position
+            SELECT u.id, u.first_name, u.last_name, u.profile_picture, u.age, u.gender, u.longtitude, u.latitude
             FROM users u
             WHERE u.id != $1
             AND u.id NOT IN (
@@ -246,7 +253,7 @@ export const getUsersProfile = async (req: AuthenticatedRequest, res: Response) 
             )
         `;
 
-        const rows = await query(getUsersQuery, [userId]);
+        const {rows} = await query(getUsersQuery, [userId]);
 
         if (!rows){
             return res.status(404).json({
@@ -258,12 +265,12 @@ export const getUsersProfile = async (req: AuthenticatedRequest, res: Response) 
         const usersProfiles: UserProfilesToSwipeDto[] = mapUserProfilesToSwipe(rows);
         //TODO: filter the users based on the user's specs
         //TODO: add functions for that
-        const usersProfilesPaginated: UserProfilesToSwipeDto[] = usersProfiles.slice((page - 1) * limit, page * limit);
+        // const usersProfilesPaginated: UserProfilesToSwipeDto[] = usersProfiles.slice((page - 1) * limit, page * limit);
 
         return res.status(200).json({
             success: true,
             message: "Users profiles retrieved successfully",
-            data: usersProfilesPaginated,
+            data: usersProfiles,
         });
 
     } catch (ex) {

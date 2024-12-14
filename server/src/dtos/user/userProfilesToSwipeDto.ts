@@ -3,6 +3,7 @@ export interface UserProfilesToSwipeDto {
     first_name: string;
     last_name: string;
     profile_picture: string;
-    gps_position: string;
+    longtitude: number;
+    latitude: number;
     age: number;
 };

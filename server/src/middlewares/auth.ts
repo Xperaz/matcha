@@ -24,6 +24,7 @@ const mapUser = (dbResults: any): UserDTO => {
 
 export const protectRoutes = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
   try {
+    
     const token = req.cookies?.jwt;
     
     if (!token) {
