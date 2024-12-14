@@ -29,6 +29,7 @@ import { registerUser } from "@/auth/register";
 import { formatGenderDisplay } from "@/helpers/formHelpers";
 import { useRouter } from "next/navigation";
 import { CustomError } from "@/auth/types";
+import { ROUTES } from "@/constants/routes";
 
 export default function ResigterForm() {
   const router = useRouter();
@@ -39,7 +40,7 @@ export default function ResigterForm() {
   >({
     mutationFn: registerUser,
     onSuccess: () => {
-      router.push("/complete-registration");
+      router.replace(ROUTES.completProfile);
     },
   });
 

@@ -16,6 +16,7 @@ export default {
         "secondary-foreground": "#171212",
         destructive: "#FF4D4D",
         "destructive-foreground": "#FFFFFF",
+        background: "#FCF7FA",
       },
       fontFamily: {
         readex_pro: ["var(--font-readex-pro)"],

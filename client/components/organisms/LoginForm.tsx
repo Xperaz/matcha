@@ -16,6 +16,7 @@ import { useMutation } from "@tanstack/react-query";
 import { userLogin } from "@/auth/login";
 import { useRouter } from "next/navigation";
 import { CustomError } from "@/auth/types";
+import { ROUTES } from "@/constants/routes";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -26,7 +27,7 @@ export default function LoginForm() {
   >({
     mutationFn: userLogin,
     onSuccess: () => {
-      router.push("/home");
+      router.replace(ROUTES.app);
     },
   });
 
