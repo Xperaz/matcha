@@ -15,6 +15,8 @@ CREATE TABLE users (
     profile_picture VARCHAR(500),
     latitude DECIMAL(9,6),
     longtitude DECIMAL(9,6),
+    city VARCHAR(100),
+    country VARCHAR(100),
     fame_rating INT  DEFAULT 0,
     sexual_preferences preferences_enum,
     age INT NOT NULL,

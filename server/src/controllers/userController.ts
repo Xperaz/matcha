@@ -26,7 +26,7 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
         }
 
         if (!userData.biography || !userData.interests || !userData.latitude || !userData.longtitude || !userData.preferences
-            || !userData.pictures || !userData.profile_picture){
+            || !userData.pictures || !userData.profile_picture || !userData.city || !userData.country){
                 return res.status(400).json({
                     success: false,
                     message: "All fields are required",
@@ -69,7 +69,9 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
               profile_completed = TRUE,
               sexual_preferences = $4,
               profile_picture = $5
-          WHERE id = $6;
+              city = $6,
+              country = $7
+          WHERE id = $8;
         `;
         await query(insertUserInfoQuery, [
           userData.biography,
@@ -77,6 +79,8 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
           userData.longtitude,
           userData.preferences,
           profilePictureUrl,
+          userData.city,
+          userData.country,
           userId,
         ]);
     
