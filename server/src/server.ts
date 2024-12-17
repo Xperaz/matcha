@@ -8,6 +8,7 @@ dotenv.config();
 import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import matchRoutes from "./routes/matchRoutes";
+import imageRoutes from "./routes/imageRoutes";
 
 const app: Application = express();
 const port: number = parseInt(process.env.SERVER_PORT || "5000", 10);
@@ -36,6 +37,7 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/match", matchRoutes);
+app.use("/api/image", imageRoutes);
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
