@@ -1,10 +1,10 @@
 db:
-	docker build -t matcha_db ~/Desktop/matcha_42/database &&  docker run --rm --name matcha_conntainer -p 5432:5432 matcha_db
+	docker build -t matcha_db ~/Desktop/matcha/database &&  docker run --rm --name matcha_conntainer -p 5432:5432 matcha_db
 
 docker:
 	~/init_docker.sh 
 
 backend:
-	npm run dev -C "~/Desktop/matcha_42/server"
+	npm run dev -C "~/Desktop/matcha/server"
 
 

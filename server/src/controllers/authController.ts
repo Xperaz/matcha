@@ -158,4 +158,6 @@ export async function signin(req: Request, res: Response): Promise<Response> {
   }
 }
 
-export const singout = async (req: , res: Response): Promise<Response> => {
+// export const singout = async (req: , res: Response): Promise<Response> => {
+
+// };
