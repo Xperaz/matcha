@@ -119,9 +119,9 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
       }
 };
 
-export const updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
-// TODO: Implement updateProfile
-};
+// export const updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
+// // TODO: Implement updateProfile
+// };
 
 export const updateEmail = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
 
