@@ -159,10 +159,11 @@ export async function signin(req: Request, res: Response): Promise<Response> {
 }
 
 export const singout = async (req: Request, res: Response): Promise<Response> => {
-  
+
   res.clearCookie("jwt");
   return res.status(200).json({
     success: true,
     message: "Signout successful",
   });
+  
 };

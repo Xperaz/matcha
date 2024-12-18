@@ -16,6 +16,8 @@ router.get("/me", protectRoutes, (req: AuthenticatedRequest, res:Response) => {
     });
 });
 
-
+router.put("/update-password", protectRoutes);
+router.put("/update-email", protectRoutes);
+router.put("/update-profile", protectRoutes);
 
 export default router;
