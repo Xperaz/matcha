@@ -94,3 +94,43 @@ export const addImage = async (req: AuthenticatedRequest, res: Response) => {
 
     }
 };
+
+export const addProfileImage = async (req: AuthenticatedRequest, res: Response) => {
+
+    try{
+        const { profileImage } = req.body;
+        const userId = req.user.id;
+
+        if (!profileImage) {
+            return res.status(400).json({
+                success: false,
+                message: "Profile image is required",
+            });
+        }
+
+        const result: any = await cloudinary.uploader.upload(profileImage);
+        const profileImageUrl: string = result.secure_url;
+
+        const updateProfileImageQuery: string = `
+            UPDATE users
+            SET profile_image = $1
+            WHERE id = $2;
+        `;
+
+        await query(updateProfileImageQuery, [profileImageUrl, userId]);
+
+        return res.status(200).json({
+            success: true,
+            message: "Profile image added successfully",
+        });
+
+    } catch (error) {
+        console.error("Error adding profile image: ", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error adding profile image",
+        });
+
+    }
+
+};
