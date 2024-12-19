@@ -368,7 +368,9 @@ export const unlikeUser = async (req: AuthenticatedRequest, res: Response) => {
 
         const unlikeUserQuery: string = `
             DELETE FROM likes
-            WHERE initiator_id = $1 AND receiver_id = $2 AND status = 'LIKED';
+            WHERE status = 'LIKED' 
+            AND initiator_id = $1 
+            AND receiver_id = $2;
         `;
         await query(unlikeUserQuery, [userId, receiverId]);
 
@@ -393,6 +395,8 @@ export const unmatchedUser = async (req: AuthenticatedRequest, res: Response) =>
         const userId: string = req.user?.id;
         const receiverId: string = req.params.userId;
 
+        console.log("receiverId", receiverId);
+
         if (!userId || !receiverId){
             return res.status(401).json({
                 success: false,
@@ -402,8 +406,8 @@ export const unmatchedUser = async (req: AuthenticatedRequest, res: Response) =>
 
         const unmatchedUserQuery: string = `
             DELETE FROM likes
-            WHERE (initiator_id = $1 AND receiver_id = $2) OR (initiator_id = $2 AND receiver_id = $1)
-            AND status = 'MATCH';
+            WHERE status = 'MATCH' 
+            AND (initiator_id = $1 AND receiver_id = $2) OR (initiator_id = $2 AND receiver_id = $1);
         `;
         await query(unmatchedUserQuery, [userId, receiverId]);
 
