@@ -281,7 +281,143 @@ export const getUsersProfile = async (req: AuthenticatedRequest, res: Response) 
           message: "An error occurred while getting users profile",
         });
     }
+};
 
+// seperate the like/unlike from swqipe right/left in case we want to add more features
+export const likeUser = async (req: AuthenticatedRequest, res: Response) => {
 
+    try {
 
+        const userId: string = req.user?.id;
+        const receiverId: string = req.params.userId;
+
+        if (!userId || !receiverId){
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: User ID not found",
+              });
+        }
+
+        // check if the user has already liked the receiver
+        const existingLikeQuery: string = `
+            SELECT initiator_id, receiver_id, status FROM likes
+            WHERE initiator_id = $1 AND receiver_id = $2 AND status = 'LIKED';
+        `;
+        const {rows: existingLikeRows} = await query(existingLikeQuery, [userId, receiverId]);
+
+        if (existingLikeRows.length > 0){
+            return res.status(409).json({
+                success: false,
+                message: "User has already liked the user",
+            });
+        }
+
+        const mutualLike: string = `
+            SELECT initiator_id, receiver_id, status FROM likes
+            WHERE initiator_id = $2 AND receiver_id = $1 AND status = 'LIKED';
+        `;
+        const {rows: mutualLikeRows} = await query(mutualLike, [userId, receiverId]);
+
+        if (mutualLikeRows.length > 0){
+            // create a match
+            const matchUsersQuery: string = `
+                UPDATE likes SET status = 'MATCH'
+                WHERE (initiator_id = $1 AND receiver_id = $2) OR (initiator_id = $2 AND receiver_id = $1);
+            `;
+            await query(matchUsersQuery, [userId, receiverId]);
+
+            return res.status(200).json({
+                success: true,
+                message: "Match created successfully",
+            });
+        }
+
+        const likeUserQuery: string = `
+            INSERT INTO likes (initiator_id, receiver_id, status)
+            VALUES ($1, $2, 'LIKED');
+        `;
+        await query(likeUserQuery, [userId, receiverId]);
+
+        return res.status(200).json({
+            success: true,
+            message: "User liked successfully",
+        });
+
+    } catch (ex) {
+        console.error("Error liking user", ex);
+        
+        return res.status(500).json({
+          success: false,
+          message: "An error occurred while liking user",
+        });
+    }
+};
+
+export const unlikeUser = async (req: AuthenticatedRequest, res: Response) => {
+
+    try {
+        const userId: string = req.user?.id;
+        const receiverId: string = req.params.userId;
+
+        if (!userId || !receiverId){
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: User ID not found",
+              });
+        }
+
+        const unlikeUserQuery: string = `
+            DELETE FROM likes
+            WHERE initiator_id = $1 AND receiver_id = $2 AND status = 'LIKED';
+        `;
+        await query(unlikeUserQuery, [userId, receiverId]);
+
+        return res.status(200).json({
+            success: true,
+            message: "User unliked successfully",
+        });
+
+    } catch (ex) {
+        console.error("Error unliking user", ex);
+        
+        return res.status(500).json({
+          success: false,
+          message: "An error occurred while unliking user",
+        });
+    }
+};
+
+export const unmatchedUser = async (req: AuthenticatedRequest, res: Response) => {
+
+    try {
+        const userId: string = req.user?.id;
+        const receiverId: string = req.params.userId;
+
+        if (!userId || !receiverId){
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized: User ID not found",
+              });
+        }
+
+        const unmatchedUserQuery: string = `
+            DELETE FROM likes
+            WHERE (initiator_id = $1 AND receiver_id = $2) OR (initiator_id = $2 AND receiver_id = $1)
+            AND status = 'MATCH';
+        `;
+        await query(unmatchedUserQuery, [userId, receiverId]);
+
+        return res.status(200).json({
+            success: true,
+            message: "User unmatched successfully",
+        });
+
+    } catch (ex) {
+        console.error("Error unmatching user", ex);
+        
+        return res.status(500).json({
+          success: false,
+          message: "An error occurred while unmatching user",
+        });
+    }
 };
