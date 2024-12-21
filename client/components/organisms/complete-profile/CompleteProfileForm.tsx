@@ -1,6 +1,16 @@
+/* eslint-disable no-console */
 "use client";
 
-import { useState } from "react";
+import { useCompleteFormContext } from "@/context/completeFormContext";
+import PersonalInfoForm from "./steps/PersonalInfoForm";
+import { useForm } from "react-hook-form";
+import {
+  CompleteFormData,
+  addressInfoSchema,
+  interestsSchema,
+  personalInfoSchema,
+} from "@/schemas/CompleteFormSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const steps = [
   {
@@ -15,17 +25,55 @@ const steps = [
 ];
 
 export default function CompleteProfileForm() {
-  // eslint-disable-next-line no-unused-vars
-  const [previousStep, setPreviousStep] = useState(0);
-  const [currentStep, setCurrentStep] = useState(0);
+  const {
+    currentStep,
+    setCurrentStep,
+    setPreviousStep,
+    formValues,
+    updateFormValues,
+  } = useCompleteFormContext();
 
-  const next = async () => {
-    if (currentStep < steps.length - 1) {
-      //   if (currentStep === steps.length - 2) {
-      //     await handleSubmit(processForm)();
-      //   }
-      setPreviousStep(currentStep);
-      setCurrentStep((step) => step + 1);
+  const getCurrentSchema = () => {
+    switch (currentStep) {
+      case 0:
+        return personalInfoSchema;
+      case 1:
+        return addressInfoSchema;
+      case 2:
+        return interestsSchema;
+      default:
+        return personalInfoSchema;
+    }
+  };
+
+  const {
+    formState: { errors },
+    handleSubmit,
+    control,
+  } = useForm<CompleteFormData>({
+    resolver: zodResolver(getCurrentSchema()),
+    defaultValues: formValues,
+    mode: "onChange",
+  });
+
+  const onSubmit = async (data: CompleteFormData) => {
+    console.log("form", data);
+
+    try {
+      if (currentStep === steps.length - 1) {
+        const finalData = { ...formValues, ...data };
+
+        console.log("final data to submit: ", finalData);
+      }
+
+      if (currentStep < steps.length - 1) {
+        updateFormValues(data);
+        setPreviousStep(currentStep);
+        setCurrentStep((step) => step + 1);
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("Form submission error: ", error);
     }
   };
 
@@ -36,8 +84,21 @@ export default function CompleteProfileForm() {
     }
   };
 
+  const rederForms = () => {
+    switch (currentStep) {
+      case 0:
+        return <PersonalInfoForm control={control} errors={errors} />;
+      case 1:
+        return <></>;
+      case 2:
+        return <></>;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <section className="absolute inset-0 flex flex-col justify-between p-24">
+    <section className="absolute inset-0 flex flex-col gap-4 p-24">
       {/* steps */}
       <nav aria-label="Progress" className="bg-[#fcf7fa]">
         <ol role="list" className="space-y-4 md:flex md:space-x-8 md:space-y-0">
@@ -73,53 +134,58 @@ export default function CompleteProfileForm() {
         </ol>
       </nav>
 
-      {/* Navigation */}
-      <div className="mt-8 pt-5">
-        <div className="flex justify-between">
-          <button
-            type="button"
-            onClick={prev}
-            disabled={currentStep === 0}
-            className="rounded bg-white px-2 py-1 text-sm font-semibold text-primary/70 shadow-sm ring-1 ring-inset ring-primary/30 hover:bg-primary/15 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="h-6 w-6"
+      <form onSubmit={handleSubmit(onSubmit)}>
+        {rederForms()}
+
+        <div className="mt-8 pt-5">
+          <div className="flex justify-between">
+            <button
+              type="button"
+              onClick={prev}
+              disabled={currentStep === 0}
+              className="rounded bg-white px-2 py-1 text-sm font-semibold text-primary/70 shadow-sm ring-1 ring-inset ring-primary/30 hover:bg-primary/15 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 19.5L8.25 12l7.5-7.5"
-              />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={next}
-            disabled={currentStep === steps.length - 1}
-            className="rounded bg-white px-2 py-1 text-sm font-semibold text-primary/70 shadow-sm ring-1 ring-inset ring-primary/30 hover:bg-primary/15 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="h-6 w-6"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="h-6 w-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 19.5L8.25 12l7.5-7.5"
+                />
+              </svg>
+            </button>
+            <button
+              type="submit"
+              className="rounded bg-white px-2 py-1 text-sm font-semibold text-primary/70 shadow-sm ring-1 ring-inset ring-primary/30 hover:bg-primary/15 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8.25 4.5l7.5 7.5-7.5 7.5"
-              />
-            </svg>
-          </button>
+              {currentStep === steps.length - 1 ? (
+                "Submit"
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="h-6 w-6"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                  />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
-      </div>
+      </form>
     </section>
   );
 }
