@@ -22,9 +22,9 @@ const matchPassword = async (
 };
 
 export async function signup(req: Request, res: Response): Promise<Response> {
-  const userData: userSignupRequest = req.body;
-
+  
   try {
+    const userData: userSignupRequest = req.body;
     // Validate request data
     if (
       !userData.first_name ||
@@ -157,3 +157,13 @@ export async function signin(req: Request, res: Response): Promise<Response> {
     });
   }
 }
+
+export const singout = async (req: Request, res: Response): Promise<Response> => {
+
+  res.clearCookie("jwt");
+  return res.status(200).json({
+    success: true,
+    message: "Signout successful",
+  });
+  
+};

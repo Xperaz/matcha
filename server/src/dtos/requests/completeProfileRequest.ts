@@ -4,6 +4,8 @@ export interface completeProfileReqeuest {
     preferences: string,
     latitude: number,
     longtitude: number,
+    city: string,
+    country: string,
     pictures: string[],
     interests: string[]
 }

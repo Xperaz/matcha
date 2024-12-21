@@ -3,6 +3,7 @@ import cloudinary  from "../config/cloudinary";
 import { Response } from "express";
 import { completeProfileReqeuest, isValidInterest, isValidPreference } from "../dtos/requests/completeProfileRequest";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
+import bcrypt from "bcryptjs";
 
 // validate data
 // update it
@@ -26,7 +27,7 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
         }
 
         if (!userData.biography || !userData.interests || !userData.latitude || !userData.longtitude || !userData.preferences
-            || !userData.pictures || !userData.profile_picture){
+            || !userData.pictures || !userData.profile_picture || !userData.city || !userData.country){
                 return res.status(400).json({
                     success: false,
                     message: "All fields are required",
@@ -59,7 +60,7 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
             pictures_urls.push(imageUrl);
         }
 
-        // await query("BEGIN");
+        await query("BEGIN");
 
         const insertUserInfoQuery = `
           UPDATE users
@@ -69,7 +70,9 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
               profile_completed = TRUE,
               sexual_preferences = $4,
               profile_picture = $5
-          WHERE id = $6;
+              city = $6,
+              country = $7
+          WHERE id = $8;
         `;
         await query(insertUserInfoQuery, [
           userData.biography,
@@ -77,6 +80,8 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
           userData.longtitude,
           userData.preferences,
           profilePictureUrl,
+          userData.city,
+          userData.country,
           userId,
         ]);
     
@@ -95,7 +100,7 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
         `;
         await query(insertUserInterestsQuery, [userId, userData.interests]);
         
-        // await query("COMMIT");
+        await query("COMMIT");
         
         return res.status(200).json({
           success: true,
@@ -105,11 +110,148 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
       } catch (ex) {
         console.error("Error completing profile:", ex);
     
-        // await query("ROLLBACK");
+        await query("ROLLBACK");
     
         return res.status(500).json({
           success: false,
           message: "An error occurred while completing the profile",
         });
       }
+};
+
+// export const updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
+// // TODO: Implement updateProfile
+// };
+
+export const updateEmail = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
+
+  try{
+    const { email, password } = req.body;
+    const userId = req.user?.id;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+      });
+    }
+
+    const checkEmailQuery: string = `
+      SELECT id FROM users
+      WHERE email = $1;
+    `;
+
+    const { rows: checkEmail } = await query(checkEmailQuery, [email]);
+
+    if (checkEmail.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Email already in use",
+      });
+    }
+
+    const getPasswordQuery: string = `
+      SELECT password FROM users
+      WHERE id = $1;
+    `;
+    const { rows } = await query(getPasswordQuery, [userId]);
+
+    if (rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const userPassword: string = rows[0].password;
+
+    const isMatch: boolean = await bcrypt.compare(password, userPassword);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+
+    const updateEmailQuery: string = `
+      UPDATE users
+      SET email = $1
+      WHERE id = $2;
+    `;
+    await query(updateEmailQuery, [email, userId]);
+
+    return res.status(200).json({
+      success: true,
+      message: "Email updated successfully",
+    });
+
+  } catch (ex) {
+    console.error("Error updating email:", ex);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while updating the email",
+    });
+  }
+
+};
+
+export const updatePassword = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
+
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.user?.id;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
+
+    const getPasswordQuery: string = `
+      SELECT password FROM users
+      WHERE id = $1;
+    `;
+    const { rows } = await query(getPasswordQuery, [userId]);
+
+    if (rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const userPassword: string = rows[0].password;
+
+    const isMatch: boolean = await bcrypt.compare(oldPassword, userPassword);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid password",
+      });
+    }
+
+    const hashedPassword: string = await bcrypt.hash(newPassword, 10);
+
+    const updatePasswordQuery: string = `
+      UPDATE users
+      SET password = $1
+      WHERE id = $2;
+    `;
+    await query(updatePasswordQuery, [hashedPassword, userId]);
+
+    return res.status(200).json({
+      success: true,
+      message: "Password updated successfully",
+    });
+
+  } catch (ex) {
+    console.error("Error updating password:", ex);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while updating the password",
+    });
+  }
 };
