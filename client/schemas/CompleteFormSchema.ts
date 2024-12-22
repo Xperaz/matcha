@@ -46,6 +46,8 @@ export const completeFormSchema = z.object({
   pictures: z.string().array().min(6, {
     message: "At least 6 pictures are required",
   }),
+  latitude: z.string().optional(),
+  longtitude: z.string().optional(),
 
   interests: z
     .string()
@@ -68,6 +70,8 @@ export const addressInfoSchema = completeFormSchema.pick({
   city: true,
   country: true,
   pictures: true,
+  latitude: true,
+  longtitude: true,
 });
 
 export const interestsSchema = completeFormSchema.pick({

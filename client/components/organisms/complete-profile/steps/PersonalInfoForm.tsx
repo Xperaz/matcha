@@ -92,11 +92,7 @@ const PersonalInfoForm = ({ control, errors }: PersonalInfoFormProps) => {
           render={({ field }) => (
             <div className="flex flex-col gap-2">
               <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                {...field}
-                placeholder="Tell us about yourself"
-                className=""
-              />
+              <Textarea {...field} placeholder="Tell us about yourself" />
             </div>
           )}
         />
@@ -113,7 +109,7 @@ const PersonalInfoForm = ({ control, errors }: PersonalInfoFormProps) => {
               <SelectTrigger>
                 <SelectValue placeholder="Select your preference" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white">
                 <SelectItem value="MALE">Male</SelectItem>
                 <SelectItem value="FEMALE">Female</SelectItem>
                 <SelectItem value="BOTH">Both</SelectItem>

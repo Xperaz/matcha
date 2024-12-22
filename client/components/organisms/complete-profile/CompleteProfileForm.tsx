@@ -11,6 +11,7 @@ import {
   personalInfoSchema,
 } from "@/schemas/CompleteFormSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import AddressAndLocation from "./steps/AddressAndLocation";
 
 const steps = [
   {
@@ -32,6 +33,8 @@ export default function CompleteProfileForm() {
     formValues,
     updateFormValues,
   } = useCompleteFormContext();
+
+  console.log("form values", formValues);
 
   const getCurrentSchema = () => {
     switch (currentStep) {
@@ -89,7 +92,7 @@ export default function CompleteProfileForm() {
       case 0:
         return <PersonalInfoForm control={control} errors={errors} />;
       case 1:
-        return <></>;
+        return <AddressAndLocation control={control} errors={errors} />;
       case 2:
         return <></>;
       default:
