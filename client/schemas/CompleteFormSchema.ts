@@ -46,20 +46,21 @@ export const completeFormSchema = z.object({
   pictures: z.string().array().min(6, {
     message: "At least 6 pictures are required",
   }),
-  latitude: z.string().optional(),
-  longtitude: z.string().optional(),
+  latitude: z.number().optional(),
+  longtitude: z.number().optional(),
 
   interests: z
-    .string()
-    .array()
-    .nonempty()
+    .array(
+      z.object({
+        value: z.string(),
+      }),
+    )
     .min(5, { message: "Please select at least 5 interests" })
     .max(10, { message: "You can't select more than 10 interests" }),
 });
 
 export type CompleteFormData = z.infer<typeof completeFormSchema>;
 
-// Partial schemas for step validation
 export const personalInfoSchema = completeFormSchema.pick({
   profile_picture: true,
   bio: true,

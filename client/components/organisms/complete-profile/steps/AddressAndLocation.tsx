@@ -3,12 +3,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCompleteFormContext } from "@/context/completeFormContext";
 import { CompleteFormData } from "@/schemas/CompleteFormSchema";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 import Select from "react-select";
 import { countryOptions, customCountryStyles } from "./countryDropdownStyle";
 import { convertToBase64 } from "@/helpers/convertToBase64";
 import Image from "next/image";
+import useGeoLocation from "@/hooks/useGeoLocation";
 
 interface AddressAndLocationProps {
   control: Control<CompleteFormData>;
@@ -16,6 +17,7 @@ interface AddressAndLocationProps {
 }
 
 const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
+  const { lat, long } = useGeoLocation();
   const { updateFormValues } = useCompleteFormContext();
   const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
 
@@ -40,6 +42,13 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
       console.error("error while converting images to base64");
     }
   };
+
+  useEffect(() => {
+    updateFormValues({
+      longtitude: long,
+      latitude: lat,
+    });
+  }, [long, lat]);
 
   return (
     <form className="flex flex-col justify-between gap-6">

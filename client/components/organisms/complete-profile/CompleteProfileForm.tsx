@@ -13,6 +13,8 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import AddressAndLocation from "./steps/AddressAndLocation";
 
+import Interests from "./steps/Interests";
+
 const steps = [
   {
     id: "Step 1",
@@ -66,7 +68,11 @@ export default function CompleteProfileForm() {
       if (currentStep === steps.length - 1) {
         const finalData = { ...formValues, ...data };
 
-        console.log("final data to submit: ", finalData);
+        const transformedData = {
+          ...finalData,
+          interests: data.interests.map((interest) => interest.value),
+        };
+        console.log("final data to submit: ", transformedData);
       }
 
       if (currentStep < steps.length - 1) {
@@ -94,7 +100,7 @@ export default function CompleteProfileForm() {
       case 1:
         return <AddressAndLocation control={control} errors={errors} />;
       case 2:
-        return <></>;
+        return <Interests control={control} errors={errors} />;
       default:
         return null;
     }
