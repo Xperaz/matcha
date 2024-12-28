@@ -102,16 +102,16 @@ const PersonalInfoForm = ({ control, errors }: PersonalInfoFormProps) => {
 
       <div className="space-y-2">
         <div className="flex gap-1 items-center">
-          <Label htmlFor="preference">Preference</Label>
+          <Label htmlFor="preferences">Preferences</Label>
           <span className="text-center text-red-500">*</span>
         </div>
         <Controller
-          name="preference"
+          name="preferences"
           control={control}
           render={({ field }) => (
             <Select onValueChange={field.onChange} defaultValue={field.value}>
               <SelectTrigger>
-                <SelectValue placeholder="Select your preference" />
+                <SelectValue placeholder="Select your preferences" />
               </SelectTrigger>
               <SelectContent className="bg-white">
                 <SelectItem value="MALE">Male</SelectItem>
@@ -121,8 +121,8 @@ const PersonalInfoForm = ({ control, errors }: PersonalInfoFormProps) => {
             </Select>
           )}
         />
-        {errors.preference && (
-          <p className="text-red-500 text-sm">{errors.preference.message}</p>
+        {errors.preferences && (
+          <p className="text-red-500 text-sm">{errors.preferences.message}</p>
         )}
       </div>
     </form>

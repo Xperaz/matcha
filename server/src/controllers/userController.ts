@@ -1,7 +1,11 @@
 import { query } from "../config/db";
-import cloudinary  from "../config/cloudinary";
+import cloudinary from "../config/cloudinary";
 import { Response } from "express";
-import { completeProfileReqeuest, isValidInterest, isValidPreference } from "../dtos/requests/completeProfileRequest";
+import {
+  completeProfileReqeuest,
+  isValidInterest,
+  isValidPreference,
+} from "../dtos/requests/completeProfileRequest";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import bcrypt from "bcryptjs";
 
@@ -10,59 +14,73 @@ import bcrypt from "bcryptjs";
 // upload images
 // save urls to database
 
-export const completeProfile = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
-  
+export const completeProfile = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<Response> => {
   console.log(req.user);
-    
-  try{ 
 
-      const userData: completeProfileReqeuest = req.body;
-      const userId: any = req.user?.id;
+  try {
+    const userData: completeProfileReqeuest = req.body;
+    const userId: any = req.user?.id;
 
-        if (!userId) {
-            return res.status(401).json({
-              success: false,
-              message: "Unauthorized: User ID not found",
-            });
-        }
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: User ID not found",
+      });
+    }
 
-        if (!userData.biography || !userData.interests || !userData.latitude || !userData.longtitude || !userData.preferences
-            || !userData.pictures || !userData.profile_picture || !userData.city || !userData.country){
-                return res.status(400).json({
-                    success: false,
-                    message: "All fields are required",
-                });
-        }
+    if (
+      !userData.biography ||
+      !userData.interests ||
+      !userData.latitude ||
+      !userData.longtitude ||
+      !userData.preferences ||
+      !userData.pictures ||
+      !userData.profile_picture ||
+      !userData.city ||
+      !userData.country
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required",
+      });
+    }
 
-        if (!isValidPreference(userData.preferences)){
-            return res.status(400).json({
-                success: false,
-                message: "invalid preference",
-            });
-        }
+    if (!isValidPreference(userData.preferences)) {
+      return res.status(400).json({
+        success: false,
+        message: "invalid preference",
+      });
+    }
 
-        const invalidInterests: string[] = userData.interests.filter((interest) => !isValidInterest(interest));
-        
-        if (invalidInterests.length > 0) {
-            return res.status(400).json({
-                error: "Invalid interests",
-                invalidInterests,
-            });
-        }
+    const invalidInterests: string[] = userData.interests.filter(
+      (interest) => !isValidInterest(interest)
+    );
 
-        const result: any = await cloudinary.uploader.upload(userData.profile_picture);
-        const profilePictureUrl: string = result.secure_url;
+    if (invalidInterests.length > 0) {
+      return res.status(400).json({
+        error: "Invalid interests",
+        invalidInterests,
+      });
+    }
 
-        const pictures_urls: string[] = [];
-        for (const image of userData.pictures ){
-            const imageResult: any = await cloudinary.uploader.upload(image);
-            const imageUrl: string = imageResult.secure_url;
-            pictures_urls.push(imageUrl);
-        }
+    const result: any = await cloudinary.uploader.upload(
+      userData.profile_picture
+    );
+    const profilePictureUrl: string = result.secure_url;
 
-        await query("BEGIN");
+    const pictures_urls: string[] = [];
+    for (const image of userData.pictures) {
+      const imageResult: any = await cloudinary.uploader.upload(image);
+      const imageUrl: string = imageResult.secure_url;
+      pictures_urls.push(imageUrl);
+    }
 
-        const insertUserInfoQuery = `
+    await query("BEGIN");
+
+    const insertUserInfoQuery = `
           UPDATE users
           SET biography = $1,
               latitude = $2,
@@ -74,58 +92,59 @@ export const completeProfile = async (req: AuthenticatedRequest, res: Response):
               country = $7
           WHERE id = $8;
         `;
-        await query(insertUserInfoQuery, [
-          userData.biography,
-          userData.latitude,
-          userData.longtitude,
-          userData.preferences,
-          profilePictureUrl,
-          userData.city,
-          userData.country,
-          userId,
-        ]);
-    
-        const insertUserImagesQuery = `
+    await query(insertUserInfoQuery, [
+      userData.biography,
+      userData.latitude,
+      userData.longtitude,
+      userData.preferences,
+      profilePictureUrl,
+      userData.city,
+      userData.country,
+      userId,
+    ]);
+
+    const insertUserImagesQuery = `
           INSERT INTO pictures (user_id, picture_url)
           VALUES ($1, unnest($2::text[]));
         `;
-        await query(insertUserImagesQuery, [userId, pictures_urls]);
-        
-        const insertUserInterestsQuery = `
+    await query(insertUserImagesQuery, [userId, pictures_urls]);
+
+    const insertUserInterestsQuery = `
             INSERT INTO interests (user_id, interest_id)
             SELECT $1, id
             FROM interest_tags
             WHERE tag = ANY($2::text[])
             ON CONFLICT DO NOTHING;
         `;
-        await query(insertUserInterestsQuery, [userId, userData.interests]);
-        
-        await query("COMMIT");
-        
-        return res.status(200).json({
-          success: true,
-          message: "Profile completed successfully",
-        });
+    await query(insertUserInterestsQuery, [userId, userData.interests]);
 
-      } catch (ex) {
-        console.error("Error completing profile:", ex);
-    
-        await query("ROLLBACK");
-    
-        return res.status(500).json({
-          success: false,
-          message: "An error occurred while completing the profile",
-        });
-      }
+    await query("COMMIT");
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile completed successfully",
+    });
+  } catch (ex) {
+    console.error("Error completing profile:", ex);
+
+    await query("ROLLBACK");
+
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while completing the profile",
+    });
+  }
 };
 
 // export const updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
 // // TODO: Implement updateProfile
 // };
 
-export const updateEmail = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
-
-  try{
+export const updateEmail = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<Response> => {
+  try {
     const { email, password } = req.body;
     const userId = req.user?.id;
 
@@ -185,7 +204,6 @@ export const updateEmail = async (req: AuthenticatedRequest, res: Response): Pro
       success: true,
       message: "Email updated successfully",
     });
-
   } catch (ex) {
     console.error("Error updating email:", ex);
     return res.status(500).json({
@@ -193,11 +211,12 @@ export const updateEmail = async (req: AuthenticatedRequest, res: Response): Pro
       message: "An error occurred while updating the email",
     });
   }
-
 };
 
-export const updatePassword = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
-
+export const updatePassword = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<Response> => {
   try {
     const { oldPassword, newPassword } = req.body;
     const userId = req.user?.id;
@@ -246,7 +265,6 @@ export const updatePassword = async (req: AuthenticatedRequest, res: Response): 
       success: true,
       message: "Password updated successfully",
     });
-
   } catch (ex) {
     console.error("Error updating password:", ex);
     return res.status(500).json({

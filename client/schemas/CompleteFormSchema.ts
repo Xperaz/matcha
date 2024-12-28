@@ -8,7 +8,7 @@ enum Preference {
 }
 
 const PreferenceSchema = z.nativeEnum(Preference, {
-  message: "You need to select one preference",
+  message: "You need to select one preferences",
 });
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -39,7 +39,7 @@ const profilePictureSchema = z.union([
 export const completeFormSchema = z.object({
   profile_picture: profilePictureSchema,
   biography: z.string().optional(),
-  preference: PreferenceSchema,
+  preferences: PreferenceSchema,
 
   city: z.string().min(1, { message: "City field is required" }),
   country: z.string().min(1, { message: "Country field is required" }),
@@ -64,7 +64,7 @@ export type CompleteFormData = z.infer<typeof completeFormSchema>;
 export const personalInfoSchema = completeFormSchema.pick({
   profile_picture: true,
   biography: true,
-  preference: true,
+  preferences: true,
 });
 
 export const addressInfoSchema = completeFormSchema.pick({

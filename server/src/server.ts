@@ -30,6 +30,9 @@ app.use(
 );
 
 // Middleware
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -38,7 +41,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/match", matchRoutes);
 app.use("/api/image", imageRoutes);
-
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);

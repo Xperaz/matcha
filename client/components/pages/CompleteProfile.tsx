@@ -1,5 +1,5 @@
 "use client";
-// import withProtectedRoute from "@/auth/withProtectedRoute";
+import withProtectedRoute from "@/auth/withProtectedRoute";
 import React from "react";
 import CompleteProfileForm from "../organisms/complete-profile/CompleteProfileForm";
 import { FormProvider } from "@/context/completeFormContext";
@@ -14,6 +14,4 @@ const CompleteProfile = () => {
   );
 };
 
-// export default withProtectedRoute(CompleteProfile);
-
-export default CompleteProfile;
+export default withProtectedRoute(CompleteProfile);

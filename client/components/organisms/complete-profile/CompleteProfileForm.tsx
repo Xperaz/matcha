@@ -13,6 +13,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import AddressAndLocation from "./steps/AddressAndLocation";
 
 import Interests from "./steps/Interests";
+import { useMutation } from "@tanstack/react-query";
+import { completeProfile } from "@/services/requests/completeProfile";
+import { AxiosResponse } from "axios";
+import { useRouter } from "next/navigation";
 
 const steps = [
   {
@@ -34,6 +38,27 @@ export default function CompleteProfileForm() {
     formValues,
     updateFormValues,
   } = useCompleteFormContext();
+
+  const router = useRouter();
+
+  const { mutate, isPending } = useMutation<
+    AxiosResponse, // success response type
+    Error, // error type
+    CompleteFormData, // variables type
+    unknown // context type
+  >({
+    mutationFn: completeProfile,
+    onSuccess: () => {
+      // TODO: add toast success message
+      reset();
+      router.replace("/home");
+    },
+    onError: (err) => {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      // TODO: add toast for error message
+    },
+  });
 
   const getCurrentSchema = () => {
     switch (currentStep) {
@@ -68,8 +93,9 @@ export default function CompleteProfileForm() {
         const transformedData = {
           ...finalData,
           interests: data.interests.map((interest) => interest.value),
-        };
-        reset();
+        } as unknown as CompleteFormData;
+        mutate(transformedData);
+        // reset();
       }
 
       if (currentStep < steps.length - 1) {
@@ -105,6 +131,9 @@ export default function CompleteProfileForm() {
 
   return (
     <section className="absolute inset-0 flex flex-col gap-4 p-24">
+      <h1 className="text-center mb-2 font-bold text-xl">
+        Welcome! Let&apos;s complete your profile
+      </h1>
       {/* steps */}
       <nav aria-label="Progress" className="bg-[#fcf7fa]">
         <ol role="list" className="space-y-4 md:flex md:space-x-8 md:space-y-0">
@@ -167,6 +196,7 @@ export default function CompleteProfileForm() {
               </svg>
             </button>
             <button
+              disabled={isPending}
               type="submit"
               className="rounded bg-white px-2 py-1 text-sm font-semibold text-primary/70 shadow-sm ring-1 ring-inset ring-primary/30 hover:bg-primary/15 disabled:cursor-not-allowed disabled:opacity-50"
             >

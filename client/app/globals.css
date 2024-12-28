@@ -87,12 +87,10 @@ header {
 
 nav {
   grid-area: 2 / 1 / 15 / 2;
-  background-color: bisque;
 }
 
 main {
   grid-area: 2 / 2 / 15 / 9;
-  background-color: beige;
   overflow: auto;
 }
 
@@ -118,12 +116,10 @@ main {
 
   nav {
     grid-area: 15 / 1 / 15 / 9;
-    background-color: rgb(64, 108, 211);
   }
 
   main {
     grid-area: 2 / 1 / 15 / 9;
-    background-color: beige;
     overflow: auto;
   }
 }
