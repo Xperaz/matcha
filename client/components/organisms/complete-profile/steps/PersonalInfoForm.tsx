@@ -37,10 +37,10 @@ const PersonalInfoForm = ({ control, errors }: PersonalInfoFormProps) => {
       try {
         const base64String = await convertToBase64(file);
         setImagePreview(base64String);
-        onChange(file);
         updateFormValues({
           profile_picture: base64String,
         });
+        onChange(base64String);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error("Error converting file to base64: ", error);
@@ -88,15 +88,15 @@ const PersonalInfoForm = ({ control, errors }: PersonalInfoFormProps) => {
       <div>
         <Controller
           control={control}
-          name="bio"
+          name="biography"
           render={({ field }) => (
             <div className="flex flex-col gap-2">
-              <Label htmlFor="bio">Bio</Label>
+              <Label htmlFor="biography">Bio</Label>
               <Textarea {...field} placeholder="Tell us about yourself" />
             </div>
           )}
         />
-        {errors.bio && <p>{errors.bio.message}</p>}
+        {errors.biography && <p>{errors.biography.message}</p>}
       </div>
 
       <div className="space-y-2">

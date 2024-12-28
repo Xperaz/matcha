@@ -38,11 +38,11 @@ const profilePictureSchema = z.union([
 
 export const completeFormSchema = z.object({
   profile_picture: profilePictureSchema,
-  bio: z.string().optional(),
+  biography: z.string().optional(),
   preference: PreferenceSchema,
 
-  city: z.string().min(3, { message: "City field is required" }),
-  country: z.string().min(3, { message: "Country field is required" }),
+  city: z.string().min(1, { message: "City field is required" }),
+  country: z.string().min(1, { message: "Country field is required" }),
   pictures: z.string().array().min(6, {
     message: "At least 6 pictures are required",
   }),
@@ -63,7 +63,7 @@ export type CompleteFormData = z.infer<typeof completeFormSchema>;
 
 export const personalInfoSchema = completeFormSchema.pick({
   profile_picture: true,
-  bio: true,
+  biography: true,
   preference: true,
 });
 

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 "use client";
 
 import { useCompleteFormContext } from "@/context/completeFormContext";
@@ -36,8 +35,6 @@ export default function CompleteProfileForm() {
     updateFormValues,
   } = useCompleteFormContext();
 
-  console.log("form values", formValues);
-
   const getCurrentSchema = () => {
     switch (currentStep) {
       case 0:
@@ -55,6 +52,7 @@ export default function CompleteProfileForm() {
     formState: { errors },
     handleSubmit,
     control,
+    reset,
   } = useForm<CompleteFormData>({
     resolver: zodResolver(getCurrentSchema()),
     defaultValues: formValues,
@@ -62,17 +60,16 @@ export default function CompleteProfileForm() {
   });
 
   const onSubmit = async (data: CompleteFormData) => {
-    console.log("form", data);
-
     try {
       if (currentStep === steps.length - 1) {
         const finalData = { ...formValues, ...data };
 
+        // eslint-disable-next-line no-unused-vars
         const transformedData = {
           ...finalData,
           interests: data.interests.map((interest) => interest.value),
         };
-        console.log("final data to submit: ", transformedData);
+        reset();
       }
 
       if (currentStep < steps.length - 1) {

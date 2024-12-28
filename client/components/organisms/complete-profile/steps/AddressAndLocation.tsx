@@ -1,9 +1,8 @@
-"use client";
+import React, { useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCompleteFormContext } from "@/context/completeFormContext";
 import { CompleteFormData } from "@/schemas/CompleteFormSchema";
-import React, { useEffect, useState } from "react";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 import Select from "react-select";
 import { countryOptions, customCountryStyles } from "./countryDropdownStyle";
@@ -19,13 +18,19 @@ interface AddressAndLocationProps {
 const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
   const { lat, long } = useGeoLocation();
   const { updateFormValues } = useCompleteFormContext();
-  const [picturesPreview, setPicturesPreview] = useState<string[]>([]);
 
-  const handleFilesChange = async (files: FileList | null) => {
+  const handleFilesChange = async (
+    files: FileList | null,
+    // eslint-disable-next-line no-unused-vars
+    onChange: (value: string[]) => void,
+    currentValue: string[] = [],
+  ) => {
     if (!files) return;
 
     try {
-      const selectedFiles = Array.from(files).slice(0, 6);
+      const remainings = 6 - currentValue.length;
+
+      const selectedFiles = Array.from(files).slice(0, remainings);
       const filesToBase64 = await Promise.all(
         selectedFiles.map(async (file) => {
           const imageBase64 = await convertToBase64(file);
@@ -33,10 +38,8 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
         }),
       );
 
-      setPicturesPreview(filesToBase64);
-      updateFormValues({
-        pictures: filesToBase64,
-      });
+      const updatedImages = [...currentValue, ...filesToBase64];
+      onChange(updatedImages);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error("error while converting images to base64");
@@ -44,15 +47,18 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
   };
 
   useEffect(() => {
-    updateFormValues({
-      longtitude: long,
-      latitude: lat,
-    });
-  }, [long, lat]);
+    if (lat && long) {
+      updateFormValues({
+        longtitude: long,
+        latitude: lat,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lat, long]);
 
   return (
     <form className="flex flex-col justify-between gap-6">
-      <div className="flex flex-col gap-2 ">
+      <div className="flex flex-col gap-2">
         <Label>City</Label>
         <Controller
           name="city"
@@ -78,7 +84,7 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
           control={control}
           render={({ field }) => (
             <Select
-              className="max-w-96 h-11 "
+              className="max-w-96 h-11"
               {...field}
               options={countryOptions}
               placeholder="Select your country"
@@ -86,11 +92,12 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
               value={countryOptions.find(
                 (option) => option.value === field.value,
               )}
+              onChange={(option) => field.onChange(option?.value)}
             />
           )}
         />
-        {errors.city && (
-          <p className="text-sm text-red-500">{errors.city.message}</p>
+        {errors.country && (
+          <p className="text-sm text-red-500">{errors.country.message}</p>
         )}
       </div>
 
@@ -100,31 +107,37 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
         <Controller
           name="pictures"
           control={control}
-          render={({ field }) => (
-            <Input
-              className="max-w-96 h-11 "
-              type="file"
-              multiple
-              onChange={(e) => {
-                field.onChange(e.target.files);
-                handleFilesChange(e.target.files);
-              }}
-            />
+          render={({ field: { onChange, value } }) => (
+            <>
+              <Input
+                className="max-w-96 h-11"
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={(e) =>
+                  handleFilesChange(e.target.files, onChange, value || [])
+                }
+              />
+              {value && Array.isArray(value) && (
+                <div className="flex gap-2 flex-wrap">
+                  {value.map((src, index) => (
+                    <div key={index} className="w-48 h-48 relative">
+                      <Image
+                        src={src}
+                        alt={`Preview ${index + 1}`}
+                        className="w-full h-full object-cover rounded"
+                        fill
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         />
-
-        <div className="flex gap-2 flex-wrap">
-          {picturesPreview.map((src, index) => (
-            <div key={index} className="w-48 h-48 relative">
-              <Image
-                src={src}
-                alt={`Preview ${index + 1}`}
-                className="w-full h-full object-cover rounded"
-                fill
-              />
-            </div>
-          ))}
-        </div>
+        {errors.pictures && (
+          <p className="text-sm text-red-500">{errors.pictures.message}</p>
+        )}
       </div>
     </form>
   );
