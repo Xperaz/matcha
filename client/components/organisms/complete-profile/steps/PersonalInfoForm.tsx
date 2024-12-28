@@ -14,7 +14,7 @@ import { convertToBase64 } from "@/helpers/convertToBase64";
 import useWindowResize from "@/hooks/useWindowResize";
 import { CompleteFormData } from "@/schemas/CompleteFormSchema";
 import Image from "next/image";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent } from "react";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 
 interface PersonalInfoFormProps {
@@ -24,8 +24,10 @@ interface PersonalInfoFormProps {
 
 const PersonalInfoForm = ({ control, errors }: PersonalInfoFormProps) => {
   const { width } = useWindowResize();
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const { updateFormValues } = useCompleteFormContext();
+  const {
+    updateFormValues,
+    formValues: { profile_picture },
+  } = useCompleteFormContext();
 
   const handleFileChange = async (
     e: ChangeEvent<HTMLInputElement>,
@@ -36,7 +38,6 @@ const PersonalInfoForm = ({ control, errors }: PersonalInfoFormProps) => {
     if (file) {
       try {
         const base64String = await convertToBase64(file);
-        setImagePreview(base64String);
         updateFormValues({
           profile_picture: base64String,
         });
@@ -57,9 +58,9 @@ const PersonalInfoForm = ({ control, errors }: PersonalInfoFormProps) => {
           // eslint-disable-next-line no-unused-vars
           render={({ field: { onChange, value } }) => (
             <div className="flex items-center gap-4">
-              {imagePreview && (
+              {profile_picture && typeof profile_picture === "string" && (
                 <Image
-                  src={imagePreview}
+                  src={profile_picture}
                   alt="Preview"
                   className={` ${width > 769 ? "w-32" : "w-24"} ${width > 769 ? "h-32" : "h-24"} rounded-full object-cover`}
                   width={width > 769 ? 32 : 24}
@@ -100,7 +101,10 @@ const PersonalInfoForm = ({ control, errors }: PersonalInfoFormProps) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="preference">Preference</Label>
+        <div className="flex gap-1 items-center">
+          <Label htmlFor="preference">Preference</Label>
+          <span className="text-center text-red-500">*</span>
+        </div>
         <Controller
           name="preference"
           control={control}

@@ -59,7 +59,10 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
   return (
     <form className="flex flex-col justify-between gap-6">
       <div className="flex flex-col gap-2">
-        <Label>City</Label>
+        <div className="flex gap-1 items-center">
+          <Label>City</Label>
+          <span className="text-center text-red-500">*</span>
+        </div>
         <Controller
           name="city"
           control={control}
@@ -78,7 +81,10 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label>Country</Label>
+        <div className="flex gap-1 items-center">
+          <Label>Country</Label>
+          <span className="text-center text-red-500">*</span>
+        </div>
         <Controller
           name="country"
           control={control}
@@ -102,7 +108,10 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label>Add photos to your profile</Label>
+        <div className="flex gap-1 items-center">
+          <Label>Add photos to your profile</Label>
+          <span className="text-center text-red-500">*</span>
+        </div>
         <p className="text-sm">Upload up to 6 photos.</p>
         <Controller
           name="pictures"
