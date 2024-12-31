@@ -14,4 +14,5 @@ const pool = new Pool({
   ssl: true,
 });
 
-export const query = (text: string, params?: any[]): Promise<any> => pool.query(text, params);
+export const query = (text: string, params?: any[]): Promise<any> =>
+  pool.query(text, params);

@@ -20,14 +20,17 @@ const withProtectedRoute = <P extends WithProtectedRouteProps>(
 
     useEffect(() => {
       if (!isAuthenticated && !isLoading) {
-        router.push("/login");
+        router.replace("/login");
       }
 
       // TODO: redirect to complete profile page if user profile is not completed
       if (isAuthenticated && !isLoading) {
         setShowContent(true);
+        if (!userData?.profile_completed) {
+          router.replace("/complete-profile");
+        }
       }
-    }, [isAuthenticated, isLoading, router]);
+    }, [isAuthenticated, isLoading, router, userData?.profile_completed]);
 
     if (isLoading || !showContent) {
       // TODO: add animated Loader
