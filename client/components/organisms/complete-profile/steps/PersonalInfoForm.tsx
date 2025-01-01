@@ -13,6 +13,7 @@ import { useCompleteFormContext } from "@/context/completeFormContext";
 import { convertToBase64 } from "@/helpers/convertToBase64";
 import useWindowResize from "@/hooks/useWindowResize";
 import { CompleteFormData } from "@/schemas/CompleteFormSchema";
+import { FileUser } from "lucide-react";
 import Image from "next/image";
 import React, { ChangeEvent } from "react";
 import { Control, Controller, FieldErrors } from "react-hook-form";
@@ -67,14 +68,27 @@ const PersonalInfoForm = ({ control, errors }: PersonalInfoFormProps) => {
                   height={width > 769 ? 32 : 24}
                 />
               )}
-              <div className="flex flex-col">
-                <Input
-                  type="file"
-                  id="profile_picture"
-                  accept="image/*"
-                  onChange={(e) => handleFileChange(e, onChange)}
-                  className="cursor-pointer"
-                />
+              <div className="flex flex-col gap-1">
+                <div className="flex gap-4 items-center">
+                  {!profile_picture && (
+                    <div className="bg-slate-400 rounded-full p-4">
+                      <FileUser size={20} />
+                    </div>
+                  )}
+                  <Input
+                    type="file"
+                    id="profile_picture"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, onChange)}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="profile_picture"
+                    className="cursor-pointer text-primary"
+                  >
+                    Upload a profile picture
+                  </label>
+                </div>
                 {errors?.profile_picture && (
                   <p className="text-red-500 text-sm">
                     {errors.profile_picture.message}
