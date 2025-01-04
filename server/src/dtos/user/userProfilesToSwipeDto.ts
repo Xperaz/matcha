@@ -6,4 +6,5 @@ export interface UserProfilesToSwipeDto {
     longtitude: number;
     latitude: number;
     age: number;
+    biography: string;
 };

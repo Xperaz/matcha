@@ -28,6 +28,7 @@ const mapUserProfilesToSwipe = (rows: any[]): UserProfilesToSwipeDto[] => {
       latitude: row.latitude,
       longtitude: row.longtitude,
       age: row.age,
+      biography: row.biography,
     };
     return user;
   });
@@ -240,7 +241,7 @@ export const getUsersProfile = async (
     // and are not blocked by the user or blocking the user
 
     const getUsersQuery: string = `
-            SELECT u.id, u.first_name, u.last_name, u.profile_picture, u.age, u.gender, u.longtitude, u.latitude
+            SELECT u.id, u.first_name, u.last_name, u.profile_picture, u.age, u.gender, u.longtitude, u.latitude, u.biography
             FROM users u
             WHERE u.id != $1
             AND u.id NOT IN (
@@ -253,6 +254,7 @@ export const getUsersProfile = async (
                 UNION
                 SELECT b.blocker_id FROM blocks b WHERE b.blocked_id = $1
             )
+            LIMIT 10;
         `;
 
     const { rows } = await query(getUsersQuery, [userId]);
