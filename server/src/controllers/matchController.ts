@@ -164,6 +164,8 @@ export const getUserMatches = async (
 ) => {
   try {
     const userId: string = req.user?.id;
+    const limit: number = parseInt(req.query.limit as string) || 10;
+    const page: number = parseInt(req.query.page as string) || 1;
 
     if (!userId) {
       return res.status(401).json({
@@ -178,10 +180,12 @@ export const getUserMatches = async (
             JOIN users u 
                 ON (u.id = l.initiator_id AND l.receiver_id = $1)
                 OR (u.id = l.receiver_id AND l.initiator_id = $1)
-            WHERE l.status = 'MATCH';
+            WHERE l.status = 'MATCH'
+            LIMIT $2
+            SKIP $3;
         `;
 
-    const { rows } = await query(getMatchesQuery, [userId]);
+    const { rows } = await query(getMatchesQuery, [userId, limit, (page - 1) * limit]);
 
     if (!rows) {
       return res.status(200).json({
