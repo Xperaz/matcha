@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import TinderCard from "react-tinder-card";
 import { useSwipeCardContext } from "@/context/swipeCardContext";
 import { useEffect, useState } from "react";
@@ -33,21 +32,21 @@ export function Swiper() {
     }
   }, [data, isSuccess]);
 
-  const handleSwipe = (dir: String, user: any) => {
+  const handleSwipe = async (dir: String, user: any) => {
     if (dir === "right") {
-      swipeRight(user.id);
+      await swipeRight(user.id);
     } else {
-      swipeLeft(user.id);
+      await swipeLeft(user.id);
     }
     setUsersCount(usersCount + 1);
-    if (usersCount == userProfiles.length - 1) {
-      refetch();
+    if (usersCount === userProfiles.length - 1) {
+      await refetch();
       setUsersCount(0);
     }
   };
 
   return (
-    <div className="relative w-[60vw] h-[45vh] max-w-xl mx-auto">
+    <div className="relative w-[60vw] h-[55vh] max-w-md mx-auto">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
           <Loader />
