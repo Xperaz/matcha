@@ -1,5 +1,9 @@
 import Image from "next/image";
 
+const handleClick = (name: string) => {
+  alert("You clicked on the user card of " + name);
+};
+
 const UserInfoCard = ({
   name,
   bio,
@@ -12,7 +16,11 @@ const UserInfoCard = ({
   age: number;
 }) => {
   return (
-    <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden shadow-xl">
+    <div
+      className="relative aspect-[3/4] w-full rounded-xl overflow-hidden shadow-xl"
+      role="button"
+      onClick={() => handleClick(name)}
+    >
       <div className="absolute inset-0">
         <Image
           src={profilePicture}
