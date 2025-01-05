@@ -28,6 +28,7 @@ const mapUserProfilesToSwipe = (rows: any[]): UserProfilesToSwipeDto[] => {
       latitude: row.latitude,
       longtitude: row.longtitude,
       age: row.age,
+      biography: row.biography,
     };
     return user;
   });
@@ -163,6 +164,8 @@ export const getUserMatches = async (
 ) => {
   try {
     const userId: string = req.user?.id;
+    const limit: number = parseInt(req.query.limit as string) || 10;
+    const page: number = parseInt(req.query.page as string) || 1;
 
     if (!userId) {
       return res.status(401).json({
@@ -177,10 +180,12 @@ export const getUserMatches = async (
             JOIN users u 
                 ON (u.id = l.initiator_id AND l.receiver_id = $1)
                 OR (u.id = l.receiver_id AND l.initiator_id = $1)
-            WHERE l.status = 'MATCH';
+            WHERE l.status = 'MATCH'
+            LIMIT $2
+            SKIP $3;
         `;
 
-    const { rows } = await query(getMatchesQuery, [userId]);
+    const { rows } = await query(getMatchesQuery, [userId, limit, (page - 1) * limit]);
 
     if (!rows) {
       return res.status(200).json({
@@ -240,7 +245,7 @@ export const getUsersProfile = async (
     // and are not blocked by the user or blocking the user
 
     const getUsersQuery: string = `
-            SELECT u.id, u.first_name, u.last_name, u.profile_picture, u.age, u.gender, u.longtitude, u.latitude
+            SELECT u.id, u.first_name, u.last_name, u.profile_picture, u.age, u.gender, u.longtitude, u.latitude, u.biography
             FROM users u
             WHERE u.id != $1
             AND u.id NOT IN (
@@ -253,6 +258,7 @@ export const getUsersProfile = async (
                 UNION
                 SELECT b.blocker_id FROM blocks b WHERE b.blocked_id = $1
             )
+            LIMIT 10;
         `;
 
     const { rows } = await query(getUsersQuery, [userId]);

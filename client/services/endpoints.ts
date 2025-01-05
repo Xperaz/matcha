@@ -5,4 +5,7 @@ export const API_ENDPOINTS = {
   register: `${BASE_URL}auth/signup`,
   user: `${BASE_URL}user/me`,
   completeProfile: `${BASE_URL}user/complete-profile`,
+  swipeRight: `${BASE_URL}match/swipe-right`,
+  swipeLeft: `${BASE_URL}match/swipe-left`,
+  profilesToSwipe: `${BASE_URL}match/users-profile`,
 };
