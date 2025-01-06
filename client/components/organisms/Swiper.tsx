@@ -46,7 +46,7 @@ export function Swiper() {
   };
 
   return (
-    <div className="relative w-[60vw] h-[55vh] max-w-md mx-auto">
+    <div className="relative w-[75vw] h-[65vh] bg-[#ff6593] rounded-lg max-w-lg overflow-hidden">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
           <Loader />
@@ -59,7 +59,7 @@ export function Swiper() {
         !noMoreProfiles &&
         userProfiles.map((user) => (
           <TinderCard
-            className="absolute h-full w-full"
+            className="absolute h-full w-full p-4"
             key={user.id}
             onSwipe={(dir) => handleSwipe(dir, user)}
             swipeRequirementType="position"
