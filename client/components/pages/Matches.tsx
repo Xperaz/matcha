@@ -5,48 +5,73 @@ import withAppLayout from "../templates/layout/withAppLayout";
 import UserInfoCard from "../organisms/UserInfoCard";
 import { IUserType } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { QUERY_KEYS } from "@/constants/query_keys";
 import { getMatches } from "@/services/requests/mathches";
 
-const Matches = () => {
-  const [users, setUsers] = useState<IUserType[]>([]);
-  const [page, setPage] = useState(1);
+const LIMIT = 10;
 
-  const { data, isLoading, isSuccess } = useQuery({
-    queryKey: [QUERY_KEYS.matches],
+const Matches = () => {
+  const [page, setPage] = useState(1);
+  const [allUsers, setAllUsers] = useState<IUserType[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const loaderRef = useRef<HTMLDivElement>(null);
+
+  const { data, isLoading } = useQuery({
+    queryKey: [QUERY_KEYS.matches, page],
     queryFn: async () => {
-      const resData = await getMatches(page, 10);
-      return resData.data.data;
+      const response = await getMatches(page, LIMIT);
+      return response.data.data;
     },
   });
 
   useEffect(() => {
-    if (data) {
-      setUsers(...users);
+    const observer = new IntersectionObserver((entries) => {
+      const firstEntry = entries[0];
+      if (firstEntry.isIntersecting && hasMore && !isLoading) {
+        setPage((prev) => prev + 1);
+      }
+    });
+
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
     }
-  }, [data, isSuccess]);
+
+    return () => observer.disconnect();
+  }, [hasMore, isLoading]);
+
+  useEffect(() => {
+    if (data) {
+      if (data.length < LIMIT) {
+        setHasMore(false);
+      }
+      setAllUsers((prev) => [...prev, ...data]);
+    }
+  }, [data]);
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6 text-center">Your Matches</h1>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {users.map((user) => (
-          <UserInfoCard
-            key={user.id}
-            name={user.first_name + " " + user.last_name}
-            bio={user.biography}
-            profilePicture={user.profile_picture}
-            age={user.age}
-          />
+        {allUsers.map((user) => (
+          <UserInfoCard key={user.id} user={user} />
         ))}
-        <div>
-          {isLoading && <p>Loading...</p>}
-          {isSuccess && data && data.length === 0 && (
-            <p className="text-center">No matches yet</p>
-          )}
-        </div>
       </div>
+
+      <div ref={loaderRef} className="mt-4 p-4">
+        {isLoading && <div className="flex justify-center">Loading ...</div>}
+      </div>
+
+      {!hasMore && allUsers.length > 0 && (
+        <p className="text-center mt-4 text-gray-600">
+          No more matches to show.
+          {allUsers.length}
+        </p>
+      )}
+      {!isLoading && allUsers.length === 0 && (
+        <p className="text-center mt-4 text-gray-600">No matches found</p>
+      )}
     </div>
   );
 };

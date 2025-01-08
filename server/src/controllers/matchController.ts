@@ -182,7 +182,7 @@ export const getUserMatches = async (
                 OR (u.id = l.receiver_id AND l.initiator_id = $1)
             WHERE l.status = 'MATCH'
             LIMIT $2
-            SKIP $3;
+            OFFSET $3;
         `;
 
     const { rows } = await query(getMatchesQuery, [userId, limit, (page - 1) * limit]);

@@ -1,30 +1,22 @@
 import Image from "next/image";
+import { IUserType } from "@/types/user";
 
-const handleClick = (name: string) => {
-  alert("You clicked on the user card of " + name);
+const handleClick = (id: string) => {
+  //TODO: redirect to user profile
+  alert("You clicked on the user card of " + id);
 };
 
-const UserInfoCard = ({
-  name,
-  bio,
-  profilePicture,
-  age,
-}: {
-  name: string;
-  bio: string | null;
-  profilePicture: string;
-  age: number;
-}) => {
+const UserInfoCard = ({ user }: { user: IUserType }) => {
   return (
     <div
       className="relative aspect-[3/4] w-full rounded-xl overflow-hidden shadow-xl"
       role="button"
-      onClick={() => handleClick(name)}
+      onClick={() => handleClick(user.id)}
     >
       <div className="absolute inset-0">
         <Image
-          src={profilePicture}
-          alt={`${name}'s profile picture`}
+          src={user.profile_picture}
+          alt={`${user.first_name}'s profile picture`}
           layout="fill"
           objectFit="cover"
           className="w-full h-full"
@@ -33,11 +25,13 @@ const UserInfoCard = ({
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
         <div className="flex items-baseline gap-2">
-          <h2 className="text-xl sm:text-2xl font-bold">{name}</h2>
-          <span className="text-lg sm:text-xl">{age}</span>
+          <h2 className="text-xl sm:text-2xl font-bold">
+            {user.first_name} {user.last_name}
+          </h2>
+          <span className="text-lg sm:text-xl">{user.age}</span>
         </div>
         <p className="mt-2 text-white/90 line-clamp-2 text-sm sm:text-base">
-          {bio}
+          {user.biography}
         </p>
       </div>
     </div>
