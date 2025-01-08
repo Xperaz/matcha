@@ -11,4 +11,5 @@ export interface IUserType {
   profile_completed: boolean;
   gender: genderEnum;
   sexual_preferences: genderEnum | null;
+  profile_picture: string;
 }

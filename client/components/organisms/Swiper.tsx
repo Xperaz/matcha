@@ -32,7 +32,7 @@ export function Swiper() {
     }
   }, [data, isSuccess]);
 
-  const handleSwipe = async (dir: String, user: any) => {
+  const handleSwipe = async (dir: String, user: UserSwipeCard) => {
     if (dir === "right") {
       await swipeRight(user.id);
     } else {

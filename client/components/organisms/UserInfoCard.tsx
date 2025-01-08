@@ -11,7 +11,7 @@ const UserInfoCard = ({
   age,
 }: {
   name: string;
-  bio: string;
+  bio: string | null;
   profilePicture: string;
   age: number;
 }) => {
