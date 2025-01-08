@@ -3,102 +3,75 @@
 import withProtectedRoute from "@/auth/withProtectedRoute";
 import withAppLayout from "../templates/layout/withAppLayout";
 import UserInfoCard from "../organisms/UserInfoCard";
+import { IUserType } from "@/types/user";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState, useRef } from "react";
+import { QUERY_KEYS } from "@/constants/query_keys";
+import { getMatches } from "@/services/requests/mathches";
 
-interface User {
-  id: number;
-  name: string;
-  bio: string;
-  profilePicture: string;
-  age: number;
-}
-const users: User[] = [
-  {
-    id: 1,
-    name: "hamid reza",
-    bio: "I'm a software engineer",
-    profilePicture:
-      "https://res.cloudinary.com/dzcvzkrow/image/upload/v1735987900/Laura_cde6os.jpg",
-    age: 35,
-  },
-  {
-    id: 2,
-    name: "mohammad",
-    bio: "I'm a software engineer",
-    profilePicture:
-      "https://res.cloudinary.com/dzcvzkrow/image/upload/v1735987900/Laura_cde6os.jpg",
-    age: 35,
-  },
-  {
-    id: 3,
-    name: "ali",
-    bio: "I'm a software engineer",
-    profilePicture:
-      "https://res.cloudinary.com/dzcvzkrow/image/upload/v1735987900/Laura_cde6os.jpg",
-    age: 35,
-  },
-  {
-    id: 4,
-    name: "reza",
-    bio: "I'm a software engineer",
-    profilePicture:
-      "https://res.cloudinary.com/dzcvzkrow/image/upload/v1735987900/Laura_cde6os.jpg",
-    age: 35,
-  },
-  {
-    id: 5,
-    name: "mohsen",
-    bio: "I'm a software engineer",
-    profilePicture:
-      "https://res.cloudinary.com/dzcvzkrow/image/upload/v1735987900/Laura_cde6os.jpg",
-    age: 35,
-  },
-  {
-    id: 6,
-    name: "mohammad",
-    bio: "I'm a software engineer",
-    profilePicture:
-      "https://res.cloudinary.com/dzcvzkrow/image/upload/v1735987994/b95028c5ee5c11e4f0881048a84b91b6_cejbte.jpg",
-    age: 35,
-  },
-  {
-    id: 7,
-    name: "ali",
-    bio: "I'm a software engineer",
-    profilePicture:
-      "https://res.cloudinary.com/dzcvzkrow/image/upload/v1735987994/b95028c5ee5c11e4f0881048a84b91b6_cejbte.jpg",
-    age: 35,
-  },
-  {
-    id: 8,
-    name: "reza",
-    bio: "I'm a software engineer",
-    profilePicture:
-      "https://res.cloudinary.com/dzcvzkrow/image/upload/v1735987994/b95028c5ee5c11e4f0881048a84b91b6_cejbte.jpg",
-    age: 35,
-  },
-];
+const LIMIT = 10;
 
-// const user = {
-//   name: "hamid reza",
-//   bio: "I'm a software engineer",
-//   profilePicture: "https://asset.cloudinary.com/dzcvzkrow/53f3a809498bf4b8f3af5180182d74b8",
-//   age: 35,
-// };
 const Matches = () => {
+  const [page, setPage] = useState(1);
+  const [allUsers, setAllUsers] = useState<IUserType[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const loaderRef = useRef<HTMLDivElement>(null);
+
+  const { data, isLoading } = useQuery({
+    queryKey: [QUERY_KEYS.matches, page],
+    queryFn: async () => {
+      const response = await getMatches(page, LIMIT);
+      return response.data.data;
+    },
+  });
+
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      const firstEntry = entries[0];
+      if (firstEntry.isIntersecting && hasMore && !isLoading) {
+        setPage((prev) => prev + 1);
+      }
+    });
+
+    if (loaderRef.current) {
+      observer.observe(loaderRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasMore, isLoading]);
+
+  useEffect(() => {
+    if (data) {
+      if (data.length < LIMIT) {
+        setHasMore(false);
+      }
+      setAllUsers((prev) => [...prev, ...data]);
+    }
+  }, [data]);
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6 text-center">Your Matches</h1>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {users.map((user) => (
-          <UserInfoCard
-            key={user.id}
-            name={user.name}
-            bio={user.bio}
-            profilePicture={user.profilePicture}
-            age={user.age}
-          />
+        {allUsers.map((user) => (
+          <UserInfoCard key={user.id} user={user} />
         ))}
       </div>
+
+      <div ref={loaderRef} className="mt-4 p-4">
+        {isLoading && <div className="flex justify-center">Loading ...</div>}
+      </div>
+
+      {!hasMore && allUsers.length > 0 && (
+        <p className="text-center mt-4 text-gray-600">
+          No more matches to show.
+          {allUsers.length}
+        </p>
+      )}
+      {!isLoading && allUsers.length === 0 && (
+        <p className="text-center mt-4 text-gray-600">No matches found</p>
+      )}
     </div>
   );
 };

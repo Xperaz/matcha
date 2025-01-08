@@ -8,4 +8,5 @@ export const API_ENDPOINTS = {
   swipeRight: `${BASE_URL}match/swipe-right`,
   swipeLeft: `${BASE_URL}match/swipe-left`,
   profilesToSwipe: `${BASE_URL}match/users-profile`,
+  matches: `${BASE_URL}match`,
 };
