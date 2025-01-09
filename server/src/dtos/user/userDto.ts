@@ -5,9 +5,9 @@ export interface UserDTO {
     last_name: string;
     biography?: string;
     fame_rating: number;
-    sexual_preferences?: "MALE" | "FEMALE" | "OTHER";
+    sexual_preferences?: "MALE" | "FEMALE" | "BOTH";
     age: number;
-    gender: "MALE" | "FEMALE" | "NON_BINARY"; 
+    gender: "MALE" | "FEMALE" | "OTHER"; 
     profile_completed: boolean;
   }
   
