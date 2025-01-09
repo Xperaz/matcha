@@ -46,7 +46,7 @@ export function Swiper() {
   };
 
   return (
-    <div className="relative w-[75vw] h-[65vh] bg-[#ff6593] rounded-lg max-w-lg overflow-hidden">
+    <div className="relative w-[75vw] h-[65vh] rounded-lg max-w-lg overflow-hidden">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
           <Loader />
@@ -68,9 +68,7 @@ export function Swiper() {
             <div className="relative h-full w-full rounded-xl overflow-hidden shadow-lg hover:shadow-2xl">
               <div className="absolute inset-0">
                 <Image
-                  src={
-                    "https://res.cloudinary.com/dzcvzkrow/image/upload/v1735736635/pya64qq1kighxo2bqw55.jpg"
-                  }
+                  src={user.profile_picture}
                   alt={user.first_name + " " + user.last_name}
                   className="h-full w-full object-cover"
                   layout="fill"
