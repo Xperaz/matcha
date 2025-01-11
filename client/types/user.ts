@@ -12,4 +12,7 @@ export interface IUserType {
   gender: genderEnum;
   sexual_preferences: genderEnum | null;
   profile_picture: string;
+  country: string;
+  city: string;
+  interests: string[];
 }
