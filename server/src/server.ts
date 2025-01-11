@@ -10,6 +10,7 @@ import userRoutes from "./routes/userRoutes";
 import matchRoutes from "./routes/matchRoutes";
 import imageRoutes from "./routes/imageRoutes";
 import seedDataBase from "./routes/seedRoutes";
+import profileRoutes from "./routes/profileRoutes";
 
 const app: Application = express();
 const port: number = parseInt(process.env.SERVER_PORT || "5000", 10);
@@ -42,6 +43,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/match", matchRoutes);
 app.use("/api/image", imageRoutes);
+app.use("/api/profile", profileRoutes);
 app.use("/api/seed", seedDataBase);
 
 app.listen(port, () => {

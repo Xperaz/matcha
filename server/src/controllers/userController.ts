@@ -9,11 +9,6 @@ import {
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import bcrypt from "bcryptjs";
 
-// validate data
-// update it
-// upload images
-// save urls to database
-
 export const completeProfile = async (
   req: AuthenticatedRequest,
   res: Response

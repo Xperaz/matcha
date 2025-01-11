@@ -3,6 +3,41 @@ import { Response } from "express";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import { query } from "../config/db";
 import cloudinary from "../config/cloudinary";
+import { UserImages } from "../dtos/user/userImages";
+
+export const getAllImages = async (req: AuthenticatedRequest, res: Response) => {
+
+    try {
+        const userId = req.user.id;
+
+        const getImagesQuery: string = `
+            SELECT id, picture_url FROM pictures
+            WHERE user_id = $1;
+        `;
+
+        const { rows: images } = await query(getImagesQuery, [userId]);
+
+        const userImages: UserImages[] = images.map((image: any) => {
+            return {
+                id: image.id,
+                secure_url: image.picture_url,
+            };
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: userImages,
+        });
+        
+    } catch (error) {
+        console.error("Error getting images: ", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error getting images",
+        });
+
+    }
+};
 
 export const removeImage = async (req: AuthenticatedRequest, res: Response) => {
 
@@ -18,7 +53,7 @@ export const removeImage = async (req: AuthenticatedRequest, res: Response) => {
         }
 
         const getImageUrlQuery: string = `
-            SELECT picture_url FROM images
+            SELECT picture_url FROM pictures
             WHERE id = $1 AND user_id = $2;
         `;
 
@@ -31,10 +66,12 @@ export const removeImage = async (req: AuthenticatedRequest, res: Response) => {
             });
         }
 
-        await cloudinary.uploader.destroy(rows[0].picture_url);
+        const imagePublicId: string = rows[0].picture_url.split("/").pop().split(".")[0];
+
+        await cloudinary.uploader.destroy(imagePublicId.trim(), { invalidate: true });
 
         const deleteImageQuery: string = `
-            DELETE FROM images
+            DELETE FROM pictures
             WHERE id = $1 AND user_id = $2;
         `;
 
