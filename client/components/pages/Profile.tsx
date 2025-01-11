@@ -2,12 +2,13 @@
 import React from "react";
 import withAppLayout from "../templates/layout/withAppLayout";
 import withProtectedRoute from "@/auth/withProtectedRoute";
-import  UserProfile from "@/components/organisms/UserProfile"; 
+import UserProfile from "@/components/organisms/UserProfile";
 
 const Profile = () => {
-  return <div>
-    <UserProfile />
-    {/* Profile
+  return (
+    <div>
+      <UserProfile />
+      {/* Profile
 
     we need 
 
@@ -22,7 +23,8 @@ const Profile = () => {
     password
     tags
     4 pictures */}
-  </div>;
+    </div>
+  );
 };
 
 export default withAppLayout(withProtectedRoute(Profile));
