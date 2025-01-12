@@ -1,19 +1,39 @@
+/* eslint-disable no-console */
 "use client";
 import { socket } from "@/app/socket";
 import { useEffect } from "react";
 
 const useSocketSetup = () => {
   useEffect(() => {
-    socket.connect();
-    socket.on("connect_error", () => {
-      // eslint-disable-next-line no-console
-      console.error("error while trying to connect to socket");
-    });
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    const onConnect = () => {
+      console.log("Socket connected successfully");
+    };
+
+    const onConnectError = (error: Error) => {
+      console.error("Socket connection error:", error);
+    };
+
+    const onDisconnect = (reason: string) => {
+      console.log("Socket disconnected:", reason);
+    };
+
+    socket.on("connect", onConnect);
+    socket.on("connect_error", onConnectError);
+    socket.on("disconnect", onDisconnect);
 
     return () => {
-      socket.off("connect_error");
+      socket.off("connect", onConnect);
+      socket.off("connect_error", onConnectError);
+      socket.off("disconnect", onDisconnect);
+      socket.disconnect();
     };
   }, []);
+
+  return socket;
 };
 
 export default useSocketSetup;

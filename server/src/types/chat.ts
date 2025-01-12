@@ -7,4 +7,10 @@ export interface Message {
   is_read: boolean;
 }
 
+export interface MessageInputType {
+  sender_id: string;
+  receiver_id: string;
+  content: string;
+}
+
 export type IUserStatus = "OFFLINE" | "ONLINE";

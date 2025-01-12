@@ -3,9 +3,11 @@ import { Socket } from "socket.io";
 
 const cookie = require("cookie");
 
-interface AuthenticatedSocket extends Socket {
+export interface AuthenticatedSocket extends Socket {
   userId?: string;
 }
+
+export const socketMap = new Map();
 
 const authorizeUserSocket = (
   socket: AuthenticatedSocket,
@@ -33,8 +35,7 @@ const authorizeUserSocket = (
   }
 
   socket.userId = decoded.id;
-  console.log("decoded data => ", decoded);
-  console.log("user id =>", socket.userId);
+  socketMap.set(decoded.id, socket.id);
 
   next();
 };

@@ -11,7 +11,9 @@ import userRoutes from "./routes/userRoutes";
 import matchRoutes from "./routes/matchRoutes";
 import imageRoutes from "./routes/imageRoutes";
 import chatRoutes from "./routes/chatRoutes";
-import authorizeUserSocket from "./middlewares/socketAuthrization";
+import authorizeUserSocket, {
+  AuthenticatedSocket,
+} from "./middlewares/socketAuthrization";
 
 const app: Application = express();
 const port: number = parseInt(process.env.SERVER_PORT || "5000", 10);
@@ -19,7 +21,7 @@ const server = require("http").createServer(app);
 
 const cookie = require("cookie");
 
-const io = new Server(server, {
+export const io = new Server(server, {
   cors: {
     origin: process.env.FRONTEND_URL || "http://localhost:3000",
     credentials: true,
@@ -57,17 +59,9 @@ app.use("/api/image", imageRoutes);
 app.use("/api/chat", chatRoutes);
 
 io.use(authorizeUserSocket);
-io.on("connection", (socket) => {
-  console.log("user connected!");
-  console.log("id:", socket.id);
-
-  socket.on("chat message", (msg) => {
-    console.log("message: ", msg);
-  });
-});
+io.on("connection", (socket: AuthenticatedSocket) => {});
+// TODO: remove user socket from socketMap
 
 server.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
-
-export default io;
