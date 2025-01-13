@@ -1,4 +1,4 @@
-export interface UserImages {
+export interface UserImage {
   id: string;
   secure_url: string;
 }

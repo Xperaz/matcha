@@ -113,7 +113,7 @@ const ProfileBasicInfo = () => {
               </div>
             </div>
           </section>
-          <section className="mx-4">
+          <section className="mx-4 w-full">
             <h3 className="text-lg font-bold pb-2">Images</h3>
             <ImagesSection />
           </section>
