@@ -8,6 +8,8 @@ export const createMessage = async (messageData: MessageInputType) => {
     RETURNING *
     `;
 
+  // Check return * !!
+
   const values = [
     messageData.sender_id,
     messageData.receiver_id,
