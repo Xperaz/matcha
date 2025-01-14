@@ -7,3 +7,13 @@ export const getUserProfile = (userId: string) =>
   axiosInstance.get(`${API_ENDPOINTS.userProfile}/${userId}`);
 export const updateEmail = (email: string, password: string) =>
   axiosInstance.put(API_ENDPOINTS.updateEmail, { email, password });
+export const updatePassword = (
+  oldPassword: string,
+  newPassword: string,
+  confirmPassword: string,
+) =>
+  axiosInstance.put(API_ENDPOINTS.updatePassword, {
+    oldPassword,
+    newPassword,
+    confirmPassword,
+  });

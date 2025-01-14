@@ -10,6 +10,7 @@ import { getMyProfile } from "@/services/requests/profile";
 import { Loader } from "lucide-react";
 import avatar from "@/public/images/avatar.png";
 import EmailSection from "./EmailSection";
+import PasswordSection from "./PasswordSection";
 
 const ProfileBasicInfo = () => {
   const [user, setUser] = useState<IUserType>({} as IUserType);
@@ -101,12 +102,7 @@ const ProfileBasicInfo = () => {
           <section className="flex flex-col mx-4">
             <h3 className="text-lg font-bold pb-2">Credentials</h3>
             <EmailSection email={user.email} />
-            <div className="flex justify-between py-2">
-              <span className="text-sm text-gray-500">Password</span>
-              <span className="text-sm w-[200px] overflow-hidden">
-                *********
-              </span>
-            </div>
+            <PasswordSection />
           </section>
           <section className="mx-4 w-full">
             <h3 className="text-lg font-bold pb-4">Images</h3>
