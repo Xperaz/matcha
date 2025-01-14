@@ -10,7 +10,7 @@ import {
 const router = Router();
 
 // Get all messages between two users
-router.get("/messages/:userId", protectRoutes, getMessages);
+router.get("/messages/:receiverId", protectRoutes, getMessages);
 
 // Get list of users with chat history
 router.get("/list", protectRoutes, getChatList);

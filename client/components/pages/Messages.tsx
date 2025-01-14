@@ -39,7 +39,7 @@ const Messages = () => {
       credentials: "include",
       body: JSON.stringify({
         content: "Test message",
-        receiver_id: "2063d126-bd47-4510-ad81-d84d8e9847ef",
+        receiver_id: "07cfdf86-3b49-40b6-90c2-aee98b76b8bd",
       }),
     });
   };

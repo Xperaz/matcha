@@ -1,21 +1,44 @@
 import { Response } from "express";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import { io } from "../server";
-import { createMessage } from "./chatUtils";
+// import { createMessage } from "../services/chatService";
 import { socketMap } from "../middlewares/socketAuthrization";
+import * as chatService from "../services/chatService";
 
-export const getMessages = (req: AuthenticatedRequest, res: Response) => {
-  return res.status(200).json({
-    success: true,
-    message: "user messages",
-  });
+export const getMessages = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const currentUserId = req.user.id;
+    const receiverId = req.params.receiverId;
+
+    console.log(currentUserId);
+    console.log(receiverId);
+
+    if (!currentUserId || !receiverId) {
+      return res.status(400).json({ error: "reciverId is required !" });
+    }
+
+    const messages = await chatService.getMessagesBetweenUsers(
+      currentUserId,
+      receiverId
+    );
+
+    res.json(messages);
+  } catch (error) {
+    console.error("Error getting messages: ", error);
+    res.status(500).json({ error: "Failed to fetch messages" });
+  }
 };
 
-export const getChatList = (req: AuthenticatedRequest, res: Response) => {
-  return res.status(200).json({
-    success: true,
-    message: "list messages",
-  });
+export const getChatList = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userId = req.user.id;
+    const chatList = await chatService.getChatList(userId);
+
+    res.json(chatList);
+  } catch (error) {
+    console.log("Error getting chat List: ", error);
+    res.status(500).json({ error: "Failed to fetch chat list" });
+  }
 };
 
 export const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
@@ -33,7 +56,7 @@ export const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
         .json({ error: "Content and receiver_id are required" });
     }
 
-    const message = await createMessage({
+    const message = await chatService.createMessage({
       sender_id,
       receiver_id,
       content,
