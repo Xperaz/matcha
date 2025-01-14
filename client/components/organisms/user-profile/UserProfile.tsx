@@ -9,9 +9,11 @@ import { QUERY_KEYS } from "@/constants/query_keys";
 import { getMyProfile } from "@/services/requests/profile";
 import { Loader } from "lucide-react";
 import avatar from "@/public/images/avatar.png";
+import EmailSection from "./EmailSection";
 
 const ProfileBasicInfo = () => {
   const [user, setUser] = useState<IUserType>({} as IUserType);
+
   const { data, isLoading, isSuccess } = useQuery({
     queryKey: [QUERY_KEYS.profileData],
     queryFn: async () => {
@@ -98,23 +100,16 @@ const ProfileBasicInfo = () => {
           </section>
           <section className="flex flex-col mx-4">
             <h3 className="text-lg font-bold pb-2">Credentials</h3>
-            <div>
-              <div className="flex justify-between py-2">
-                <span className="text-sm text-gray-500">Email</span>
-                <span className="text-sm  w-[300px] overflow-hidden ">
-                  {user.email}
-                </span>
-              </div>
-              <div className="flex justify-between py-2">
-                <span className="text-sm text-gray-500">password</span>
-                <span className="text-sm w-[300px] overflow-hidden">
-                  *********
-                </span>
-              </div>
+            <EmailSection email={user.email} />
+            <div className="flex justify-between py-2">
+              <span className="text-sm text-gray-500">Password</span>
+              <span className="text-sm w-[200px] overflow-hidden">
+                *********
+              </span>
             </div>
           </section>
           <section className="mx-4 w-full">
-            <h3 className="text-lg font-bold pb-2">Images</h3>
+            <h3 className="text-lg font-bold pb-4">Images</h3>
             <ImagesSection />
           </section>
         </div>

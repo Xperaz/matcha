@@ -1,7 +1,7 @@
 import TinderCard from "react-tinder-card";
 import { useSwipeCardContext } from "@/context/swipeCardContext";
 import { useEffect, useState } from "react";
-import { NoMoreUsers } from "../atoms/NoMoreUsers";
+import { NoMoreUsers } from "../../atoms/NoMoreUsers";
 import { Loader } from "lucide-react";
 import Image from "next/image";
 import { QUERY_KEYS } from "@/constants/query_keys";

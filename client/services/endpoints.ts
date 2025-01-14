@@ -15,4 +15,5 @@ export const API_ENDPOINTS = {
   uploadImage: `${BASE_URL}image/upload`,
   deleteImage: `${BASE_URL}image/remove`,
   uploadProfileImage: `${BASE_URL}image/profile-picture`,
+  updateEmail: `${BASE_URL}user/update-email`,
 };

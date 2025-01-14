@@ -2,7 +2,7 @@
 import React from "react";
 import withAppLayout from "../templates/layout/withAppLayout";
 import withProtectedRoute from "@/auth/withProtectedRoute";
-import UserProfile from "@/components/organisms/UserProfile";
+import UserProfile from "@/components/organisms/user-profile/UserProfile";
 
 const Profile = () => {
   return (
