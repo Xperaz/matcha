@@ -150,6 +150,13 @@ export const updateEmail = async (
       });
     }
 
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password should be at least 8 characters",
+      });
+    }
+
     const checkEmailQuery: string = `
       SELECT id FROM users
       WHERE email = $1;
@@ -199,6 +206,7 @@ export const updateEmail = async (
       success: true,
       message: "Email updated successfully",
     });
+
   } catch (ex) {
     console.error("Error updating email:", ex);
     return res.status(500).json({
@@ -213,13 +221,27 @@ export const updatePassword = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const { oldPassword, newPassword } = req.body;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
     const userId = req.user?.id;
 
-    if (!oldPassword || !newPassword) {
+    if (!oldPassword || !newPassword || !confirmPassword) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password should be at least 8 characters",
+      });
+    }
+
+    if (newPassword !== confirmPassword){
+      return res.status(400).json({
+        success: false,
+        message: "pssword don't match",
       });
     }
 
@@ -260,6 +282,7 @@ export const updatePassword = async (
       success: true,
       message: "Password updated successfully",
     });
+    
   } catch (ex) {
     console.error("Error updating password:", ex);
     return res.status(500).json({
