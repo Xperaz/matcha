@@ -1,11 +1,10 @@
-/* eslint-disable no-console */
 "use client";
 
 import withProtectedRoute from "@/auth/withProtectedRoute";
 import withAppLayout from "../templates/layout/withAppLayout";
 import ConversationLayout from "../templates/layout/ConversationLayout";
 import useSocketSetup from "@/hooks/useSocketSetup";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import FriendList from "../organisms/messages/FriendList";
 import Conversations from "../organisms/messages/Conversation";
 
@@ -18,13 +17,12 @@ interface Message {
 }
 
 const Conversation = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
   const socket = useSocketSetup();
 
   useEffect(() => {
     const onNewMessage = (message: Message) => {
+      // eslint-disable-next-line no-console
       console.log("New message received:", message);
-      setMessages((prev) => [...prev, message]);
     };
 
     socket.on("new_message", onNewMessage);
@@ -53,11 +51,6 @@ const Conversation = () => {
       <div className="grid grid-cols-[2fr,4fr] gap-4 h-full">
         <FriendList />
         <Conversations />
-
-        {/* I added just tem for skip elint errors*/}
-        {messages.map((message) => (
-          <p key={message.id}>{message.content}</p>
-        ))}
       </div>
     </ConversationLayout>
   );

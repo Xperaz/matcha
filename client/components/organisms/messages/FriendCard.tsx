@@ -1,20 +1,29 @@
 import { IReceivedMessage } from "@/types/messages";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { getMessagePassedHours } from "@/helpers/getMessagePassedHours";
+import { useRouter } from "next/navigation";
 
 interface FriendCardProps {
   friend: IReceivedMessage;
 }
 
 const FriendCard: FC<FriendCardProps> = ({ friend }) => {
-  const isSelected = false;
+  const [isSelected, setIsSlected] = useState(false);
+  const router = useRouter();
   const timeAgo = getMessagePassedHours(friend?.timestamp);
   const initials =
     `${friend.first_name[0]}${friend.last_name[0]}`.toUpperCase();
+
+  const handleOpenChat = () => {
+    setIsSlected(true);
+    router.push(`/messages/${friend.other_user_id}`);
+  };
+
   return (
     <div
+      onClick={handleOpenChat}
       className={cn(
         "flex items-center gap-4 p-4 cursor-pointer transition-colors rounded-lg",
         "hover:bg-secondary",

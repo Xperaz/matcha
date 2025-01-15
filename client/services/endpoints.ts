@@ -5,4 +5,6 @@ export const API_ENDPOINTS = {
   register: `${BASE_URL}auth/signup`,
   user: `${BASE_URL}user/me`,
   completeProfile: `${BASE_URL}user/complete-profile`,
+  chatList: `${BASE_URL}chat/list`,
+  messagesHisotry: `${BASE_URL}chat/messages`,
 };
