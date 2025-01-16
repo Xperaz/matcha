@@ -7,4 +7,5 @@ export const API_ENDPOINTS = {
   completeProfile: `${BASE_URL}user/complete-profile`,
   chatList: `${BASE_URL}chat/list`,
   messagesHisotry: `${BASE_URL}chat/messages`,
+  sendMessage: `${BASE_URL}chat/send`,
 };

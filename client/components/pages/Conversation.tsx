@@ -48,7 +48,7 @@ const Conversation = () => {
 
   return (
     <ConversationLayout>
-      <div className="grid grid-cols-[2fr,4fr] gap-4 h-full">
+      <div className="grid grid-cols-[2fr,20fr] gap-4 h-full">
         <FriendList />
         <Conversations />
       </div>

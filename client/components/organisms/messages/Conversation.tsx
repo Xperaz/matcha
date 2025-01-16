@@ -41,7 +41,7 @@ const Conversations = () => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto p-4">
+      <div className="flex-1 overflow-y-auto p-4 xl:p-8">
         {messagesHistory.map((message) => (
           <MessageCard
             key={message.id}
@@ -53,10 +53,7 @@ const Conversations = () => {
           />
         ))}
       </div>
-
-      <div>
-        <MessageInput receiverId={conversationId} />
-      </div>
+      <MessageInput receiverId={conversationId} />
     </div>
   );
 };
