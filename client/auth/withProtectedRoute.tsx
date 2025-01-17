@@ -35,8 +35,13 @@ const withProtectedRoute = <P extends WithProtectedRouteProps>(
     if (isLoading || !showContent) {
       // TODO: add animated Loader
       return (
-        <div className="fixed inset-0 flex items-center justify-center z-999 bg-pink-100">
-          <Loader />
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-background/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-2">
+            <Loader className="h-8 w-8 animate-spin" />
+            <p className="text-sm text-muted-foreground">
+              Verifying authentication...
+            </p>
+          </div>
         </div>
       );
     }

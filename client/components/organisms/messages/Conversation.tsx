@@ -1,16 +1,24 @@
-import { useAuthData } from "@/auth/useAuthData";
 import { QUERY_KEYS } from "@/constants/query_keys";
 import { getMessagesHisotry } from "@/services/requests/messages";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import React from "react";
+import React, { useRef } from "react";
 import MessageCard from "./MessageCard";
 import { IMessageType } from "@/types/messages";
 import MessageInput from "./MessageInput";
+import { getUser } from "@/services/requests/home";
 
 const Conversations = () => {
   const params = useParams();
-  const { userData: userData } = useAuthData();
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  const { data: userData } = useQuery({
+    queryKey: [QUERY_KEYS.user],
+    queryFn: async () => {
+      const data = await getUser();
+      return data.data.user;
+    },
+  });
   const conversationId = params.conversationId as string;
 
   const {
@@ -40,8 +48,11 @@ const Conversations = () => {
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto p-4 xl:p-8">
+    <div className="flex flex-col h-full overflow-y-auto">
+      <div
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto p-4 xl:p-8"
+      >
         {messagesHistory.map((message) => (
           <MessageCard
             key={message.id}
@@ -53,7 +64,11 @@ const Conversations = () => {
           />
         ))}
       </div>
-      <MessageInput receiverId={conversationId} />
+      <MessageInput
+        receiverId={conversationId}
+        userData={userData}
+        containerRef={messagesContainerRef}
+      />
     </div>
   );
 };

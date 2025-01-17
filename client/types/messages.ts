@@ -23,8 +23,3 @@ export interface IMessageType {
   receiver_first_name: string;
   receiver_last_name: string;
 }
-
-export interface IMessagePayload {
-  content: string;
-  receiver_id: string;
-}

@@ -32,23 +32,9 @@ const Conversation = () => {
     };
   }, [socket]);
 
-  //   const sendTestMessage = () => {
-  //     fetch("http://localhost:5000/api/chat/send", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       credentials: "include",
-  //       body: JSON.stringify({
-  //         content: "Test message",
-  //         receiver_id: "07cfdf86-3b49-40b6-90c2-aee98b76b8bd",
-  //       }),
-  //     });
-  //   };
-
   return (
     <ConversationLayout>
-      <div className="grid grid-cols-[2fr,20fr] gap-4 h-full">
+      <div className="grid grid-cols-[2fr,20fr] gap-4 h-full overflow-hidden">
         <FriendList />
         <Conversations />
       </div>
