@@ -116,10 +116,8 @@ const getGoogleUser = async ({
   access_token: string;
 }): Promise<GoogleUserInfo> => {
   try {
-    // Get user info from id_token
     const basicInfo = decodeGoogleToken(id_token);
 
-    // Get additional info using People API
     const profileResponse = await axios.get(
       "https://people.googleapis.com/v1/people/me",
       {
@@ -156,11 +154,7 @@ export const googleOauthHandle = async (req: Request, res: Response) => {
       access_token,
     });
 
-    console.log("googleUser", googleUser);
-
     const token = await generateToken(googleUser);
-
-    console.log("---------------------------------token", token);
 
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
