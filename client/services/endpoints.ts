@@ -8,4 +8,5 @@ export const API_ENDPOINTS = {
   chatList: `${BASE_URL}chat/list`,
   messagesHisotry: `${BASE_URL}chat/messages`,
   sendMessage: `${BASE_URL}chat/send`,
+  markMessagesAsRead: `${BASE_URL}chat/read`,
 };

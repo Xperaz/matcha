@@ -6,6 +6,8 @@ import useSocketSetup from "@/hooks/useSocketSetup";
 import { useEffect } from "react";
 import FriendList from "../organisms/messages/FriendList";
 import Conversations from "../organisms/messages/Conversation";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/constants/query_keys";
 
 interface Message {
   id: number;
@@ -17,9 +19,11 @@ interface Message {
 
 const Conversation = () => {
   const socket = useSocketSetup();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const onNewMessage = (message: Message) => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.messagesHistory] });
       // eslint-disable-next-line no-console
       console.log("New message received:", message);
     };
@@ -29,7 +33,7 @@ const Conversation = () => {
     return () => {
       socket.off("new_message", onNewMessage);
     };
-  }, [socket]);
+  }, [socket, queryClient]);
 
   return (
     <ConversationLayout>

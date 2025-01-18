@@ -4,6 +4,7 @@ import { io } from "../server";
 
 import { socketMap } from "../middlewares/socketAuthrization";
 import * as chatService from "../services/chatService";
+import { error } from "console";
 
 export const getMessages = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -46,10 +47,6 @@ export const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
     const { content, receiver_id } = req.body;
     const sender_id = req.user.id;
 
-    console.log("rec:", receiver_id);
-    console.log("sender: ", sender_id);
-    console.log("socket map: ", socketMap);
-
     if (!content || !receiver_id) {
       return res
         .status(400)
@@ -74,12 +71,34 @@ export const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
-export const markMessagesAsRead = (
+export const markMessagesAsRead = async (
   req: AuthenticatedRequest,
   res: Response
 ) => {
-  return res.status(200).json({
-    success: true,
-    message: "mark message as read",
-  });
+  try {
+    const currentUserId = req.user.id;
+    const sender_id = req.params.senderId;
+    if (!sender_id) {
+      return res.status(400).json({
+        error: "The sender id is required",
+      });
+    }
+
+    const updatedMessages = await chatService.markMessagesAsRead(
+      currentUserId,
+      sender_id
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        updatedMessages,
+      },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error on mark Message as read",
+    });
+  }
 };

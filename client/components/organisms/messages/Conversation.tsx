@@ -1,6 +1,9 @@
 import { QUERY_KEYS } from "@/constants/query_keys";
-import { getMessagesHisotry } from "@/services/requests/messages";
-import { useQuery } from "@tanstack/react-query";
+import {
+  getMessagesHisotry,
+  markMessagesAsRead,
+} from "@/services/requests/messages";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import React, { useEffect, useRef } from "react";
 import MessageCard from "./MessageCard";
@@ -13,6 +16,7 @@ import CustomError from "../CustomError";
 const Conversations = () => {
   const params = useParams();
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const queryClient = useQueryClient();
 
   const { data: userData } = useQuery({
     queryKey: [QUERY_KEYS.user],
@@ -40,12 +44,33 @@ const Conversations = () => {
     },
   });
 
+  const { mutate: markMessageAsReadMutate } = useMutation({
+    mutationFn: async () => {
+      if (!conversationId) {
+        return null;
+      }
+
+      const data = await markMessagesAsRead(conversationId);
+
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`${QUERY_KEYS.chatList}`] });
+    },
+  });
+
   useEffect(() => {
     if (messagesContainerRef.current && messagesHistory?.length) {
       const container = messagesContainerRef.current;
       container.scrollTop = container.scrollHeight;
     }
   }, [messagesHistory]);
+
+  useEffect(() => {
+    if (messagesHistory && !isLoading) {
+      markMessageAsReadMutate();
+    }
+  }, [messagesHistory, isLoading, markMessageAsReadMutate]);
 
   if (isLoading) {
     return (

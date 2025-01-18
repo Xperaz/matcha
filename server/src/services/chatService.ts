@@ -8,8 +8,6 @@ export const createMessage = async (messageData: MessageInputType) => {
     RETURNING *
     `;
 
-  // Check return * !!
-
   const values = [
     messageData.sender_id,
     messageData.receiver_id,
@@ -121,5 +119,27 @@ export const getChatList = async (userId: string) => {
   } catch (error) {
     console.error("Error getting chat list:", error);
     throw error;
+  }
+};
+
+export const markMessagesAsRead = async (
+  receivedId: string,
+  senderId: string
+) => {
+  const markReadQuery = `
+  UPDATE messages
+  SET is_read = true
+  WHERE
+    sender_id = $1
+    AND receiver_id = $2
+    AND is_read = false
+  RETURNING id, sender_id, receiver_id, timestamp;
+  `;
+
+  try {
+    const { rows } = await query(markReadQuery, [senderId, receivedId]);
+    return rows.length;
+  } catch (error) {
+    console.error("Error marking messages as read: ", error);
   }
 };

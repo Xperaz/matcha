@@ -9,3 +9,6 @@ export const getMessagesHisotry = (otherUserId: string) =>
 
 export const sendMessage = (data: MessageFormValue) =>
   axiosInstance.post(API_ENDPOINTS.sendMessage, data);
+
+export const markMessagesAsRead = (otherUserId: string) =>
+  axiosInstance.put(`${API_ENDPOINTS.markMessagesAsRead}/${otherUserId}`);
