@@ -7,6 +7,7 @@ const handleClick = (id: string) => {
 };
 
 const UserInfoCard = ({ user }: { user: IUserType }) => {
+  const initials = `${user.first_name[0]}${user.last_name[0]}`.toUpperCase();
   return (
     <div
       className="relative aspect-[3/4] w-full rounded-xl overflow-hidden shadow-xl"
@@ -15,7 +16,7 @@ const UserInfoCard = ({ user }: { user: IUserType }) => {
     >
       <div className="absolute inset-0">
         <Image
-          src={user.profile_picture}
+          src={user.profile_picture ?? initials}
           alt={`${user.first_name}'s profile picture`}
           layout="fill"
           objectFit="cover"

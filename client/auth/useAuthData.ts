@@ -28,7 +28,7 @@ export const useAuthData = () => {
           withCredentials: true,
         });
 
-        setUserData(res.data as IUserType);
+        setUserData(res.data.user as IUserType);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error("Error fetching user data:", error);

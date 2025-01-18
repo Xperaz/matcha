@@ -24,19 +24,24 @@ const withProtectedRoute = <P extends WithProtectedRouteProps>(
       }
 
       // TODO: redirect to complete profile page if user profile is not completed
-      if (isAuthenticated && !isLoading) {
+      if (isAuthenticated && !isLoading && userData) {
         setShowContent(true);
-        // if (!userData?.profile_completed) {
-        //   router.replace("/complete-profile");
-        // }
+        if (!userData?.profile_completed) {
+          router.replace("/complete-profile");
+        }
       }
-    }, [isAuthenticated, isLoading, router, userData?.profile_completed]);
+    }, [isAuthenticated, isLoading, router, userData]);
 
     if (isLoading || !showContent) {
       // TODO: add animated Loader
       return (
-        <div className="fixed inset-0 flex items-center justify-center z-999 bg-pink-100">
-          <Loader />
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-background/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-2">
+            <Loader className="h-8 w-8 animate-spin" />
+            <p className="text-sm text-muted-foreground">
+              Verifying authentication...
+            </p>
+          </div>
         </div>
       );
     }
