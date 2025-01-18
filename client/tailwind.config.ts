@@ -30,9 +30,17 @@ export default {
             opacity: "1",
           },
         },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
       },
       animation: {
         "spinner-leaf-fade": "spinner-leaf-fade 800ms linear infinite",
+        shimmer: "shimmer 1.5s infinite linear",
+      },
+      backgroundSize: {
+        "200%": "200% 100%",
       },
     },
   },
