@@ -3,26 +3,25 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { Server } from "socket.io";
+import { createServer } from "http";
 
 dotenv.config();
 
-import authRoutes from "./routes/authRoutes";
-import userRoutes from "./routes/userRoutes";
-import matchRoutes from "./routes/matchRoutes";
-import imageRoutes from "./routes/imageRoutes";
-import seedDataBase from "./routes/seedRoutes";
-import profileRoutes from "./routes/profileRoutes";
-import googleRoutes from "./routes/googleRoutes";
-import chatRoutes from "./routes/chatRoutes";
+import authRoutes from "./routes/auth.routes";
+import userRoutes from "./routes/user.routes";
+import matchRoutes from "./routes/match.routes";
+import imageRoutes from "./routes/image.routes";
+import seedDataBase from "./routes/seed.routes";
+import profileRoutes from "./routes/profile.routes";
+import googleRoutes from "./routes/google.routes";
+import chatRoutes from "./routes/chat.routes";
 import authorizeUserSocket, {
   AuthenticatedSocket,
 } from "./middlewares/socketAuthrization";
 
 const app: Application = express();
 const port: number = parseInt(process.env.SERVER_PORT || "5000", 10);
-const server = require("http").createServer(app);
-
-const cookie = require("cookie");
+const server = createServer(app);
 
 export const io = new Server(server, {
   cors: {

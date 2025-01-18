@@ -3,7 +3,7 @@ import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import { io } from "../server";
 
 import { socketMap } from "../middlewares/socketAuthrization";
-import * as chatService from "../services/chatService";
+import * as chatService from "../services/chat.service";
 
 export const getMessages = async (req: AuthenticatedRequest, res: Response) => {
   try {

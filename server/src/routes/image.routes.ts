@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { protectRoutes } from "../middlewares/auth";
-import { addImage, removeImage, addProfileImage, getAllImages } from "../controllers/imageController";
+import { addImage, removeImage, addProfileImage, getAllImages } from "../controllers/image.controller";
 
 const router: Router = Router();
 

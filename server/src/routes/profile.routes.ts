@@ -2,7 +2,7 @@ import { Router } from "express";
 import { protectRoutes } from "../middlewares/auth";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import { Response } from "express";
-import { getMyProfile } from "../controllers/profileController";
+import { getMyProfile } from "../controllers/profile.controller";
 
 
 const router: Router = Router();

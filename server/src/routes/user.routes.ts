@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { protectRoutes } from "../middlewares/auth";
-import { completeProfile, updatePassword } from "../controllers/userController";
+import { completeProfile, updatePassword } from "../controllers/user.controller";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
-import { updateEmail } from "../controllers/userController";
+import { updateEmail } from "../controllers/user.controller";
 import { Response } from "express";
 
 

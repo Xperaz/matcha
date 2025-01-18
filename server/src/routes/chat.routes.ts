@@ -5,7 +5,7 @@ import {
   getMessages,
   markMessagesAsRead,
   sendMessage,
-} from "../controllers/chatController";
+} from "../controllers/chat.controller";
 
 const router = Router();
 

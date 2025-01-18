@@ -5,7 +5,6 @@ import { AuthenticatedRequest } from "./ahthenticatedRequest";
 import { UserDTO } from "../dtos/user/userDto";
 
 const mapUser = (dbResults: any): UserDTO => {
-  
   const user: UserDTO = {
     id: dbResults.id,
     first_name: dbResults.first_name,
@@ -22,11 +21,14 @@ const mapUser = (dbResults: any): UserDTO => {
   return user;
 };
 
-export const protectRoutes = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
+export const protectRoutes = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
-    
     const token = req.cookies?.jwt;
-    
+
     if (!token) {
       res.status(401).json({
         success: false,
@@ -35,7 +37,10 @@ export const protectRoutes = async (req: AuthenticatedRequest, res: Response, ne
       return;
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET as string
+    ) as JwtPayload;
 
     if (!decoded || !decoded.id) {
       res.status(401).json({

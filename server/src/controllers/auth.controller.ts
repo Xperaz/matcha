@@ -7,19 +7,7 @@ import {
   isValidGender,
 } from "../dtos/requests/userSignupRequest";
 import { userSigninRequest } from "../dtos/requests/userSigninRequest";
-
-const signToken = (id: number): string => {
-  return jwt.sign({ id }, process.env.JWT_SECRET as string, {
-    expiresIn: "7d",
-  });
-};
-
-const matchPassword = async (
-  password: string,
-  hashedPassword: string
-): Promise<boolean> => {
-  return await bcrypt.compare(password, hashedPassword);
-};
+import * as authService from "../services/auth.service"
 
 export async function signup(req: Request, res: Response): Promise<Response> {
   
@@ -60,38 +48,19 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       });
     }
 
+    const emailExist = await authService.checkAvailableEmail(userData.email);
 
-    const emailCheckQuery = `SELECT email FROM users WHERE email = $1;`;
-    
-    const { rows } = await query(emailCheckQuery, [userData.email]);
-
-    if (rows.length > 0) {
+    if (emailExist) {
       return res.status(400).json({
         success: false,
         message: "Email is already in use",
       });
     }
 
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
+    const user_id = await authService.insertUser(userData);
 
-    const insertUserQuery = `
-      INSERT INTO users (first_name, last_name, password, email, gender, age)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id;
-    `;
-    const values = [
-      userData.first_name,
-      userData.last_name,
-      hashedPassword,
-      userData.email,
-      userData.gender,
-      userData.age,
-    ];
-    const {rows: result}   = await query(insertUserQuery, values);
-
-    const user_id = result[0].id;
-
-    const token = signToken(user_id);
+    const token = authService.signToken(user_id);
+    
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       sameSite: "strict",
@@ -135,7 +104,7 @@ export async function signin(req: Request, res: Response): Promise<Response> {
     
     if (
       rows.length !== 1 ||
-      !(await matchPassword(userData.password, rows[0].password))
+      !(await authService.matchPassword(userData.password, rows[0].password))
     ) {
       return res.status(400).json({
         success: false,
@@ -143,7 +112,8 @@ export async function signin(req: Request, res: Response): Promise<Response> {
       });
     }
 
-    const token = signToken(rows[0].id);
+    const token = authService.signToken(rows[0].id);
+
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       sameSite: "strict",

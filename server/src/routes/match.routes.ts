@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getUsersProfile, swipeLeft, swipeRight, getUserMatches, unlikeUser, likeUser, unmatchedUser } from "../controllers/matchController";
+import { getUsersProfile, swipeLeft, swipeRight, getUserMatches, unlikeUser, likeUser, unmatchedUser } from "../controllers/match.controller";
 import { protectRoutes } from "../middlewares/auth";
 
 const router: Router = Router();
