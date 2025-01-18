@@ -1,10 +1,9 @@
 "use client";
-
 import withProtectedRoute from "@/auth/withProtectedRoute";
-import withAppLayout from "../templates/layout/withAppLayout";
+import Conversation from "./Conversation";
 
 const Messages = () => {
-  return <div>Messages</div>;
+  return <Conversation />;
 };
 
-export default withAppLayout(withProtectedRoute(Messages));
+export default withProtectedRoute(Messages);
