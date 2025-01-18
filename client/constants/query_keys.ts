@@ -3,4 +3,6 @@ export const QUERY_KEYS = {
   chatList: "chatList",
   messagesHistory: "messageHistory",
   sendMessage: "sendMessage",
+  profileData: "profileData",
+  matches: "matches",
 };

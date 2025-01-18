@@ -4,15 +4,11 @@ import { io } from "../server";
 
 import { socketMap } from "../middlewares/socketAuthrization";
 import * as chatService from "../services/chatService";
-import { error } from "console";
 
 export const getMessages = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const currentUserId = req.user.id;
     const receiverId = req.params.receiverId;
-
-    console.log(currentUserId);
-    console.log(receiverId);
 
     if (!currentUserId || !receiverId) {
       return res.status(400).json({ error: "reciverId is required !" });
@@ -37,7 +33,7 @@ export const getChatList = async (req: AuthenticatedRequest, res: Response) => {
 
     res.json(chatList);
   } catch (error) {
-    console.log("Error getting chat List: ", error);
+    console.error("Error getting chat List: ", error);
     res.status(500).json({ error: "Failed to fetch chat list" });
   }
 };

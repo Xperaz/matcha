@@ -9,4 +9,8 @@ export const API_ENDPOINTS = {
   messagesHisotry: `${BASE_URL}chat/messages`,
   sendMessage: `${BASE_URL}chat/send`,
   markMessagesAsRead: `${BASE_URL}chat/read`,
+  swipeRight: `${BASE_URL}match/swipe-right`,
+  swipeLeft: `${BASE_URL}match/swipe-left`,
+  profilesToSwipe: `${BASE_URL}match/users-profile`,
+  matches: `${BASE_URL}match`,
 };
