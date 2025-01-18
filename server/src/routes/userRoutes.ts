@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { protectRoutes } from "../middlewares/auth";
-import { completeProfile } from "../controllers/userController";
+import { completeProfile, updatePassword } from "../controllers/userController";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
+import { updateEmail } from "../controllers/userController";
 import { Response } from "express";
 
 
@@ -16,8 +17,8 @@ router.get("/me", protectRoutes, (req: AuthenticatedRequest, res:Response) => {
     });
 });
 
-router.put("/update-password", protectRoutes);
-router.put("/update-email", protectRoutes);
+router.put("/update-password", protectRoutes, updatePassword);
+router.put("/update-email", protectRoutes, updateEmail);
 router.put("/update-profile", protectRoutes);
 
 export default router;

@@ -10,6 +10,9 @@ import authRoutes from "./routes/authRoutes";
 import userRoutes from "./routes/userRoutes";
 import matchRoutes from "./routes/matchRoutes";
 import imageRoutes from "./routes/imageRoutes";
+import seedDataBase from "./routes/seedRoutes";
+import profileRoutes from "./routes/profileRoutes";
+import googleRoutes from "./routes/googleRoutes";
 import chatRoutes from "./routes/chatRoutes";
 import authorizeUserSocket, {
   AuthenticatedSocket,
@@ -56,6 +59,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/match", matchRoutes);
 app.use("/api/image", imageRoutes);
+app.use("/api/profile", profileRoutes);
+app.use("/api/seed", seedDataBase);
+app.use("/api/google", googleRoutes);
 app.use("/api/chat", chatRoutes);
 
 io.use(authorizeUserSocket);

@@ -5,4 +5,5 @@ export const QUERY_KEYS = {
   sendMessage: "sendMessage",
   profileData: "profileData",
   matches: "matches",
+  images: "images",
 };

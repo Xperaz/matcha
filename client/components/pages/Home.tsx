@@ -2,8 +2,8 @@
 
 import withProtectedRoute from "@/auth/withProtectedRoute";
 import withAppLayout from "../templates/layout/withAppLayout";
-import { Swiper } from "@/components/organisms/Swiper";
-import { SwipeFeedback } from "@/components/organisms/SwipeFeedback";
+import { Swiper } from "@/components/organisms/swipe/Swiper";
+import { SwipeFeedback } from "@/components/organisms/swipe/SwipeFeedback";
 import { SwipeCardProvider } from "@/context/swipeCardContext";
 
 const Home = () => {

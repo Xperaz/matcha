@@ -25,7 +25,6 @@ export async function signup(req: Request, res: Response): Promise<Response> {
   
   try {
     const userData: userSignupRequest = req.body;
-    // Validate request data
     if (
       !userData.first_name ||
       !userData.last_name ||
@@ -124,9 +123,16 @@ export async function signin(req: Request, res: Response): Promise<Response> {
       });
     }
 
-    const emailCheckQuery = `SELECT id, email, password FROM users WHERE email = $1;`;
+    const emailCheckQuery = `SELECT id, email, password, is_google FROM users WHERE email = $1;`;
     const { rows } = await query(emailCheckQuery, [userData.email]);
 
+    if (rows[0].is_google === true) {
+      return res.status(400).json({
+        success: false,
+        message: "this email is registered with google",
+      });
+    }
+    
     if (
       rows.length !== 1 ||
       !(await matchPassword(userData.password, rows[0].password))

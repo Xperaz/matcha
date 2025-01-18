@@ -9,11 +9,6 @@ import {
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import bcrypt from "bcryptjs";
 
-// validate data
-// update it
-// upload images
-// save urls to database
-
 export const completeProfile = async (
   req: AuthenticatedRequest,
   res: Response
@@ -154,6 +149,25 @@ export const updateEmail = async (
         message: "Email and password are required",
       });
     }
+    const checkIsGoogleQuery: string = `
+      SELECT is_google FROM users
+      WHERE id = $1;
+    `;
+    const { rows: isGoogle } = await query(checkIsGoogleQuery, [userId]);
+
+    if (isGoogle[0].is_google) {
+      return res.status(400).json({
+        success: false,
+        message: "Email cannot be updated for google accounts",
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password should be at least 8 characters",
+      });
+    }
 
     const checkEmailQuery: string = `
       SELECT id FROM users
@@ -204,6 +218,7 @@ export const updateEmail = async (
       success: true,
       message: "Email updated successfully",
     });
+
   } catch (ex) {
     console.error("Error updating email:", ex);
     return res.status(500).json({
@@ -218,13 +233,40 @@ export const updatePassword = async (
   res: Response
 ): Promise<Response> => {
   try {
-    const { oldPassword, newPassword } = req.body;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
     const userId = req.user?.id;
 
-    if (!oldPassword || !newPassword) {
+    if (!oldPassword || !newPassword || !confirmPassword) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password should be at least 8 characters",
+      });
+    }
+
+    if (newPassword !== confirmPassword){
+      return res.status(400).json({
+        success: false,
+        message: "pssword don't match",
+      });
+    }
+
+    const checkIsGoogleQuery: string = `
+      SELECT is_google FROM users
+      WHERE id = $1;
+    `;
+    const { rows: isGoogle } = await query(checkIsGoogleQuery, [userId]);
+
+    if (isGoogle[0].is_google) {
+      return res.status(400).json({
+        success: false,
+        message: "Password cannot be updated for google accounts",
       });
     }
 
@@ -265,6 +307,7 @@ export const updatePassword = async (
       success: true,
       message: "Password updated successfully",
     });
+    
   } catch (ex) {
     console.error("Error updating password:", ex);
     return res.status(500).json({
