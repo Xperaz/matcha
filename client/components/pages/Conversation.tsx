@@ -8,24 +8,31 @@ import FriendList from "../organisms/messages/FriendList";
 import Conversations from "../organisms/messages/Conversation";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants/query_keys";
-
-interface Message {
-  id: number;
-  content: string;
-  sender_id: string;
-  receiver_id: string;
-  timestamp: string;
-}
+import { IMessageType } from "@/types/messages";
 
 const Conversation = () => {
   const socket = useSocketSetup();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const onNewMessage = (message: Message) => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.messagesHistory] });
-      // eslint-disable-next-line no-console
-      console.log("New message received:", message);
+    const onNewMessage = (message: IMessageType) => {
+      queryClient.setQueryData<IMessageType[] | null>(
+        [QUERY_KEYS.messagesHistory, message.receiver_id],
+        (oldMessages) => {
+          if (!oldMessages) return [message];
+          return [...oldMessages, message];
+        },
+      );
+
+      queryClient.setQueryData<IMessageType[] | null>(
+        [QUERY_KEYS.messagesHistory, message.sender_id],
+        (oldMessages) => {
+          if (!oldMessages) return [message];
+          return [...oldMessages, message];
+        },
+      );
+
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.chatList] });
     };
 
     socket.on("new_message", onNewMessage);
