@@ -149,6 +149,18 @@ export const updateEmail = async (
         message: "Email and password are required",
       });
     }
+    const checkIsGoogleQuery: string = `
+      SELECT is_google FROM users
+      WHERE id = $1;
+    `;
+    const { rows: isGoogle } = await query(checkIsGoogleQuery, [userId]);
+
+    if (isGoogle[0].is_google) {
+      return res.status(400).json({
+        success: false,
+        message: "Email cannot be updated for google accounts",
+      });
+    }
 
     if (password.length < 8) {
       return res.status(400).json({
@@ -242,6 +254,19 @@ export const updatePassword = async (
       return res.status(400).json({
         success: false,
         message: "pssword don't match",
+      });
+    }
+
+    const checkIsGoogleQuery: string = `
+      SELECT is_google FROM users
+      WHERE id = $1;
+    `;
+    const { rows: isGoogle } = await query(checkIsGoogleQuery, [userId]);
+
+    if (isGoogle[0].is_google) {
+      return res.status(400).json({
+        success: false,
+        message: "Password cannot be updated for google accounts",
       });
     }
 

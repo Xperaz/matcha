@@ -2,8 +2,17 @@
 import Image from "next/image";
 import logiImg from "@/public/images/login.jpeg";
 import LoginForm from "../organisms/LoginForm";
+import { useRouter } from "next/navigation";
+import getGoogleOAuthURL from "@/helpers/googleUrl";
 
 const Login = () => {
+  const router = useRouter();
+  const url: string = getGoogleOAuthURL();
+
+  const handleClick = () => {
+    router.replace(url);
+  };
+
   return (
     <div className="min-h-screen flex">
       <div className="w-full lg:w-1/2 flex items-center justify-center px-4 sm:px-6 lg:px-8">
@@ -16,6 +25,12 @@ const Login = () => {
           </div>
           <div className="w-full mt-8">
             <LoginForm />
+            <button
+              onClick={handleClick}
+              className="items-center w-full  bg-blue-500 text-white p-2 rounded"
+            >
+              login with google
+            </button>
           </div>
         </div>
       </div>
