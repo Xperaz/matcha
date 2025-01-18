@@ -1,5 +1,5 @@
 import { IReceivedMessage } from "@/types/messages";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { getMessagePassedHours } from "@/helpers/getMessagePassedHours";
@@ -7,27 +7,31 @@ import { useRouter } from "next/navigation";
 
 interface FriendCardProps {
   friend: IReceivedMessage;
+  selectedId: string | undefined;
 }
 
-const FriendCard: FC<FriendCardProps> = ({ friend }) => {
-  const [isSelected, setIsSlected] = useState(false);
+const FriendCard: FC<FriendCardProps> = ({ friend, selectedId }) => {
+  const [isSelected, setIsSelected] = useState(false);
   const router = useRouter();
   const timeAgo = getMessagePassedHours(friend?.timestamp);
   const initials =
     `${friend.first_name[0]}${friend.last_name[0]}`.toUpperCase();
 
+  useEffect(() => {
+    setIsSelected(selectedId === friend.other_user_id);
+  }, [selectedId, friend.other_user_id]);
+
   const handleOpenChat = () => {
-    setIsSlected(true);
-    router.push(`/messages/${friend.other_user_id}`);
+    router.replace(`/messages/${friend.other_user_id}`);
   };
 
   return (
     <div
       onClick={handleOpenChat}
       className={cn(
-        "flex items-center gap-4 p-4 cursor-pointer transition-colors rounded-lg",
+        "flex items-center gap-4 p-4 cursor-pointer transition-colors",
         "hover:bg-secondary",
-        isSelected && "bg-secondary",
+        isSelected && "bg-secondary border-r-2 border-primary",
       )}
     >
       <Avatar className="h-12 w-12">

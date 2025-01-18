@@ -1,9 +1,11 @@
 /* eslint-disable no-console */
 "use client";
 import { socket } from "@/app/socket";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 const useSocketSetup = () => {
+  const router = useRouter();
   useEffect(() => {
     if (!socket.connected) {
       socket.connect();
@@ -14,7 +16,18 @@ const useSocketSetup = () => {
     };
 
     const onConnectError = (error: Error) => {
-      console.error("Socket connection error:", error);
+      console.error("Socket connection error:", error.message);
+
+      switch (error.message) {
+        case "NO_COOKIES":
+        case "NO_TOKEN":
+        case "INVALID_TOKEN":
+        case "INVALID_PAYLOAD":
+          router.push("/login");
+          break;
+        default:
+          console.error("Unexpected socket error:", error);
+      }
     };
 
     const onDisconnect = (reason: string) => {

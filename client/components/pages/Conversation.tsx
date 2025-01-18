@@ -1,6 +1,5 @@
 "use client";
 
-import withProtectedRoute from "@/auth/withProtectedRoute";
 import withAppLayout from "../templates/layout/withAppLayout";
 import ConversationLayout from "../templates/layout/ConversationLayout";
 import useSocketSetup from "@/hooks/useSocketSetup";
@@ -42,4 +41,4 @@ const Conversation = () => {
   );
 };
 
-export default withAppLayout(withProtectedRoute(Conversation));
+export default withAppLayout(Conversation);
