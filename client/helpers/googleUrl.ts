@@ -2,7 +2,7 @@ const getGoogleOAuthURL = () => {
   const rootUrl = "https://accounts.google.com/o/oauth2/v2/auth";
 
   const options = {
-    redirect_uri: "http://localhost:5000/api/google/callback",
+    redirect_uri: "http://localhost:5000/api/auth/google/callback",
     client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_Id as string,
     access_type: "offline",
     response_type: "code",
