@@ -15,4 +15,5 @@ export interface IUserType {
   country: string;
   city: string;
   interests: string[];
+  is_google: boolean;
 }

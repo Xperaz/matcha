@@ -20,6 +20,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { updateEmail } from "@/services/requests/profile";
 import { CustomError } from "@/auth/types";
 import {
@@ -29,7 +35,13 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants/query_keys";
 
-const EmailSection = ({ email }: { email: string }) => {
+const EmailSection = ({
+  email,
+  is_google,
+}: {
+  email: string;
+  is_google: boolean;
+}) => {
   const [open, setOpen] = useState(false);
 
   const queryClient = useQueryClient();
@@ -78,15 +90,32 @@ const EmailSection = ({ email }: { email: string }) => {
         <Dialog
           open={open}
           onOpenChange={(newOpen) => {
-            setOpen(newOpen);
-            if (!newOpen) {
-              form.reset();
+            if (!is_google) {
+              setOpen(newOpen);
+              if (!newOpen) {
+                form.reset();
+              }
             }
           }}
         >
-          <DialogTrigger asChild>
-            <Button className="h-8 px-2 text-sm">Edit Email</Button>
-          </DialogTrigger>
+          {is_google ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button className="h-8 px-2 text-sm opacity-50">
+                    Edit Email
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Email cannot be updated for google accounts</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <DialogTrigger asChild>
+              <Button className="h-8 px-2 text-sm">Edit Email</Button>
+            </DialogTrigger>
+          )}
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Edit Email</DialogTitle>
