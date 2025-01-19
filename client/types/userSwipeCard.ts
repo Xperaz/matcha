@@ -7,4 +7,5 @@ export interface UserSwipeCard {
   latitude: number;
   age: number;
   biography: string;
+  distance: number;
 }
