@@ -9,7 +9,6 @@ import {
 import { userSigninRequest } from "../dtos/requests/userSigninRequest";
 
 export const signToken = (id: string): string => {
-  console.log("id:", id);
   return jwt.sign({ id }, process.env.JWT_SECRET as string, {
     expiresIn: "7d",
   });

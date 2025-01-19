@@ -15,6 +15,8 @@ import seedDataBase from "./routes/seed.routes";
 import profileRoutes from "./routes/profile.routes";
 import googleRoutes from "./routes/google.routes";
 import chatRoutes from "./routes/chat.routes";
+import searchRoutes from "./routes/search.routes";
+
 import authorizeUserSocket, {
   AuthenticatedSocket,
 } from "./middlewares/socketAuthrization";
@@ -62,6 +64,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/seed", seedDataBase);
 app.use("/api/google", googleRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/search", searchRoutes);
 
 io.use(authorizeUserSocket);
 io.on("connection", (socket: AuthenticatedSocket) => {});

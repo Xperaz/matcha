@@ -131,10 +131,6 @@ export const completeProfile = async (
   }
 };
 
-// export const updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
-// // TODO: Implement updateProfile
-// };
-
 export const updateEmail = async (
   req: AuthenticatedRequest,
   res: Response
@@ -218,7 +214,6 @@ export const updateEmail = async (
       success: true,
       message: "Email updated successfully",
     });
-
   } catch (ex) {
     console.error("Error updating email:", ex);
     return res.status(500).json({
@@ -250,7 +245,7 @@ export const updatePassword = async (
       });
     }
 
-    if (newPassword !== confirmPassword){
+    if (newPassword !== confirmPassword) {
       return res.status(400).json({
         success: false,
         message: "pssword don't match",
@@ -307,7 +302,6 @@ export const updatePassword = async (
       success: true,
       message: "Password updated successfully",
     });
-    
   } catch (ex) {
     console.error("Error updating password:", ex);
     return res.status(500).json({
@@ -315,4 +309,25 @@ export const updatePassword = async (
       message: "An error occurred while updating the password",
     });
   }
+};
+
+export const updateProfile = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  const userId = req.user.id;
+  const updatedInfo = req.body;
+
+  console.log("updated dto", updatedInfo);
+  if (!userId) {
+    res.status(404).json({
+      success: false,
+      message: "User not found!",
+    });
+  }
+
+  res.status(204).json({
+    success: true,
+    message: "User Info has been updated successfully!",
+  });
 };
