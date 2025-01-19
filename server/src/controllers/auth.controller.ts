@@ -1,16 +1,13 @@
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
 import { Request, Response } from "express";
-import { query } from "../config/db";
 import {
   userSignupRequest,
   isValidGender,
 } from "../dtos/requests/userSignupRequest";
 import { userSigninRequest } from "../dtos/requests/userSigninRequest";
-import * as authService from "../services/auth.service"
+import * as authService from "../services/auth.service";
+import * as googleService from "../services/google.service";
 
 export async function signup(req: Request, res: Response): Promise<Response> {
-  
   try {
     const userData: userSignupRequest = req.body;
     if (
@@ -60,7 +57,7 @@ export async function signup(req: Request, res: Response): Promise<Response> {
     const user_id = await authService.insertUser(userData);
 
     const token = authService.signToken(user_id);
-    
+
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       sameSite: "strict",
@@ -71,7 +68,6 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       message: "User created successfully",
       accessToken: token,
     });
-
   } catch (error) {
     console.error("Error from signup:", error);
     return res.status(500).json({
@@ -91,20 +87,18 @@ export async function signin(req: Request, res: Response): Promise<Response> {
         message: "All fields are required",
       });
     }
+    const dbUser = await authService.checkUser(userData);
 
-    const emailCheckQuery = `SELECT id, email, password, is_google FROM users WHERE email = $1;`;
-    const { rows } = await query(emailCheckQuery, [userData.email]);
-
-    if (rows[0].is_google === true) {
+    if (dbUser && dbUser.is_google === true) {
       return res.status(400).json({
         success: false,
         message: "this email is registered with google",
       });
     }
-    
+
     if (
-      rows.length !== 1 ||
-      !(await authService.matchPassword(userData.password, rows[0].password))
+      !dbUser ||
+      !(await authService.matchPassword(userData.password, dbUser.password))
     ) {
       return res.status(400).json({
         success: false,
@@ -112,7 +106,7 @@ export async function signin(req: Request, res: Response): Promise<Response> {
       });
     }
 
-    const token = authService.signToken(rows[0].id);
+    const token = authService.signToken(dbUser.id);
 
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
@@ -124,7 +118,6 @@ export async function signin(req: Request, res: Response): Promise<Response> {
       message: "Signin successful",
       accessToken: token,
     });
-
   } catch (error) {
     console.error("Error from signin:", error);
     return res.status(500).json({
@@ -134,12 +127,37 @@ export async function signin(req: Request, res: Response): Promise<Response> {
   }
 }
 
-export const singout = async (req: Request, res: Response): Promise<Response> => {
 
+export const googleOauthHandler = async (req: Request, res: Response) => {
+  try {
+    const code: string = req.query.code as string;
+    const { id_token, access_token } = await googleService.getGoogleAauthTokens({ code });
+    const googleUser: googleService.GoogleUserInfo = await googleService.getGoogleUser({
+      id_token,
+      access_token,
+    });
+
+    const token = await googleService.generateToken(googleUser);
+
+    res.cookie("jwt", token, {
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      sameSite: "strict",
+    });
+
+    res.redirect("http://localhost:3000/home");
+  } catch (error) {
+    console.error("error getting google auth credentials", error);
+    res.redirect("http://localhost:3000/login");
+  }
+};
+
+export const singout = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
   res.clearCookie("jwt");
   return res.status(200).json({
     success: true,
     message: "Signout successful",
   });
-  
 };

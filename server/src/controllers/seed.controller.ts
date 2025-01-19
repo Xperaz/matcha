@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs";
 import path from "path";
 
 const MALE_COUNT = 100;
-const FEMALE_COUNT = 100;
+const FEMALE_COUNT = 200;
 
 const Preferences = ["MALE", "FEMALE", "BOTH"];
 
@@ -144,6 +144,26 @@ const pictures = [
   "/Users/aboudoun/Desktop/matcha/server/src/public/pictures/10.jpeg",
 ];
 
+function generateRandomLocation() {
+  const centerLat: number = 33.5792;
+  const centerLng: number = -7.6133;
+  const radiusInKm: number = 500;
+
+  const randomAngle = Math.random() * 2 * Math.PI;
+  const randomDistance = Math.random() * radiusInKm;
+
+  // Convert distance to lat/lng degrees (rough approximation)
+  const latOffset = (randomDistance * Math.cos(randomAngle)) / 111.32;
+  const lngOffset =
+    (randomDistance * Math.sin(randomAngle)) /
+    (111.32 * Math.cos(centerLat * (Math.PI / 180)));
+
+  return {
+    latitude: Number((centerLat + latOffset).toFixed(6)),
+    longitude: Number((centerLng + lngOffset).toFixed(6)),
+  };
+}
+
 export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userEmail = req.user.email;
@@ -175,6 +195,7 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
       const preferences =
         Preferences[Math.floor(Math.random() * Preferences.length)];
       const gender = "MALE";
+      const { latitude, longitude } = generateRandomLocation();
       const email = `${firstName}${lastName}${i}@gmail.com`;
       const password = `${firstName}${lastName}${i}`;
       const biography = "this is random biography lorem ipsum dolor sit amet";
@@ -199,8 +220,9 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
       // insert user to db
       const insertUserQuery = `
                 INSERT INTO users (email, password, first_name, last_name, biography, age,
-                    profile_picture, city, country, sexual_preferences, gender, profile_completed)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                    profile_picture, city, country, sexual_preferences, gender, profile_completed,
+                    latitude, longitude)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
                 RETURNING id;
             `;
 
@@ -217,6 +239,8 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
         preferences,
         gender,
         profileCompleted,
+        latitude,
+        longitude,
       ]);
       const userId = result2.rows[0].id;
 
@@ -258,6 +282,7 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
       const preferences =
         Preferences[Math.floor(Math.random() * Preferences.length)];
       const gender = "FEMALE";
+      const { latitude, longitude } = generateRandomLocation();
       const email = `${firstName}${lastName}${i}@gmail.com`;
       const password = `${firstName}${lastName}${i}`;
       const biography = "this is random biography lorem ipsum dolor sit amet";
@@ -283,8 +308,9 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
       // insert user to db
       const insertUserQuery = `
                 INSERT INTO users (email, password, first_name, last_name, biography, age,
-                    profile_picture, city, country, sexual_preferences, gender, profile_completed)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+                    profile_picture, city, country, sexual_preferences, gender, profile_completed,
+                    latitude, longitude)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
                 RETURNING id;
             `;
 
@@ -301,6 +327,8 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
         preferences,
         gender,
         profileCompleted,
+        latitude,
+        longitude,
       ]);
       const userId = result2.rows[0].id;
 

@@ -1,11 +1,9 @@
-import { Request, Response } from "express";
 import axios from "axios";
-import dotenv from "dotenv";
 import qs from "querystring";
 import jwt from "jsonwebtoken";
 import { query } from "../config/db";
+import { signToken } from "./auth.service";
 
-dotenv.config();
 interface GoogleUserBasicInfo {
   email: string;
   name: string;
@@ -14,59 +12,52 @@ interface GoogleUserBasicInfo {
   family_name: string;
 }
 
-interface GoogleUserInfo extends GoogleUserBasicInfo {
+export interface GoogleUserInfo extends GoogleUserBasicInfo {
   gender: string;
   age: number;
 }
 
 const validateUser = (user: GoogleUserInfo): GoogleUserInfo => {
   const { age, gender } = user;
-  if (!age){
+  if (!age) {
     user.age = 18;
   }
-  if (!gender || (gender != "male" && gender != "female")){
+  if (!gender || (gender != "male" && gender != "female")) {
     user.gender = "other";
   }
   user.gender = user.gender.toUpperCase();
-  console.log("user", user);
   return user;
-}
+};
 
-const calculateAge = (year: number, day:number, month:number): number => {
+const calculateAge = (year: number, day: number, month: number): number => {
   const today = new Date();
   const birthDate = new Date(year, month, day);
   let age = today.getFullYear() - birthDate.getFullYear();
   return age;
-}
-
-const signToken = (id: string): string => {
-  return jwt.sign({ id }, process.env.JWT_SECRET as string, {
-    expiresIn: "7d",
-  });
 };
 
-const createUser = async (user: GoogleUserInfo): Promise<string> => {
+const createGoogleUser = async (user: GoogleUserInfo): Promise<string> => {
   const createUserQuery = `
-    INSERT INTO users (email, first_name, last_name, gender, age, is_google)
-    VALUES ($1, $2, $3, $4, $5, $6)
-    RETURNING id;
-  `;
+      INSERT INTO users (email, first_name, last_name, gender, age, is_google)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING id;
+    `;
   const { email, given_name, family_name, gender, age } = user;
   const values = [email, given_name, family_name, gender, age, true];
   const { rows } = await query(createUserQuery, values);
   return rows[0].id;
 };
 
-const generateToken = async (user: GoogleUserInfo): Promise<string> => {
+export const generateToken = async (user: GoogleUserInfo): Promise<string> => {
   const getUserQuery = `
-    SELECT id FROM users WHERE email = $1;
-  `;
+      SELECT id FROM users WHERE email = $1;
+    `;
   const { rows } = await query(getUserQuery, [user.email]);
   if (rows.length > 0) {
     const token = signToken(rows[0].id);
     return token;
   }
-  const id = await createUser(validateUser(user));
+  const id = await createGoogleUser(validateUser(user));
   return signToken(id);
 };
 
@@ -84,7 +75,7 @@ const decodeGoogleToken = (token: string): GoogleUserBasicInfo => {
   };
 };
 
-const getGoogleAauthTokens = async ({ code }: { code: string }) => {
+export const getGoogleAauthTokens = async ({ code }: { code: string }) => {
   const url = "https://oauth2.googleapis.com/token";
 
   const values = {
@@ -108,7 +99,7 @@ const getGoogleAauthTokens = async ({ code }: { code: string }) => {
   }
 };
 
-const getGoogleUser = async ({
+export const getGoogleUser = async ({
   id_token,
   access_token,
 }: {
@@ -131,39 +122,16 @@ const getGoogleUser = async ({
     );
 
     const additionalInfo = profileResponse.data;
-    const {year, month, day} = additionalInfo.birthdays?.[0]?.date || {};
+    const { year, month, day } = additionalInfo.birthdays?.[0]?.date || {};
     const userAge = calculateAge(year, day, month);
 
     return {
       ...basicInfo,
       gender: additionalInfo.genders?.[0]?.value || null,
-      age: userAge ,
+      age: userAge,
     };
   } catch (error: any) {
     console.error(error, "Error fetching Google user");
     throw new Error(error.message);
-  }
-};
-
-export const googleOauthHandle = async (req: Request, res: Response) => {
-  try {
-    const code: string = req.query.code as string;
-    const { id_token, access_token } = await getGoogleAauthTokens({ code });
-    const googleUser: GoogleUserInfo = await getGoogleUser({
-      id_token,
-      access_token,
-    });
-
-    const token = await generateToken(googleUser);
-
-    res.cookie("jwt", token, {
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      sameSite: "strict",
-    });
-
-    res.redirect("http://localhost:3000/home");
-  } catch (error) {
-    console.log("error getting google auth credentials", error);
-    res.redirect("http://localhost:3000/login");
   }
 };
