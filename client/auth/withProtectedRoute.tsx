@@ -26,9 +26,9 @@ const withProtectedRoute = <P extends WithProtectedRouteProps>(
       // TODO: redirect to complete profile page if user profile is not completed
       if (isAuthenticated && !isLoading && userData) {
         setShowContent(true);
-        if (!userData?.profile_completed) {
-          router.replace("/complete-profile");
-        }
+        // if (!userData?.profile_completed) {
+        //   router.replace("/complete-profile");
+        // }
       }
     }, [isAuthenticated, isLoading, router, userData]);
 

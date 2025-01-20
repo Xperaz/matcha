@@ -174,6 +174,7 @@ export const getProfilesToSwipe = async (
     maxFameRating?: number;
     minDistance?: number;
     maxDistance?: number;
+    commonInterests?: number;
   }
 ) => {
   const userDataQuery = `
@@ -256,7 +257,7 @@ export const getProfilesToSwipe = async (
   const params: any[] = [userId];
   let paramCounter = 2;
 
-  if (filters?.minAge && filters?.maxAge) {
+  if (filters?.minAge || filters?.maxAge) {
     dynamicFilters += ` AND age BETWEEN $${paramCounter} AND $${
       paramCounter + 1
     }`;
@@ -264,7 +265,7 @@ export const getProfilesToSwipe = async (
     paramCounter += 2;
   }
 
-  if (filters?.minFameRating && filters?.maxFameRating) {
+  if (filters?.minFameRating || filters?.maxFameRating) {
     dynamicFilters += ` AND fame_rating BETWEEN $${paramCounter} AND $${
       paramCounter + 1
     }`;
@@ -272,32 +273,38 @@ export const getProfilesToSwipe = async (
     paramCounter += 2;
   }
 
-  if (filters?.minDistance && filters?.maxDistance) {
-    dynamicFilters += ` AND distance BETWEEN $${paramCounter} AND $${
+  
+  let finalSelection = `
+  SELECT * FROM potential_matches
+  WHERE 1=1
+  `;
+
+  if (filters?.minDistance || filters?.maxDistance) {
+    finalSelection += ` AND distance BETWEEN $${paramCounter} AND $${
       paramCounter + 1
     }`;
     params.push(filters.minDistance, filters.maxDistance);
     paramCounter += 2;
   }
 
-  let finalSelection = `
-    SELECT * FROM potential_matches
-    WHERE 1=1
-  `;
+  if (filters?.commonInterests) {
+    finalSelection += ` AND common_tags_count >= $${paramCounter}`;
+    params.push(filters.commonInterests);
+    paramCounter++;
+  }
 
+  // CASE
+  //   WHEN $${paramCounter} = 'distance' THEN distance
+  //   WHEN $${paramCounter} = 'age' THEN age::float
+  //   WHEN $${paramCounter} = 'fame_rating' THEN fame_rating::float
+  //   WHEN $${paramCounter} = 'common_tags' THEN common_tags_count::float
+  //   ELSE distance
+  // END ASC,
   const sorting = `
-    ORDER BY
-      CASE
-        WHEN $${paramCounter} = 'distance' THEN distance
-        WHEN $${paramCounter} = 'age' THEN age::float
-        WHEN $${paramCounter} = 'fame_rating' THEN fame_rating::float
-        WHEN $${paramCounter} = 'common_tags' THEN common_tags_count::float
-        ELSE distance
-      END ASC,
-      distance ASC
+    ORDER BY distance
     LIMIT 50;
   `;
-  params.push("distance");
+  // params.push("distance");
 
   const fullQuery = `
     ${userDataQuery}

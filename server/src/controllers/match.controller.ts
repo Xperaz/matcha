@@ -152,12 +152,7 @@ export const getUsersProfileToSwipe = async (
 ) => {
   try {
     const userId: string = req.user?.id;
-    const minAge: number = parseInt(req.query.minAge as string);
-    const maxAge: number = parseInt(req.query.maxAge as string);
-    const minDistance: number = parseInt(req.query.minDistance as string);
-    const maxDistance: number = parseInt(req.query.maxDistance as string);
-    const minFameRating: number = parseInt(req.query.minFame as string);
-    const maxFameRating: number = parseInt(req.query.maxFame as string);
+    const { ageRange, distanceRange, fameRatingRange, commonInterests } = req.query;
 
     if (!userId) {
       return res.status(401).json({
@@ -165,21 +160,35 @@ export const getUsersProfileToSwipe = async (
         message: "Unauthorized: User ID not found",
       });
     }
-    // get users that didn't swipe left or right or match with the current user
-    // and are not blocked by the user or blocking the user
+
+    if (!ageRange || !distanceRange || !fameRatingRange || !commonInterests) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required query parameters",
+      });
+    }
+
+    const ageRangeArray: number[] = (ageRange as string).split(",").map(Number);
+    const distanceRangeArray: number[] = (distanceRange as string)
+      .split(",")
+      .map(Number);
+    const fameRatingRangeArray: number[] = (fameRatingRange as string)
+      .split(",")
+      .map(Number);
+    const commonInterestsCount: number = parseInt(commonInterests as string);
 
     const usersProfiles: UserProfilesToSwipeDto[] =
       await matchService.getProfilesToSwipe(userId, {
-        minAge: minAge,
-        maxAge: maxAge,
-        minFameRating: minFameRating,
-        maxFameRating: maxFameRating,
-        minDistance: minDistance,
-        maxDistance: maxDistance,
+        minAge: ageRangeArray[0],
+        maxAge: ageRangeArray[1],
+        minFameRating: fameRatingRangeArray[0],
+        maxFameRating: fameRatingRangeArray[1],
+        minDistance: distanceRangeArray[0],
+        maxDistance: distanceRangeArray[1],
+        commonInterests: commonInterestsCount,
       });
-    //TODO: filter the users based on the user's specs
-    //TODO: add functions for that
-    // const usersProfilesPaginated: UserProfilesToSwipeDto[] = usersProfiles.slice((page - 1) * limit, page * limit);
+
+      console.log("usersProfiles", usersProfiles.length);
 
     return res.status(200).json({
       success: true,
@@ -188,7 +197,6 @@ export const getUsersProfileToSwipe = async (
     });
   } catch (ex) {
     console.error("Error getting users profile", ex);
-
     return res.status(500).json({
       success: false,
       message: "An error occurred while getting users profile",
