@@ -16,30 +16,6 @@ const mapUserMatches = (rows: any[]): UserMatchesDto[] => {
   });
 };
 
-function deg2rad(deg: number): number {
-  return deg * (Math.PI / 180);
-}
-
-const getDistanceFromLatLonInKm = (
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number
-): number => {
-  const R = 6371; // Radius of the earth in km
-  const dLat = deg2rad(lat2 - lat1); // deg2rad below
-  const dLon = deg2rad(lon2 - lon1);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(deg2rad(lat1)) *
-      Math.cos(deg2rad(lat2)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const d = R * c; // Distance in km
-  return Number(d.toFixed(2));
-};
-
 const mapUserProfilesToSwipe = (rows: any[]): UserProfilesToSwipeDto[] => {
   return rows.map((row) => {
     const user: UserProfilesToSwipeDto = {
@@ -53,12 +29,7 @@ const mapUserProfilesToSwipe = (rows: any[]): UserProfilesToSwipeDto[] => {
       biography: row.biography,
       gender: row.gender,
       fame_rating: row.fame_rating,
-      distance: getDistanceFromLatLonInKm(
-        row.latitude,
-        row.longitude,
-        33.5792,
-        -7.6133
-      ), // to remove
+      distance: row.distance.toFixed(2),
     };
     return user;
   });
@@ -197,15 +168,14 @@ export const unmatch = async (
 export const getProfilesToSwipe = async (
   userId: string,
   filters?: {
-    ageRange?: [number, number];
-    locationRange?: [number, number];
-    fameRange?: [number, number];
-    withCommonTags?: boolean;
-    sortBy?: "age" | "distance" | "fame_rating" | "common_tags";
-    sortOrder?: "ASC";
+    minAge?: number;
+    maxAge?: number;
+    minFameRating?: number;
+    maxFameRating?: number;
+    minDistance?: number;
+    maxDistance?: number;
   }
 ) => {
-  // Base user data query
   const userDataQuery = `
     WITH user_data AS (
       SELECT 
@@ -219,7 +189,6 @@ export const getProfilesToSwipe = async (
     ),
   `;
 
-  // Base matching query
   const baseMatchQuery = `
     potential_matches AS (
       SELECT 
@@ -253,7 +222,6 @@ export const getProfilesToSwipe = async (
       AND u.profile_completed = true
   `;
 
-  // Blocking and matching filters
   const blockMatchFilter = `
     AND NOT EXISTS (
       SELECT 1 FROM blocks 
@@ -267,7 +235,6 @@ export const getProfilesToSwipe = async (
     )
   `;
 
-  // Sexual preferences filter
   const preferencesFilter = `
     AND (
       CASE 
@@ -289,56 +256,49 @@ export const getProfilesToSwipe = async (
   const params: any[] = [userId];
   let paramCounter = 2;
 
-  if (filters?.ageRange) {
+  if (filters?.minAge && filters?.maxAge) {
     dynamicFilters += ` AND age BETWEEN $${paramCounter} AND $${
       paramCounter + 1
     }`;
-    params.push(filters.ageRange[0], filters.ageRange[1]);
+    params.push(filters.minAge, filters.maxAge);
     paramCounter += 2;
   }
 
-  if (filters?.fameRange) {
+  if (filters?.minFameRating && filters?.maxFameRating) {
     dynamicFilters += ` AND fame_rating BETWEEN $${paramCounter} AND $${
       paramCounter + 1
     }`;
-    params.push(filters.fameRange[0], filters.fameRange[1]);
+    params.push(filters.minFameRating, filters.maxFameRating);
     paramCounter += 2;
   }
 
-  // Final selection with location and tag filters
+  if (filters?.minDistance && filters?.maxDistance) {
+    dynamicFilters += ` AND distance BETWEEN $${paramCounter} AND $${
+      paramCounter + 1
+    }`;
+    params.push(filters.minDistance, filters.maxDistance);
+    paramCounter += 2;
+  }
+
   let finalSelection = `
     SELECT * FROM potential_matches
     WHERE 1=1
   `;
 
-  if (filters?.locationRange) {
-    finalSelection += ` AND distance BETWEEN $${paramCounter} AND $${
-      paramCounter + 1
-    }`;
-    params.push(filters.locationRange[0], filters.locationRange[1]);
-    paramCounter += 2;
-  }
+  const sorting = `
+    ORDER BY
+      CASE
+        WHEN $${paramCounter} = 'distance' THEN distance
+        WHEN $${paramCounter} = 'age' THEN age::float
+        WHEN $${paramCounter} = 'fame_rating' THEN fame_rating::float
+        WHEN $${paramCounter} = 'common_tags' THEN common_tags_count::float
+        ELSE distance
+      END ASC,
+      distance ASC
+    LIMIT 50;
+  `;
+  params.push("distance");
 
-  // if (filters?.withCommonTags) {
-  //   finalSelection += ` AND common_tags_count > 0`;
-  // }
-
-  // Sorting
-  // const sorting = `
-  //   ORDER BY
-  //     CASE
-  //       WHEN $${paramCounter} = 'distance' THEN distance
-  //       WHEN $${paramCounter} = 'age' THEN age::float
-  //       WHEN $${paramCounter} = 'fame_rating' THEN fame_rating::float
-  //       WHEN $${paramCounter} = 'common_tags' THEN common_tags_count::float
-  //       ELSE distance
-  //     END ${filters?.sortOrder || 'ASC'},
-  //     distance ASC
-  //   LIMIT 50
-  // `;
-  // params.push(filters?.sortBy || 'distance');
-
-  // Combine all query parts
   const fullQuery = `
     ${userDataQuery}
     ${baseMatchQuery}
@@ -347,7 +307,7 @@ export const getProfilesToSwipe = async (
     ${dynamicFilters}
     )
     ${finalSelection}
-    LIMIT 50;
+    ${sorting}
   `;
   console.log(fullQuery);
   console.log("params", params);

@@ -152,9 +152,12 @@ export const getUsersProfileToSwipe = async (
 ) => {
   try {
     const userId: string = req.user?.id;
-    // const ageRange: number[] = req.query.ageRange
-    // const locationRange: number[] = req.query.locationRange
-    // const fameRange: number[] = req.query.fameRange
+    const minAge: number = parseInt(req.query.minAge as string);
+    const maxAge: number = parseInt(req.query.maxAge as string);
+    const minDistance: number = parseInt(req.query.minDistance as string);
+    const maxDistance: number = parseInt(req.query.maxDistance as string);
+    const minFameRating: number = parseInt(req.query.minFame as string);
+    const maxFameRating: number = parseInt(req.query.maxFame as string);
 
     if (!userId) {
       return res.status(401).json({
@@ -167,12 +170,12 @@ export const getUsersProfileToSwipe = async (
 
     const usersProfiles: UserProfilesToSwipeDto[] =
       await matchService.getProfilesToSwipe(userId, {
-        ageRange: [18, 42],
-        locationRange: [10, 100],
-        fameRange: [0, 12], // km
-        withCommonTags: true,
-        sortBy: "age",
-        sortOrder: "ASC",
+        minAge: minAge,
+        maxAge: maxAge,
+        minFameRating: minFameRating,
+        maxFameRating: maxFameRating,
+        minDistance: minDistance,
+        maxDistance: maxDistance,
       });
     //TODO: filter the users based on the user's specs
     //TODO: add functions for that
