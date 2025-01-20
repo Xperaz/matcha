@@ -101,8 +101,8 @@ const ProfileBasicInfo = () => {
           </section>
           <section className="flex flex-col mx-4">
             <h3 className="text-lg font-bold pb-2">Credentials</h3>
-            <EmailSection email={user.email} />
-            <PasswordSection />
+            <EmailSection email={user.email} is_google={user.is_google} />
+            <PasswordSection is_google={user.is_google} />
           </section>
           <section className="mx-4 w-full">
             <h3 className="text-lg font-bold pb-4">Images</h3>

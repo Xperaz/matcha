@@ -83,8 +83,8 @@ export function Swiper() {
                   </h2>
                   <span className="text-xl">{user.age}</span>
                 </div>
-                <p className="mt-2 text-white/90 line-clamp-2">
-                  {user.biography}
+                <p className="mt-2 ml-2 text-white/90 line-clamp-2">
+                  Away {user.distance} km
                 </p>
               </div>
             </div>

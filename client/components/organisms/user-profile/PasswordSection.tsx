@@ -10,6 +10,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -29,7 +35,7 @@ import {
 import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
 
-const PasswordSection = () => {
+const PasswordSection = ({ is_google }: { is_google: boolean }) => {
   const [open, setOpen] = useState(false);
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -89,15 +95,32 @@ const PasswordSection = () => {
         <Dialog
           open={open}
           onOpenChange={(newOpen) => {
-            setOpen(newOpen);
-            if (!newOpen) {
-              form.reset();
+            if (!is_google) {
+              setOpen(newOpen);
+              if (!newOpen) {
+                form.reset();
+              }
             }
           }}
         >
-          <DialogTrigger asChild>
-            <Button className="h-8 px-2 text-sm">Edit Password</Button>
-          </DialogTrigger>
+          {is_google ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button className="h-8 px-2 text-sm opacity-50">
+                    Edit Password
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Password cannot be updated for google accounts</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : (
+            <DialogTrigger asChild>
+              <Button className="h-8 px-2 text-sm">Edit Password</Button>
+            </DialogTrigger>
+          )}
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Edit Password</DialogTitle>

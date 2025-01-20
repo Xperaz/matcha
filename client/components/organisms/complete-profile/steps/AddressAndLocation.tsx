@@ -49,7 +49,7 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
   useEffect(() => {
     if (lat && long) {
       updateFormValues({
-        longtitude: long,
+        longitude: long,
         latitude: lat,
       });
     }

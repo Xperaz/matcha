@@ -14,7 +14,7 @@ CREATE TABLE users (
     biography VARCHAR(500),
     profile_picture VARCHAR(500),
     latitude DECIMAL(9,6),
-    longtitude DECIMAL(9,6),
+    longitude DECIMAL(9,6),
     city VARCHAR(100),
     country VARCHAR(100),
     fame_rating INT  DEFAULT 0,

@@ -13,5 +13,6 @@ export interface UserProfileDTO {
     country: string;
     city: string;
     interests: string[];
+    is_google: boolean;
   }
   

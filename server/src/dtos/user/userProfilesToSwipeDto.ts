@@ -1,10 +1,13 @@
 export interface UserProfilesToSwipeDto {
-    id: string;
-    first_name: string;
-    last_name: string;
-    profile_picture: string;
-    longtitude: number;
-    latitude: number;
-    age: number;
-    biography: string;
-};
+  id: string;
+  first_name: string;
+  last_name: string;
+  profile_picture: string;
+  longitude: number;
+  latitude: number;
+  age: number;
+  biography: string;
+  gender: string;
+  fame_rating: number;
+  distance: number;
+}

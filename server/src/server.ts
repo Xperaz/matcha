@@ -13,7 +13,6 @@ import matchRoutes from "./routes/match.routes";
 import imageRoutes from "./routes/image.routes";
 import seedDataBase from "./routes/seed.routes";
 import profileRoutes from "./routes/profile.routes";
-import googleRoutes from "./routes/google.routes";
 import chatRoutes from "./routes/chat.routes";
 import authorizeUserSocket, {
   AuthenticatedSocket,
@@ -60,7 +59,6 @@ app.use("/api/match", matchRoutes);
 app.use("/api/image", imageRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/seed", seedDataBase);
-app.use("/api/google", googleRoutes);
 app.use("/api/chat", chatRoutes);
 
 io.use(authorizeUserSocket);

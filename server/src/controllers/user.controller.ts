@@ -13,8 +13,6 @@ export const completeProfile = async (
   req: AuthenticatedRequest,
   res: Response
 ): Promise<Response> => {
-  console.log(req.user);
-
   try {
     const userData: completeProfileReqeuest = req.body;
     const userId: any = req.user?.id;
@@ -30,7 +28,7 @@ export const completeProfile = async (
       !userData.biography ||
       !userData.interests ||
       !userData.latitude ||
-      !userData.longtitude ||
+      !userData.longitude ||
       !userData.preferences ||
       !userData.pictures ||
       !userData.profile_picture ||
@@ -79,7 +77,7 @@ export const completeProfile = async (
           UPDATE users
           SET biography = $1,
               latitude = $2,
-              longtitude = $3,
+              longitude = $3,
               profile_completed = true,
               sexual_preferences = $4,
               profile_picture = $5,
@@ -90,7 +88,7 @@ export const completeProfile = async (
     await query(insertUserInfoQuery, [
       userData.biography,
       userData.latitude,
-      userData.longtitude,
+      userData.longitude,
       userData.preferences,
       profilePictureUrl,
       userData.city,
@@ -130,10 +128,6 @@ export const completeProfile = async (
     });
   }
 };
-
-// export const updateProfile = async (req: AuthenticatedRequest, res: Response): Promise<Response> => {
-// // TODO: Implement updateProfile
-// };
 
 export const updateEmail = async (
   req: AuthenticatedRequest,
@@ -218,7 +212,6 @@ export const updateEmail = async (
       success: true,
       message: "Email updated successfully",
     });
-
   } catch (ex) {
     console.error("Error updating email:", ex);
     return res.status(500).json({
@@ -250,7 +243,7 @@ export const updatePassword = async (
       });
     }
 
-    if (newPassword !== confirmPassword){
+    if (newPassword !== confirmPassword) {
       return res.status(400).json({
         success: false,
         message: "pssword don't match",
@@ -307,7 +300,6 @@ export const updatePassword = async (
       success: true,
       message: "Password updated successfully",
     });
-    
   } catch (ex) {
     console.error("Error updating password:", ex);
     return res.status(500).json({
