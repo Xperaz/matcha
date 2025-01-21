@@ -2,17 +2,21 @@ import { axiosInstance } from "../config";
 
 import { API_ENDPOINTS } from "../endpoints";
 
-export const getMyProfile = () => axiosInstance.get(API_ENDPOINTS.myProfile);
-export const getUserProfile = (userId: string) =>
-  axiosInstance.get(`${API_ENDPOINTS.userProfile}/${userId}`);
-export const updateEmail = (email: string, password: string) =>
-  axiosInstance.put(API_ENDPOINTS.updateEmail, { email, password });
-export const updatePassword = (
+export const getMyProfile = async () =>
+  await axiosInstance.get(API_ENDPOINTS.myProfile);
+
+export const getUserProfile = async (userId: string) =>
+  await axiosInstance.get(`${API_ENDPOINTS.userProfile}/${userId}`);
+
+export const updateEmail = async (email: string, password: string) =>
+  await axiosInstance.put(API_ENDPOINTS.updateEmail, { email, password });
+
+export const updatePassword = async (
   oldPassword: string,
   newPassword: string,
   confirmPassword: string,
 ) =>
-  axiosInstance.put(API_ENDPOINTS.updatePassword, {
+  await axiosInstance.put(API_ENDPOINTS.updatePassword, {
     oldPassword,
     newPassword,
     confirmPassword,

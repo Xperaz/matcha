@@ -10,7 +10,7 @@ import { getProfilesToSwipeReq } from "@/services/requests/home";
 import { UserSwipeCard } from "@/types/userSwipeCard";
 
 export function Swiper() {
-  const { swipeRight, swipeLeft } = useSwipeCardContext();
+  const { swipeRight, swipeLeft, filters } = useSwipeCardContext();
   const [usersCount, setUsersCount] = useState(0);
   const [userProfiles, setUserProfiles] = useState<UserSwipeCard[]>([]);
   const [noMoreProfiles, setNoMoreProfiles] = useState(false);
@@ -18,14 +18,20 @@ export function Swiper() {
   const { data, isLoading, isSuccess, refetch } = useQuery({
     queryKey: [QUERY_KEYS.profileData],
     queryFn: async () => {
-      const retData = await getProfilesToSwipeReq();
+      const retData = await getProfilesToSwipeReq(filters);
       return retData.data.data;
     },
   });
 
   useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters]);
+
+  useEffect(() => {
     if (data) {
       setUserProfiles(data);
+      setNoMoreProfiles(false);
     }
     if (data && data.length === 0) {
       setNoMoreProfiles(true);

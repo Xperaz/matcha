@@ -3,7 +3,7 @@ import { axiosInstance } from "../config";
 import { API_ENDPOINTS } from "../endpoints";
 import { AxiosResponse } from "axios";
 
-export const completeProfile = (
+export const completeProfile = async (
   data: CompleteFormData,
 ): Promise<AxiosResponse> =>
-  axiosInstance.post(API_ENDPOINTS.completeProfile, data);
+  await axiosInstance.post(API_ENDPOINTS.completeProfile, data);
