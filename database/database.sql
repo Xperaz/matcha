@@ -75,6 +75,17 @@ CREATE TABLE reports (
     FOREIGN KEY (reporter_id) REFERENCES users(id) 
 );
 
+CREATE TABLE notifications (
+    id BIGSERIAL PRIMARY KEY,
+    message TEXT NOT NULL,
+    sender_id uuid,
+    receiver_id uuid,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (sender_id) REFERENCES users(id) ,
+    FOREIGN KEY (receiver_id) REFERENCES users(id) 
+);
+
 
 
 CREATE TABLE blocks (

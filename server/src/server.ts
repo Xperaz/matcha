@@ -14,6 +14,7 @@ import imageRoutes from "./routes/image.routes";
 import seedDataBase from "./routes/seed.routes";
 import profileRoutes from "./routes/profile.routes";
 import chatRoutes from "./routes/chat.routes";
+import notifRoutes from "./routes/notif.routes";
 import authorizeUserSocket, {
   AuthenticatedSocket,
 } from "./middlewares/socketAuthrization";
@@ -60,6 +61,7 @@ app.use("/api/image", imageRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/seed", seedDataBase);
 app.use("/api/chat", chatRoutes);
+app.use("/api/notif", notifRoutes);
 
 io.use(authorizeUserSocket);
 io.on("connection", (socket: AuthenticatedSocket) => {});
