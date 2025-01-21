@@ -301,8 +301,8 @@ export const getProfilesToSwipe = async (
   //   ELSE distance
   // END ASC,
   const sorting = `
-    ORDER BY distance
-    LIMIT 50;
+    ORDER BY distance ASC
+    LIMIT 10;
   `;
   // params.push("distance");
 
