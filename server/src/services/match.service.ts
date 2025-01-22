@@ -302,7 +302,7 @@ export const getProfilesToSwipe = async (
   // END ASC,
   const sorting = `
     ORDER BY distance ASC
-    LIMIT 10;
+    LIMIT 50;
   `;
   // params.push("distance");
 
@@ -316,8 +316,8 @@ export const getProfilesToSwipe = async (
     ${finalSelection}
     ${sorting}
   `;
-  console.log(fullQuery);
-  console.log("params", params);
+  // console.log(fullQuery);
+  // console.log("params", params);
 
   try {
     const { rows } = await query(fullQuery, params);

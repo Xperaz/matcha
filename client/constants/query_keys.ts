@@ -6,4 +6,5 @@ export const QUERY_KEYS = {
   profileData: "profileData",
   matches: "matches",
   images: "images",
+  notifications: "notifications",
 };

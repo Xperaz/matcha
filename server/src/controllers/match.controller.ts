@@ -4,6 +4,7 @@ import { query } from "../config/db";
 import { UserMatchesDto } from "../dtos/user/userMatchesDto";
 import { UserProfilesToSwipeDto } from "../dtos/user/userProfilesToSwipeDto";
 import * as matchService from "../services/match.service";
+import { createNotificationAndSendMessage } from "../services/notification.service";
 
 export const swipeLeft = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -83,15 +84,28 @@ export const swipeRight = async (req: AuthenticatedRequest, res: Response) => {
 
     if (mutualLike === true) {
       // create a match
-
       await matchService.insertMatch(userId, receiverId);
-      //TODO: send notification to both users and add it to the notification table
+      await createNotificationAndSendMessage(
+        userId,
+        receiverId,
+        "is your match now! Say hi to start a conversation."
+      );
+      await createNotificationAndSendMessage(
+        receiverId,
+        userId,
+        "is your match now! Say hi to start a conversation."
+      );
       return res.status(200).json({
         success: true,
         message: "Match created successfully",
       });
     }
     await matchService.insertSwipe(userId, receiverId, "LIKED");
+    await createNotificationAndSendMessage(
+      userId,
+      receiverId,
+      "liked you! check them out."
+    );
 
     return res.status(200).json({
       success: true,
@@ -152,7 +166,8 @@ export const getUsersProfileToSwipe = async (
 ) => {
   try {
     const userId: string = req.user?.id;
-    const { ageRange, distanceRange, fameRatingRange, commonInterests } = req.query;
+    const { ageRange, distanceRange, fameRatingRange, commonInterests } =
+      req.query;
 
     if (!userId) {
       return res.status(401).json({
@@ -188,7 +203,7 @@ export const getUsersProfileToSwipe = async (
         commonInterests: commonInterestsCount,
       });
 
-      console.log("usersProfiles", usersProfiles.length);
+    console.log("usersProfiles", usersProfiles.length);
 
     return res.status(200).json({
       success: true,
@@ -290,6 +305,7 @@ export const unlikeUser = async (req: AuthenticatedRequest, res: Response) => {
     }
 
     await matchService.unlike(userId, receiverId);
+    await createNotificationAndSendMessage(userId, receiverId, "unliked you.");
 
     return res.status(200).json({
       success: true,

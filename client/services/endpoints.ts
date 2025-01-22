@@ -21,4 +21,5 @@ export const API_ENDPOINTS = {
   uploadProfileImage: `${BASE_URL}image/profile-picture`,
   updateEmail: `${BASE_URL}user/update-email`,
   updatePassword: `${BASE_URL}user/update-password`,
+  notifications: `${BASE_URL}notif`,
 };
