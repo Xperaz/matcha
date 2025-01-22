@@ -39,7 +39,7 @@ const Filters = () => {
           label={(value) => value}
           value={distanceRange}
           onValueChange={setDistanceRange}
-          min={1}
+          min={0}
           max={500}
           step={1}
         />
