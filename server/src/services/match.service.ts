@@ -16,7 +16,7 @@ const mapUserMatches = (rows: any[]): UserMatchesDto[] => {
   });
 };
 
-const mapUserProfilesToSwipe = (rows: any[]): UserProfilesToSwipeDto[] => {
+export const mapUserProfilesToSwipe = (rows: any[]): UserProfilesToSwipeDto[] => {
   return rows.map((row) => {
     const user: UserProfilesToSwipeDto = {
       id: row.id,
@@ -244,14 +244,7 @@ export const getProfilesToSwipe = async (
         ELSE u.gender::text = (SELECT sexual_preferences FROM user_data)::text
       END
     )
-    AND (
-      CASE 
-        WHEN u.sexual_preferences = 'BOTH' 
-        OR u.sexual_preferences IS NULL THEN true
-        ELSE u.sexual_preferences::text = (SELECT gender FROM user_data)::text
-      END
-    )
-  `;
+    `;
 
   let dynamicFilters = "";
   const params: any[] = [userId];
