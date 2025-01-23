@@ -4,7 +4,7 @@ import { query } from "../config/db";
 import { UserMatchesDto } from "../dtos/user/userMatchesDto";
 import { UserProfilesToSwipeDto } from "../dtos/user/userProfilesToSwipeDto";
 import * as matchService from "../services/match.service";
-import { createNotificationAndSendMessage } from "../services/notification.service";
+import { createNotificationAndSendMessage } from "../services/notif.service";
 
 export const swipeLeft = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -166,8 +166,7 @@ export const getUsersProfileToSwipe = async (
 ) => {
   try {
     const userId: string = req.user?.id;
-    const { ageRange, distanceRange, fameRatingRange, commonInterests } =
-      req.query;
+    const { ageRange, distanceRange, fameRatingRange, commonInterests } = req.query;
 
     if (!userId) {
       return res.status(401).json({
