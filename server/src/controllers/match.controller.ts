@@ -4,7 +4,7 @@ import { query } from "../config/db";
 import { UserMatchesDto } from "../dtos/user/userMatchesDto";
 import { UserProfilesToSwipeDto } from "../dtos/user/userProfilesToSwipeDto";
 import * as matchService from "../services/match.service";
-import { createNotificationAndSendMessage } from "../services/notification.service";
+import { createNotificationAndSendMessage } from "../services/notif.service";
 
 export const swipeLeft = async (req: AuthenticatedRequest, res: Response) => {
   try {
