@@ -78,9 +78,8 @@ export async function signup(req: Request, res: Response): Promise<Response> {
 }
 
 export async function signin(req: Request, res: Response): Promise<Response> {
-  const userData: userSigninRequest = req.body;
-
   try {
+    const userData: userSigninRequest = req.body;
     if (!userData.email || !userData.password) {
       return res.status(400).json({
         success: false,
@@ -127,15 +126,17 @@ export async function signin(req: Request, res: Response): Promise<Response> {
   }
 }
 
-
 export const googleOauthHandler = async (req: Request, res: Response) => {
   try {
     const code: string = req.query.code as string;
-    const { id_token, access_token } = await googleService.getGoogleAauthTokens({ code });
-    const googleUser: googleService.GoogleUserInfo = await googleService.getGoogleUser({
-      id_token,
-      access_token,
-    });
+    const { id_token, access_token } = await googleService.getGoogleAauthTokens(
+      { code }
+    );
+    const googleUser: googleService.GoogleUserInfo =
+      await googleService.getGoogleUser({
+        id_token,
+        access_token,
+      });
 
     const token = await googleService.generateToken(googleUser);
 
@@ -160,4 +161,131 @@ export const singout = async (
     success: true,
     message: "Signout successful",
   });
+};
+
+export const forgotPassword = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({
+      success: false,
+      message: "Email is required",
+    });
+  }
+
+  try {
+    const user = await authService.getUserByEmail(email);
+
+    if (!user || user.is_google === true) {
+      return res.status(404).json({
+        success: true,
+        message: "Reset password email sent",
+      });
+    }
+    const resetToken: string = await authService.generateResetToken(user.id);
+
+    await authService.sendResetPasswordEmail(user.email, resetToken);
+
+    return res.status(200).json({
+      success: true,
+      message: "Reset password email sent",
+    });
+  } catch (error) {
+    console.error("Error from reset password:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error from reset password",
+    });
+  }
+};
+
+export const resetPassword = async (
+  req: Request,
+  res: Response
+): Promise<Response> => {
+  try {
+    const { token, password } = req.body;
+
+    if (!token || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Token and password are required",
+      });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters long",
+      });
+    }
+
+    const validToken: {
+      userId: string;
+      tokenId: string;
+    } | null = await authService.verifyResetToken(token);
+
+    if (!validToken) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid token",
+      });
+    }
+
+    await authService.updatePassword(
+      validToken.userId,
+      validToken.tokenId,
+      password
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    console.error("Error from reset password:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error from reset password",
+    });
+  }
+};
+
+export const getResetPassword = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "Token is required",
+      });
+    }
+
+    const validToken: {
+      userId: string;
+      tokenId: string;
+    } | null = await authService.verifyResetToken(token as string);
+
+    if (!validToken) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid token",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Valid token",
+    });
+  } catch (error) {
+    console.error("Error from get reset password:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error from get reset password",
+    });
+  }
 };
