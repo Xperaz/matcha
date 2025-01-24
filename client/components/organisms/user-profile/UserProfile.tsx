@@ -7,12 +7,14 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants/query_keys";
 import { getMyProfile } from "@/services/requests/profile";
-import { Loader } from "lucide-react";
+import { Loader, UserRoundPen } from "lucide-react";
 import avatar from "@/public/images/avatar.png";
 import EmailSection from "./EmailSection";
 import PasswordSection from "./PasswordSection";
+import EditProfile from "./EditProfile";
 
 const ProfileBasicInfo = () => {
+  const [isEditProfilModalOpen, setIsEditProfilModalOpen] = useState(false);
   const [user, setUser] = useState<IUserType>({} as IUserType);
 
   const { data, isLoading, isSuccess } = useQuery({
@@ -31,6 +33,12 @@ const ProfileBasicInfo = () => {
 
   return (
     <>
+      {isEditProfilModalOpen && (
+        <EditProfile
+          userData={user}
+          closeModal={() => setIsEditProfilModalOpen(false)}
+        />
+      )}
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
           <Loader />
@@ -40,13 +48,21 @@ const ProfileBasicInfo = () => {
       {!isLoading && (
         <div className="flex py-4 flex-col gap-8 justify-center mx-auto max-w-[1000px]">
           <section className="flex flex-col items-center justify-center">
-            <div className="w-32 h-32 rounded-full bg-center bg-cover overflow-hidden">
-              <Image
-                alt="profile picture"
-                src={user.profile_picture || avatar}
-                width={300}
-                height={300}
-              />
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full bg-center bg-cover overflow-hidden">
+                <Image
+                  alt="profile picture"
+                  src={user.profile_picture || avatar}
+                  width={300}
+                  height={300}
+                />
+              </div>
+              <div
+                onClick={() => setIsEditProfilModalOpen(true)}
+                className="absolute bottom-0 right-0 bg-blue-400 rounded-full p-1 flex justify-center items-center text-center"
+              >
+                <UserRoundPen size={24} color="#fff" />
+              </div>
             </div>
             <h2 className="text-lg font-bold">
               {user.first_name} {user.last_name}

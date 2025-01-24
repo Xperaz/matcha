@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { z } from "zod";
 
-enum Preference {
+export enum Preference {
   MALE = "MALE",
   FEMALE = "FEMALE",
   BOTH = "BOTH",
