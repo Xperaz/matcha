@@ -6,6 +6,7 @@ import {
 import { userSigninRequest } from "../dtos/requests/userSigninRequest";
 import * as authService from "../services/auth.service";
 import * as googleService from "../services/google.service";
+import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 
 export async function signup(req: Request, res: Response): Promise<Response> {
   try {
@@ -180,12 +181,25 @@ export const forgotPassword = async (
     const user = await authService.getUserByEmail(email);
 
     if (!user || user.is_google === true) {
-      return res.status(404).json({
+      return res.status(200).json({
         success: true,
         message: "Reset password email sent",
       });
     }
-    const resetToken: string = await authService.generateResetToken(user.id);
+
+    const reateLimit = await authService.checkRateLimit(user.id, "password_reset");
+
+    if (reateLimit) {
+      return res.status(200).json({
+        success: false,
+        message: "a reset password email already sent, please check your email",
+      });
+    }
+
+    const resetToken: string = await authService.generateToken(
+      user.id,
+      "password_reset"
+    );
 
     await authService.sendResetPasswordEmail(user.email, resetToken);
 
@@ -226,7 +240,7 @@ export const resetPassword = async (
     const validToken: {
       userId: string;
       tokenId: string;
-    } | null = await authService.verifyResetToken(token);
+    } | null = await authService.verifyToken(token as string, "password_reset");
 
     if (!validToken) {
       return res.status(400).json({
@@ -268,7 +282,7 @@ export const getResetPassword = async (req: Request, res: Response) => {
     const validToken: {
       userId: string;
       tokenId: string;
-    } | null = await authService.verifyResetToken(token as string);
+    } | null = await authService.verifyToken(token as string, "password_reset");
 
     if (!validToken) {
       return res.status(400).json({
@@ -286,6 +300,99 @@ export const getResetPassword = async (req: Request, res: Response) => {
     return res.status(500).json({
       success: false,
       message: "Error from get reset password",
+    });
+  }
+};
+
+export const verifyEmail = async (req: Request, res: Response) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "Token is required",
+      });
+    }
+
+    const validToken: {
+      userId: string;
+      tokenId: string;
+    } | null = await authService.verifyToken(
+      token as string,
+      "email_verification"
+    );
+
+    if (!validToken) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid token",
+      });
+    }
+
+    await authService.verifyEmail(validToken.userId, validToken.tokenId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Email verified",
+    });
+  } catch (error) {
+    console.error("Error from verify email:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error from verify email",
+    });
+  }
+};
+
+export const sendVerificationEmail = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    const { email, id } = req.user;
+
+    if (!email || !id) {
+      return res.status(400).json({
+        success: false,
+        message: "user don't have email",
+      });
+    }
+
+    const user = await authService.getUserByEmail(email);
+
+    if (!user || user.is_google === true || user.email_verified === true) {
+      return res.status(200).json({
+        success: true,
+        message: "Verification email sent",
+      });
+    }
+
+    const reateLimit = await authService.checkRateLimit(user.id, "email_verification");
+
+    if (reateLimit) {
+      return res.status(200).json({
+        success: false,
+        message: "an email verification already sent, please check your email",
+      });
+    }
+
+    const token: string = await authService.generateToken(
+      id,
+      "email_verification"
+    );
+
+    await authService.sendVerificationEmail(email, token);
+
+    return res.status(200).json({
+      success: true,
+      message: "Verification email sent",
+    });
+  } catch (error) {
+    console.error("Error from send verification email:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error from send verification email",
     });
   }
 };
