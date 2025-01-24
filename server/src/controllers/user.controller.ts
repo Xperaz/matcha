@@ -8,6 +8,7 @@ import {
 } from "../dtos/requests/completeProfileRequest";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import bcrypt from "bcryptjs";
+import { updateProfileValues } from "../services/user.service";
 
 export const completeProfile = async (
   req: AuthenticatedRequest,
@@ -313,33 +314,13 @@ export const updateProfile = async (
   req: AuthenticatedRequest,
   res: Response
 ) => {
-  const userId = req.user?.id;
-  const { first_name, last_name, biography, interests } = req.body;
-
   try {
     await query("BEGIN");
 
-    if (first_name || last_name || biography) {
-      const updates = [];
-      const values = [];
-      let paramCounter = 1;
+    const { userId, updates, values, paramCounter, interests } =
+      await updateProfileValues(req, res);
 
-      if (first_name) {
-        updates.push(`first_name = $${paramCounter}`);
-        values.push(first_name);
-        paramCounter++;
-      }
-      if (last_name) {
-        updates.push(`last_name = $${paramCounter}`);
-        values.push(last_name);
-        paramCounter++;
-      }
-      if (biography) {
-        updates.push(`biography = $${paramCounter}`);
-        values.push(biography);
-        paramCounter++;
-      }
-
+    if (updates.length > 0 || interests) {
       values.push(userId);
       const updateUserQuery = `
         UPDATE users
@@ -349,50 +330,39 @@ export const updateProfile = async (
       await query(updateUserQuery, values);
     }
 
-    if (interests && Array.isArray(interests)) {
-      await query("DELETE FROM interests WHERE user_id = $1", [userId]);
-
-      if (interests.length > 0) {
-        for (const interest of interests) {
-          const insertTagResult = await query(
-            `INSERT INTO interest_tags (tag) 
-             VALUES ($1) 
-             ON CONFLICT (tag) DO UPDATE SET tag = EXCLUDED.tag 
-             RETURNING id`,
-            [interest]
-          );
-
-          const tagId = insertTagResult.rows[0].id;
-
-          await query(
-            "INSERT INTO interests (user_id, interest_id) VALUES ($1, $2)",
-            [userId, tagId]
-          );
+    if (interests && Array.isArray(interests) && interests.length > 0) {
+      for (const interest of interests) {
+        if (!isValidInterest(interest)) {
+          return res.status(400).json({
+            error: "Invalid interests",
+            invalidInterests: [interest],
+          });
         }
       }
     }
 
-    const finalResult = await query(
-      `
-      SELECT 
-        u.*,
-        ARRAY_AGG(it.tag) FILTER (WHERE it.tag IS NOT NULL) as interests
-      FROM users u
-      LEFT JOIN interests i ON u.id = i.user_id
-      LEFT JOIN interest_tags it ON i.interest_id = it.id
-      WHERE u.id = $1
-      GROUP BY u.id
-    `,
-      [userId]
-    );
+    if (interests && Array.isArray(interests) && interests.length > 0) {
+      await query("DELETE FROM interests WHERE user_id = $1", [userId]);
+      for (const interest of interests) {
+        const insertTagResult = await query(
+          `SELECT id FROM interest_tags WHERE tag = $1`,
+          [interest]
+        );
+
+        const tagId = insertTagResult.rows[0].id;
+
+        await query(
+          "INSERT INTO interests (user_id, interest_id) VALUES ($1, $2)",
+          [userId, tagId]
+        );
+      }
+    }
 
     await query("COMMIT");
-    res.json(finalResult.rows[0]);
+    res.status(200).json({ message: "Profile updated successfully" });
   } catch (error) {
     await query("ROLLBACK");
     console.error("Update user profile error:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
-
-// TODO: add update for rest field
