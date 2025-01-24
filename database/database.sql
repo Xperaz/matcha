@@ -116,6 +116,15 @@ CREATE TABLE pictures (
     FOREIGN KEY (user_id) REFERENCES users(id) 
 );
 
+CREATE TABLE password_reset_tokens (
+    id BIGSERIAL PRIMARY KEY,
+    user_id uuid,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    token_expiration TIMESTAMP NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES users(id) 
+);
+
 
 CREATE INDEX idx_messages_sender_receiver ON messages(sender_id, receiver_id);
 CREATE INDEX idx_likes_initiator_receiver ON likes(initiator_id, receiver_id);
