@@ -166,7 +166,8 @@ export const getUsersProfileToSwipe = async (
 ) => {
   try {
     const userId: string = req.user?.id;
-    const { ageRange, distanceRange, fameRatingRange, commonInterests } = req.query;
+    const { ageRange, distanceRange, fameRatingRange, commonInterests } =
+      req.query;
 
     if (!userId) {
       return res.status(401).json({
@@ -191,6 +192,20 @@ export const getUsersProfileToSwipe = async (
       .map(Number);
     const commonInterestsCount: number = parseInt(commonInterests as string);
 
+    const validFilters: boolean = matchService.validateSearchFilters(
+      ageRangeArray,
+      distanceRangeArray,
+      fameRatingRangeArray,
+      commonInterestsCount
+    );
+
+    if (!validFilters) {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request: Invalid search parameters",
+      });
+    }
+
     const usersProfiles: UserProfilesToSwipeDto[] =
       await matchService.getProfilesToSwipe(userId, {
         minAge: ageRangeArray[0],
@@ -201,8 +216,6 @@ export const getUsersProfileToSwipe = async (
         maxDistance: distanceRangeArray[1],
         commonInterests: commonInterestsCount,
       });
-
-    console.log("usersProfiles", usersProfiles.length);
 
     return res.status(200).json({
       success: true,
