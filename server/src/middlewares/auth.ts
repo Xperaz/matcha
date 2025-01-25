@@ -16,6 +16,7 @@ const mapUser = (dbResults: any): UserDTO => {
     profile_completed: dbResults.profile_completed,
     gender: dbResults.gender,
     sexual_preferences: dbResults.sexual_preferences,
+    profile_picture: dbResults.profile_picture,
   };
 
   return user;
@@ -29,7 +30,6 @@ export const protectRoutes = async (
   try {
     const token = req.cookies?.jwt;
     // const token = req.headers.authorization?.split(" ")[1];
-
 
     if (!token) {
       res.status(401).json({
@@ -52,7 +52,7 @@ export const protectRoutes = async (
       return;
     }
 
-    const getUserQuery = `SELECT id, first_name, last_name, email, biography, fame_rating, age, profile_completed, gender, sexual_preferences FROM users WHERE id = $1;`;
+    const getUserQuery = `SELECT id, first_name, last_name, email, biography, profile_picture, fame_rating, age, profile_completed, gender, sexual_preferences FROM users WHERE id = $1;`;
     const { rows } = await query(getUserQuery, [decoded.id]);
 
     if (rows.length === 0) {

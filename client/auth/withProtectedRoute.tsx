@@ -23,17 +23,17 @@ const withProtectedRoute = <P extends WithProtectedRouteProps>(
         router.replace("/login");
       }
 
-      // TODO: redirect to complete profile page if user profile is not completed
       if (isAuthenticated && !isLoading && userData) {
         setShowContent(true);
-        // if (!userData?.profile_completed) {
-        //   router.replace("/complete-profile");
-        // }
+        // TODO: redirect to verify email page if user email is not verified
+        // TODO: also if user email is not verified, should not redirect to complete profile page
+        if (!userData?.profile_completed) {
+          router.replace("/complete-profile");
+        }
       }
     }, [isAuthenticated, isLoading, router, userData]);
 
     if (isLoading || !showContent) {
-      // TODO: add animated Loader
       return (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-background/80 backdrop-blur-sm">
           <div className="flex flex-col items-center gap-2">

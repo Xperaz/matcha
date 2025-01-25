@@ -8,7 +8,7 @@ const Filters = () => {
   const [ageRange, setAgeRange] = useState([18, 100]);
   const [distanceRange, setDistanceRange] = useState([0, 500]);
   const [fameRatingRange, setFameRatingRange] = useState([1, 100]);
-  const [commonInterests, setCommonInterests] = useState([0, 5]);
+  const [commonInterests, setCommonInterests] = useState([0, 0]);
   const { setFilters } = useSwipeCardContext();
 
   const applyFilters = () => {
