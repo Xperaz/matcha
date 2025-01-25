@@ -76,5 +76,7 @@ export const updateProfileValues = async (
     paramCounter++;
   }
 
+  values.push(userId);
+
   return { userId, updates, values, paramCounter, interests };
 };

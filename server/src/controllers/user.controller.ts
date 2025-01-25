@@ -320,13 +320,13 @@ export const updateProfile = async (
     const { userId, updates, values, paramCounter, interests } =
       await updateProfileValues(req, res);
 
-    if (updates.length > 0 || interests) {
-      values.push(userId);
+    if (updates.length > 0) {
       const updateUserQuery = `
         UPDATE users
         SET ${updates.join(", ")}
         WHERE id = $${paramCounter}
       `;
+
       await query(updateUserQuery, values);
     }
 

@@ -5,10 +5,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"; // Import Select from your UI components
+} from "@/components/ui/select";
 import { INTERESTS } from "@/constants/interests";
 import { EditProfileSchemaType } from "@/schemas/EditProfileSchema";
-import { X } from "lucide-react"; // Don't forget to import X icon
+import { X } from "lucide-react";
 import React, { FC } from "react";
 import { Control, Controller, FieldErrors } from "react-hook-form";
 
@@ -30,15 +30,11 @@ const EditInterests: FC<PersonalInfoFormProps> = ({ errors, control }) => {
           <div className="space-y-2">
             <Select
               onValueChange={(value) => {
-                // Check if interest already exists
                 const exists = field.value?.includes(value);
 
-                // Check if we've reached the maximum of 10 interests
                 if (field.value && field.value.length >= 10) {
                   return;
                 }
-
-                // Add new interest if it doesn't exist
                 if (!exists) {
                   field.onChange([...(field.value || []), value]);
                 }
@@ -81,8 +77,6 @@ const EditInterests: FC<PersonalInfoFormProps> = ({ errors, control }) => {
                 </span>
               ))}
             </div>
-
-            {/* Show helper text for min/max selections */}
             <p className="text-sm text-gray-500">
               Select between 5 and 10 interests ({field.value?.length || 0}{" "}
               selected)

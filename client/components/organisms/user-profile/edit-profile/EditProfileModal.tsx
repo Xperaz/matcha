@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +20,7 @@ import EditIntrests from "./EditIntrests";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateProfile } from "@/services/requests/profile";
 import { QUERY_KEYS } from "@/constants/query_keys";
+import { toast } from "@/hooks/use-toast";
 
 interface EditProfileProps {
   user: IUserType;
@@ -36,12 +36,19 @@ const EditProfile: FC<EditProfileProps> = ({ user, onClose }) => {
   >({
     mutationFn: updateProfile,
     onSuccess: () => {
-      console.log("Profile updated successfully");
+      toast({
+        title: "Success",
+        description: "Profile updated successfully",
+      });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.profileData] });
       onClose();
     },
-    onError: (error) => {
-      console.error("Error updating profile: ", error);
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update profile",
+        variant: "destructive",
+      });
       onClose();
     },
   });
@@ -62,10 +69,8 @@ const EditProfile: FC<EditProfileProps> = ({ user, onClose }) => {
   });
 
   const onSubmit = (data: EditProfileSchemaType) => {
-    // Create an object to store only modified fields
     const updatedFields: Partial<EditProfileSchemaType> = {};
 
-    // Compare each field with original user data and add only changed fields
     if (data.first_name !== user.first_name) {
       updatedFields.first_name = data.first_name;
     }
@@ -84,11 +89,8 @@ const EditProfile: FC<EditProfileProps> = ({ user, onClose }) => {
     if (data.sexual_preferences !== user.sexual_preferences) {
       updatedFields.sexual_preferences = data.sexual_preferences;
     }
-    console.log("Updated fields: ", data.interests);
-
-    if (data.interests) {
-      const newInterests = data.interests.map((interest) => interest);
-      updatedFields.interests = newInterests;
+    if (data.interests !== user.interests) {
+      updatedFields.interests = data.interests;
     }
 
     updateProfileMutation(updatedFields);
