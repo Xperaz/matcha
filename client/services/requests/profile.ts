@@ -1,3 +1,4 @@
+import { EditProfileSchemaType } from "@/schemas/EditProfileSchema";
 import { axiosInstance } from "../config";
 
 import { API_ENDPOINTS } from "../endpoints";
@@ -21,3 +22,6 @@ export const updatePassword = async (
     newPassword,
     confirmPassword,
   });
+
+export const updateProfile = async (data: Partial<EditProfileSchemaType>) =>
+  axiosInstance.patch(API_ENDPOINTS.updateProfile, data);

@@ -11,7 +11,7 @@ import { Loader } from "lucide-react";
 import avatar from "@/public/images/avatar.png";
 import EmailSection from "./EmailSection";
 import PasswordSection from "./PasswordSection";
-import EditProfileModal from "./EditProfileModal";
+import EditProfileModal from "./edit-profile/EditProfileModal";
 
 const ProfileBasicInfo = () => {
   const [user, setUser] = useState<IUserType>({} as IUserType);

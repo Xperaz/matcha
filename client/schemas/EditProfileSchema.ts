@@ -41,11 +41,7 @@ const editProfileSchema = z.object({
   sexual_preferences: z.nativeEnum(Preference).optional(),
   gender: z.nativeEnum(genderEnum).optional(),
   interests: z
-    .array(
-      z.object({
-        value: z.string(),
-      }),
-    )
+    .array(z.string())
     .min(5, { message: "Please select at least 5 interests" })
     .max(10, { message: "You can't select more than 10 interests" })
     .optional(),
