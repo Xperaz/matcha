@@ -17,6 +17,7 @@ import { useMutation } from "@tanstack/react-query";
 import { completeProfile } from "@/services/requests/completeProfile";
 import { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 
 const steps = [
   {
@@ -42,21 +43,28 @@ export default function CompleteProfileForm() {
   const router = useRouter();
 
   const { mutate, isPending } = useMutation<
-    AxiosResponse, // success response type
-    Error, // error type
-    CompleteFormData, // variables type
-    unknown // context type
+    AxiosResponse,
+    Error,
+    CompleteFormData,
+    unknown
   >({
     mutationFn: completeProfile,
     onSuccess: () => {
-      // TODO: add toast success message
+      toast({
+        title: "Success",
+        description: "Profile completed successfully",
+      });
       reset();
       router.replace("/home");
     },
     onError: (err) => {
       // eslint-disable-next-line no-console
       console.error(err);
-      // TODO: add toast for error message
+      toast({
+        title: "Error",
+        description: "Failed to complete profile",
+        variant: "destructive",
+      });
     },
   });
 
