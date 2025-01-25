@@ -203,8 +203,6 @@ export const getUsersProfileToSwipe = async (
         commonInterests: commonInterestsCount,
       });
 
-    console.log("usersProfiles", usersProfiles.length);
-
     return res.status(200).json({
       success: true,
       message: "Users profiles retrieved successfully",
