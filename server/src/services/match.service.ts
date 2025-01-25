@@ -16,7 +16,9 @@ const mapUserMatches = (rows: any[]): UserMatchesDto[] => {
   });
 };
 
-const mapUserProfilesToSwipe = (rows: any[]): UserProfilesToSwipeDto[] => {
+export const mapUserProfilesToSwipe = (
+  rows: any[]
+): UserProfilesToSwipeDto[] => {
   return rows.map((row) => {
     const user: UserProfilesToSwipeDto = {
       id: row.id,
@@ -244,14 +246,7 @@ export const getProfilesToSwipe = async (
         ELSE u.gender::text = (SELECT sexual_preferences FROM user_data)::text
       END
     )
-    AND (
-      CASE 
-        WHEN u.sexual_preferences = 'BOTH' 
-        OR u.sexual_preferences IS NULL THEN true
-        ELSE u.sexual_preferences::text = (SELECT gender FROM user_data)::text
-      END
-    )
-  `;
+    `;
 
   let dynamicFilters = "";
   const params: any[] = [userId];
@@ -273,7 +268,6 @@ export const getProfilesToSwipe = async (
     paramCounter += 2;
   }
 
-  
   let finalSelection = `
   SELECT * FROM potential_matches
   WHERE 1=1
@@ -324,6 +318,47 @@ export const getProfilesToSwipe = async (
     return mapUserProfilesToSwipe(rows);
   } catch (error) {
     console.error("Error in getMatchingProfiles:", error);
+    throw error;
+  }
+};
+
+export const validateSearchFilters = (
+  ageRange: number[],
+  distanceRange: number[],
+  fameRatingRange: number[],
+  commonTags: number
+): boolean => {
+  try {
+    if (
+      ageRange.length !== 2 ||
+      distanceRange.length !== 2 ||
+      fameRatingRange.length !== 2 ||
+      commonTags < 0 ||
+      commonTags > 10
+    ) {
+      return false;
+    }
+    if (ageRange[0] < 18 || ageRange[1] > 100 || ageRange[0] > ageRange[1]) {
+      return false;
+    }
+    if (
+      distanceRange[0] < 0 ||
+      distanceRange[1] > 20000 ||
+      distanceRange[0] > distanceRange[1]
+    ) {
+      return false;
+    }
+    if (
+      fameRatingRange[0] < 0 ||
+      fameRatingRange[1] > 100 ||
+      fameRatingRange[0] > fameRatingRange[1]
+    ) {
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error in validateSearchFilters:", error);
     throw error;
   }
 };

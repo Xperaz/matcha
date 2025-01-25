@@ -8,7 +8,8 @@ CREATE TYPE like_status AS ENUM ('LIKED', 'MATCH', 'DISLIKED');
 CREATE TABLE users (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255),
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     biography VARCHAR(500),
@@ -25,7 +26,9 @@ CREATE TABLE users (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_active BOOLEAN DEFAULT FALSE,
-    profile_completed BOOLEAN DEFAULT FALSE
+    profile_completed BOOLEAN DEFAULT FALSE,
+    is_google BOOLEAN DEFAULT FALSE,
+    email_verified BOOLEAN DEFAULT FALSE,
 );
 
 CREATE TABLE messages (
@@ -112,6 +115,24 @@ CREATE TABLE pictures (
     user_id uuid,
     picture_url VARCHAR(255) NOT NULL,
     uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) 
+);
+
+CREATE TABLE password_reset_tokens (
+    id BIGSERIAL PRIMARY KEY,
+    user_id uuid,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    token_expiration TIMESTAMP NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES users(id) 
+);
+
+CREATE TABLE email_verification_tokens (
+    id BIGSERIAL PRIMARY KEY,
+    user_id uuid,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    token_expiration TIMESTAMP NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (user_id) REFERENCES users(id) 
 );
 

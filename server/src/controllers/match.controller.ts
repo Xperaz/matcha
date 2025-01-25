@@ -192,6 +192,20 @@ export const getUsersProfileToSwipe = async (
       .map(Number);
     const commonInterestsCount: number = parseInt(commonInterests as string);
 
+    const validFilters: boolean = matchService.validateSearchFilters(
+      ageRangeArray,
+      distanceRangeArray,
+      fameRatingRangeArray,
+      commonInterestsCount
+    );
+
+    if (!validFilters) {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request: Invalid search parameters",
+      });
+    }
+
     const usersProfiles: UserProfilesToSwipeDto[] =
       await matchService.getProfilesToSwipe(userId, {
         minAge: ageRangeArray[0],

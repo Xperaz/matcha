@@ -28,6 +28,8 @@ export const protectRoutes = async (
 ): Promise<void> => {
   try {
     const token = req.cookies?.jwt;
+    // const token = req.headers.authorization?.split(" ")[1];
+
 
     if (!token) {
       res.status(401).json({
