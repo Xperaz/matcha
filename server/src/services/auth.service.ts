@@ -61,10 +61,10 @@ export const checkAvailableEmail = async (email: string): Promise<boolean> => {
 
 export const insertUser = async (userData: userSignupRequest) => {
   const insertUserQuery = `
-      INSERT INTO users (first_name, last_name, password, email, gender, age)
-      VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING id;
-      `;
+  INSERT INTO users (first_name, last_name, password, email, gender, age)
+  VALUES ($1, $2, $3, $4, $5, $6)
+  RETURNING id;
+  `;
   try {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     const values = [
@@ -90,9 +90,9 @@ export const insertUser = async (userData: userSignupRequest) => {
 
 export const getUserByEmail = async (email: string) => {
   const getUserQuery = `
-    SELECT id, first_name, last_name, email, is_google, email_verified
-    FROM users
-    WHERE email = $1;
+  SELECT id, first_name, last_name, email, is_google, email_verified
+  FROM users
+  WHERE email = $1;
   `;
   try {
     const { rows } = await query(getUserQuery, [email]);
@@ -106,60 +106,32 @@ export const getUserByEmail = async (email: string) => {
   }
 };
 
-// export const generateResetToken = async (userId: string): Promise<string> => {
-//   const insertResetTokenQuery = `
-//     INSERT INTO password_reset_tokens (user_id, token, token_expiration)
-//     VALUES ($1, $2, $3);
-//   `;
+export const verifyEmail = async (userId: string, tokenId: string) => {
+  const verifyEmailQuery = `
+    UPDATE users
+    SET email_verified = true
+    WHERE id = $1;
+  `;
 
-//   try {
-//     const resetToken = randomBytes(48).toString("hex");
+  const updateTokenQuery = `
+    UPDATE email_verification_tokens
+    SET used = true
+    WHERE id = $1;
+  `;
 
-//     const hasedToken = bcrypt.hashSync(resetToken, 10);
+  try {
+    await query("BEGIN");
 
-//     const expireTime = new Date(Date.now() + 3600000); // 1 hour
+    await query(verifyEmailQuery, [userId]);
+    await query(updateTokenQuery, [tokenId]);
 
-//     await query(insertResetTokenQuery, [userId, hasedToken, expireTime]);
-
-//     return resetToken;
-//   } catch (error) {
-//     console.error("Error generating reset token:", error);
-//     throw error;
-//   }
-// };
-
-// export const verifyResetToken = async (
-//   token: string
-// ): Promise<{ userId: string; tokenId: string } | null> => {
-//   const nowData = new Date(Date.now());
-
-//   const verifyResetTokenQuery = `
-//     SELECT user_id, id, token
-//     FROM password_reset_tokens
-//     WHERE token_expiration > $1
-//     and used = false
-//   `;
-
-//   try {
-//     const { rows } = await query(verifyResetTokenQuery, [nowData]);
-
-//     if (rows.length === 0) {
-//       return null;
-//     }
-
-//     for (const row of rows) {
-//       const isMatch = await bcrypt.compare(token, row.token);
-
-//       if (isMatch) {
-//         return { userId: row.user_id, tokenId: row.id };
-//       }
-//     }
-//     return null;
-//   } catch (error) {
-//     console.error("Error verifying reset token:", error);
-//     throw error;
-//   }
-// };
+    await query("COMMIT");
+  } catch (error) {
+    await query("ROLLBACK");
+    console.error("Error verifying email:", error);
+    throw error;
+  }
+};
 
 export const updatePassword = async (
   userId: string,
@@ -318,88 +290,6 @@ export const checkRateLimit = async (
     return false;
   } catch (error) {
     console.error("Error checking rate limit:", error);
-    throw error;
-  }
-};
-
-// export const generateEmailToken = async (userId: string): Promise<string> => {
-//   const insertEmailTokenQuery = `
-//     INSERT INTO email_verification_tokens (user_id, token, token_expiration)
-//     VALUES ($1, $2, $3);
-//     `;
-
-//   try {
-//     const emailToken = randomBytes(48).toString("hex");
-
-//     const hasedToken = bcrypt.hashSync(emailToken, 10);
-
-//     const expireTime = new Date(Date.now() + 3600000); // 1 hour
-
-//     await query(insertEmailTokenQuery, [userId, hasedToken, expireTime]);
-
-//     return emailToken;
-//   } catch (error) {
-//     console.error("Error generating email token:", error);
-//     throw error;
-//   }
-// };
-
-// export const verifyEmailToken = async (
-//   token: string
-// ): Promise<{ userId: string; tokenId: string } | null> => {
-//   const nowData = new Date(Date.now());
-
-//   const verifyEmailTokenQuery = `
-//     SELECT user_id, id, token
-//     FROM email_verification_tokens
-//     WHERE token_expiration > $1
-//     and used = false
-//   `;
-
-//   try {
-//     const { rows } = await query(verifyEmailTokenQuery, [nowData]);
-
-//     if (rows.length === 0) {
-//       return null;
-//     }
-
-//     for (const row of rows) {
-//       const isMatch = await bcrypt.compare(token, row.token);
-
-//       if (isMatch) {
-//         return { userId: row.user_id, tokenId: row.id };
-//       }
-//     }
-//     return null;
-//   } catch (error) {
-//     console.error("Error verifying email token:", error);
-//     throw error;
-//   }
-// };
-
-export const verifyEmail = async (userId: string, tokenId: string) => {
-  const verifyEmailQuery = `
-    UPDATE users
-    SET email_verified = true
-    WHERE id = $1;
-  `;
-
-  const updateTokenQuery = `
-    UPDATE email_verification_tokens
-    SET used = true
-    WHERE id = $1;
-  `;
-
-  try {
-    await query("BEGIN");
-
-    await query(verifyEmailQuery, [userId]);
-    await query(updateTokenQuery, [tokenId]);
-
-    await query("COMMIT");
-  } catch (error) {
-    await query("ROLLBACK");
-    console.error("Error verifying email:", error);
     throw error;
   }
 };
