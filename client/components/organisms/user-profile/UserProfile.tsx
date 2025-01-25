@@ -7,15 +7,15 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants/query_keys";
 import { getMyProfile } from "@/services/requests/profile";
-import { Loader, UserRoundPen } from "lucide-react";
+import { Loader } from "lucide-react";
 import avatar from "@/public/images/avatar.png";
 import EmailSection from "./EmailSection";
 import PasswordSection from "./PasswordSection";
-import EditProfile from "./EditProfile";
+import EditProfileModal from "./EditProfileModal";
 
 const ProfileBasicInfo = () => {
-  const [isEditProfilModalOpen, setIsEditProfilModalOpen] = useState(false);
   const [user, setUser] = useState<IUserType>({} as IUserType);
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
 
   const { data, isLoading, isSuccess } = useQuery({
     queryKey: [QUERY_KEYS.profileData],
@@ -33,10 +33,10 @@ const ProfileBasicInfo = () => {
 
   return (
     <>
-      {isEditProfilModalOpen && (
-        <EditProfile
-          userData={user}
-          closeModal={() => setIsEditProfilModalOpen(false)}
+      {isEditProfileModalOpen && (
+        <EditProfileModal
+          user={user}
+          onClose={() => setIsEditProfileModalOpen(false)}
         />
       )}
       {isLoading && (
@@ -57,11 +57,13 @@ const ProfileBasicInfo = () => {
                   height={300}
                 />
               </div>
-              <div
-                onClick={() => setIsEditProfilModalOpen(true)}
-                className="absolute bottom-0 right-0 bg-blue-400 rounded-full p-1 flex justify-center items-center text-center"
-              >
-                <UserRoundPen size={24} color="#fff" />
+              <div>
+                <button
+                  onClick={() => setIsEditProfileModalOpen(true)}
+                  className="text-xs text-blue-500"
+                >
+                  Edit profile
+                </button>
               </div>
             </div>
             <h2 className="text-lg font-bold">

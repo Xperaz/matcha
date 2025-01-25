@@ -27,17 +27,27 @@ const profilePictureSchema = z.union([
     .regex(/^data:image\/(jpeg|png|gif|webp);base64,/, "Invalid image format"),
 ]);
 
-export const editProfileSchema = z.object({
+const editProfileSchema = z.object({
+  first_name: z
+    .string()
+    .min(2, { message: "First name is too short" })
+    .optional(),
+  last_name: z
+    .string()
+    .min(2, { message: "Last name is too short" })
+    .optional(),
   profile_picture: profilePictureSchema.optional(),
   biography: z.string().optional(),
-  interests: z.array(z.string()).optional(),
-  first_name: z.string().optional(),
-  last_name: z.string().optional(),
+  sexual_preferences: z.nativeEnum(Preference).optional(),
   gender: z.nativeEnum(genderEnum).optional(),
-  sexual_preferences: z
-    .nativeEnum(Preference, {
-      message: "You need to select one preferences",
-    })
+  interests: z
+    .array(
+      z.object({
+        value: z.string(),
+      }),
+    )
+    .min(5, { message: "Please select at least 5 interests" })
+    .max(10, { message: "You can't select more than 10 interests" })
     .optional(),
 });
 
