@@ -7,8 +7,7 @@ export const searchForUsers = async (
   res: Response
 ): Promise<Response> => {
   const userId: string = req.user?.id;
-  const { ageRange, distanceRange, fameRatingRange, interests } =
-    req.query;
+  const { ageRange, distanceRange, fameRatingRange, interests } = req.query;
 
   if (!userId) {
     return res.status(401).json({
@@ -33,7 +32,19 @@ export const searchForUsers = async (
     .map(Number);
   const interestsTags: string[] = (interests as string).split(",");
 
+  const validFilters: boolean = searchService.validateSearchFilters(
+    ageRangeArray,
+    distanceRangeArray,
+    fameRatingRangeArray,
+    interestsTags
+  );
 
+  if (!validFilters) {
+    return res.status(400).json({
+      success: false,
+      message: "Bad request: Invalid search parameters",
+    });
+  }
 
   const results = await searchService.getUsersSearched(userId, {
     minAge: ageRangeArray[0],
