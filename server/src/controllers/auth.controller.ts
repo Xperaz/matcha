@@ -146,10 +146,10 @@ export const googleOauthHandler = async (req: Request, res: Response) => {
       sameSite: "strict",
     });
 
-    res.redirect("http://localhost:3000/home");
+    res.redirect(`${process.env.CLIENT_URL}/home`);
   } catch (error) {
     console.error("error getting google auth credentials", error);
-    res.redirect("http://localhost:3000/login");
+    res.redirect(`${process.env.CLIENT_URL}/login`);
   }
 };
 

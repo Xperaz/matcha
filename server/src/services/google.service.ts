@@ -29,6 +29,10 @@ const validateUser = (user: GoogleUserInfo): GoogleUserInfo => {
   return user;
 };
 
+const generateRndomUsername = (name: string): string => {
+  return name.replace(/\s/g, "").toLowerCase() + Math.floor(Math.random() * 1000);
+}
+
 const calculateAge = (year: number, day: number, month: number): number => {
   const today = new Date();
   const birthDate = new Date(year, month, day);
@@ -38,12 +42,13 @@ const calculateAge = (year: number, day: number, month: number): number => {
 
 const createGoogleUser = async (user: GoogleUserInfo): Promise<string> => {
   const createUserQuery = `
-      INSERT INTO users (email, first_name, last_name, gender, age, is_google)
+      INSERT INTO users (email, first_name, last_name, gender, age, is_google, email_verified)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING id;
     `;
+  
   const { email, given_name, family_name, gender, age } = user;
-  const values = [email, given_name, family_name, gender, age, true];
+  const values = [email, given_name, family_name, gender, age, true, true];
   const { rows } = await query(createUserQuery, values);
   return rows[0].id;
 };
