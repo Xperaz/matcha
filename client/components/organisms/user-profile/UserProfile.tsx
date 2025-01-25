@@ -11,9 +11,11 @@ import { Loader } from "lucide-react";
 import avatar from "@/public/images/avatar.png";
 import EmailSection from "./EmailSection";
 import PasswordSection from "./PasswordSection";
+import EditProfileModal from "./EditProfileModal";
 
 const ProfileBasicInfo = () => {
   const [user, setUser] = useState<IUserType>({} as IUserType);
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
 
   const { data, isLoading, isSuccess } = useQuery({
     queryKey: [QUERY_KEYS.profileData],
@@ -31,6 +33,12 @@ const ProfileBasicInfo = () => {
 
   return (
     <>
+      {isEditProfileModalOpen && (
+        <EditProfileModal
+          user={user}
+          onClose={() => setIsEditProfileModalOpen(false)}
+        />
+      )}
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
           <Loader />
@@ -40,13 +48,23 @@ const ProfileBasicInfo = () => {
       {!isLoading && (
         <div className="flex py-4 flex-col gap-8 justify-center mx-auto max-w-[1000px]">
           <section className="flex flex-col items-center justify-center">
-            <div className="w-32 h-32 rounded-full bg-center bg-cover overflow-hidden">
-              <Image
-                alt="profile picture"
-                src={user.profile_picture || avatar}
-                width={300}
-                height={300}
-              />
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full bg-center bg-cover overflow-hidden">
+                <Image
+                  alt="profile picture"
+                  src={user.profile_picture || avatar}
+                  width={300}
+                  height={300}
+                />
+              </div>
+              <div>
+                <button
+                  onClick={() => setIsEditProfileModalOpen(true)}
+                  className="text-xs text-blue-500"
+                >
+                  Edit profile
+                </button>
+              </div>
             </div>
             <h2 className="text-lg font-bold">
               {user.first_name} {user.last_name}

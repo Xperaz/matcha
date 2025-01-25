@@ -1,0 +1,15 @@
+export const INTERESTS = [
+  "TRAVEL",
+  "MUSIC",
+  "GYM",
+  "SHOPPING",
+  "PROGRAMMING",
+  "FILMS",
+  "NIGHTLIFE",
+  "FOOTBALL",
+  "FOOD",
+  "DOGS",
+  "CATS",
+  "BOOKS",
+  "GAMING",
+] as const;

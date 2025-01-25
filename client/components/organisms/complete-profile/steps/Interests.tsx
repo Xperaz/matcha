@@ -3,27 +3,12 @@ import { Control, FieldErrors, useFieldArray } from "react-hook-form";
 import { CompleteFormData } from "@/schemas/CompleteFormSchema";
 import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { INTERESTS } from "@/constants/interests";
 
 interface InterestsProps {
   control: Control<CompleteFormData>;
   errors: FieldErrors<CompleteFormData>;
 }
-
-const INTERESTS = [
-  "TRAVEL",
-  "MUSIC",
-  "GYM",
-  "SHOPPING",
-  "PROGRAMMING",
-  "FILMS",
-  "NIGHTLIFE",
-  "FOOTBALL",
-  "FOOD",
-  "DOGS",
-  "CATS",
-  "BOOKS",
-  "GAMING",
-] as const;
 
 const Interests: FC<InterestsProps> = ({ control, errors }) => {
   const { fields, append, remove } = useFieldArray({
