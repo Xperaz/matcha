@@ -9,5 +9,6 @@ export interface UserDTO {
     age: number;
     gender: "MALE" | "FEMALE" | "OTHER"; 
     profile_completed: boolean;
+    email_verified: boolean;
   }
   

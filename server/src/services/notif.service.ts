@@ -149,17 +149,3 @@ export const createNotificationAndSendMessage = async (
     throw error;
   }
 };
-
-export const sendNotificationTest = async () => {
-  //
-  const time = new Date().toISOString();
-  //time format hh:mm:ss minus one hour
-  const fotmatTime = time.split("T")[1].split(".")[0];
-  const message = "testing notification  " + fotmatTime;
-  // const reciver_id = "0c93a2b4-86ad-401d-8da6-748cf0a2ad6e";
-  // const sender_id = "eba1c049-b075-4a7a-9a57-7d973997d35d";
-  const reciver_id = "eba1c049-b075-4a7a-9a57-7d973997d35d";
-  const sender_id = "0c93a2b4-86ad-401d-8da6-748cf0a2ad6e";
-
-  await createNotificationAndSendMessage(sender_id, reciver_id, message);
-};

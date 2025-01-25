@@ -6,15 +6,16 @@ import {
   markMessagesAsRead,
   sendMessage,
 } from "../controllers/chat.controller";
+import { usableProfile } from "../middlewares/usableProfile";
 
 const router = Router();
 
-router.get("/messages/:receiverId", protectRoutes, getMessages);
+router.get("/messages/:receiverId", protectRoutes, usableProfile, getMessages);
 
-router.get("/list", protectRoutes, getChatList);
+router.get("/list", protectRoutes, usableProfile, getChatList);
 
-router.post("/send", protectRoutes, sendMessage);
+router.post("/send", protectRoutes, usableProfile, sendMessage);
 
-router.put("/read/:senderId", protectRoutes, markMessagesAsRead);
+router.put("/read/:senderId", protectRoutes, usableProfile, markMessagesAsRead);
 
 export default router;

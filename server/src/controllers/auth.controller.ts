@@ -187,12 +187,15 @@ export const forgotPassword = async (
       });
     }
 
-    const reateLimit = await authService.checkRateLimit(user.id, "password_reset");
+    const reateLimit = await authService.checkRateLimit(
+      user.id,
+      "password_reset"
+    );
 
     if (reateLimit) {
       return res.status(200).json({
         success: false,
-        message: "a reset password email already sent, please check your email",
+        message: "Reset password email sent",
       });
     }
 
@@ -368,12 +371,15 @@ export const sendVerificationEmail = async (
       });
     }
 
-    const reateLimit = await authService.checkRateLimit(user.id, "email_verification");
+    const reateLimit = await authService.checkRateLimit(
+      user.id,
+      "email_verification"
+    );
 
     if (reateLimit) {
       return res.status(200).json({
         success: false,
-        message: "an email verification already sent, please check your email",
+        message: "Verification email sent",
       });
     }
 
