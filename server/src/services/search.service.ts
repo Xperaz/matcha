@@ -11,7 +11,7 @@ export const getUsersSearched = async (
     maxFameRating?: number;
     minDistance?: number;
     maxDistance?: number;
-    interests?: string[]; // Changed from tags to interests
+    interests?: string[];
   }
 ) => {
   const userDataQuery = `
@@ -85,7 +85,6 @@ export const getUsersSearched = async (
   let paramCounter = 2;
   let dynamicFilters = "";
 
-  // Age filter
   if (filters?.minAge || filters?.maxAge) {
     dynamicFilters += ` AND age BETWEEN $${paramCounter} AND $${
       paramCounter + 1
@@ -94,7 +93,6 @@ export const getUsersSearched = async (
     paramCounter += 2;
   }
 
-  // Fame rating filter
   if (filters?.minFameRating || filters?.maxFameRating) {
     dynamicFilters += ` AND fame_rating BETWEEN $${paramCounter} AND $${
       paramCounter + 1
@@ -103,9 +101,7 @@ export const getUsersSearched = async (
     paramCounter += 2;
   }
 
-  // Interests filter
   if (filters?.interests && filters.interests.length > 0) {
-    // Add to the SQL WHERE clause
     dynamicFilters += `
       AND (
         SELECT COUNT(DISTINCT it.tag)        -- Count unique matching tags
@@ -114,19 +110,13 @@ export const getUsersSearched = async (
           ON i.interest_id = it.id          -- Match interest_id with interest_tags id
         WHERE i.user_id = u.id              -- For the current user being evaluated
         AND it.tag = ANY($${paramCounter}::varchar[])  -- Match against array of requested tags
-      ) = $${paramCounter + 1}`; // Must equal the number of requested tags
+      ) = $${paramCounter + 1}`;
 
-    // Add two parameters to the query params array:
-    params.push(
-      filters.interests, // First param: The array of tags ['hiking', 'photography']
-      filters.interests.length // Second param: The length of the array (2)
-    );
+    params.push(filters.interests, filters.interests.length);
 
-    // Increment counter by 2 because we added two parameters
     paramCounter += 2;
   }
 
-  // Distance filter
   let finalSelection = `SELECT * FROM potential_users WHERE 1=1`;
 
   if (filters?.minDistance || filters?.maxDistance) {
@@ -137,7 +127,7 @@ export const getUsersSearched = async (
     paramCounter += 2;
   }
 
-  const sorting = `ORDER BY distance ASC LIMIT 12;`;
+  const sorting = `ORDER BY distance ASC;`;
 
   const fullQuery = `
     ${userDataQuery}
@@ -159,47 +149,30 @@ export const getUsersSearched = async (
   }
 };
 
-export const validateSearchFilters = (
-  ageRange: number[],
-  distanceRange: number[],
-  fameRatingRange: number[],
-  interests: string[]
-): boolean => {
-  try {
-    if (
-      ageRange.length !== 2 ||
-      distanceRange.length !== 2 ||
-      fameRatingRange.length !== 2 ||
-      interests.length === 0 ||
-      interests.length > 10
-    ) {
-      return false;
-    }
-    if (ageRange[0] < 18 || ageRange[1] > 100 || ageRange[0] > ageRange[1]) {
-      return false;
-    }
-    if (
-      distanceRange[0] < 0 ||
-      distanceRange[1] > 20000 ||
-      distanceRange[0] > distanceRange[1]
-    ) {
-      return false;
-    }
-    if (
-      fameRatingRange[0] < 0 ||
-      fameRatingRange[1] > 100 ||
-      fameRatingRange[0] > fameRatingRange[1]
-    ) {
-      return false;
-    }
-    for (const interest of interests) {
-      if (!isValidInterest(interest)) {
-        return false;
-      }
-    }
-    return true;
-  } catch (error) {
-    console.error("Error in validateSearchFilters:", error);
-    throw error;
+export const validateAgeRange = (ageRange: number[]): boolean => {
+  if (ageRange.length !== 2) return false;
+  const [minAge, maxAge] = ageRange;
+  return minAge >= 18 && maxAge <= 100 && minAge <= maxAge;
+};
+
+export const validateDistanceRange = (distanceRange: number[]): boolean => {
+  if (distanceRange.length !== 2) return false;
+  const [minDistance, maxDistance] = distanceRange;
+  return minDistance >= 0 && maxDistance <= 20000 && minDistance <= maxDistance;
+};
+
+export const validateFameRatingRange = (fameRatingRange: number[]): boolean => {
+  if (fameRatingRange.length !== 2) return false;
+  const [minFameRating, maxFameRating] = fameRatingRange;
+  return (
+    minFameRating >= 0 && maxFameRating <= 100 && minFameRating <= maxFameRating
+  );
+};
+
+export const validateInterests = (interests: string[]): boolean => {
+  if (interests.length === 0 || interests.length > 10) return false;
+  for (const interest of interests) {
+    if (!isValidInterest(interest)) return false;
   }
+  return true;
 };
