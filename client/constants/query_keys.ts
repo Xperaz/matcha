@@ -8,4 +8,5 @@ export const QUERY_KEYS = {
   images: "images",
   notifications: "notifications",
   usersToSwipe: "usersToSwipe",
+  explore: "explore",
 };

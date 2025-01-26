@@ -24,4 +24,5 @@ export const API_ENDPOINTS = {
   notifications: `${BASE_URL}notif`,
   updateProfile: `${BASE_URL}user/update-profile`,
   logout: `${BASE_URL}auth/signout`,
+  explore: `${BASE_URL}search`,
 };
