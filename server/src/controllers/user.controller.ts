@@ -42,6 +42,8 @@ export const completeProfile = async (
       });
     }
 
+    //tODO: check the length of interests and images.
+
     if (!isValidPreference(userData.preferences)) {
       return res.status(400).json({
         success: false,

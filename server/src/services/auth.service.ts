@@ -8,14 +8,14 @@ import { randomBytes } from "crypto";
 
 export const checkUser = async (userData: userSigninRequest) => {
   try {
-    const emailCheckQuery = `SELECT id, email, password, is_google FROM users WHERE email = $1;`;
-    const { rows } = await query(emailCheckQuery, [userData.email]);
+    const emailCheckQuery = `SELECT id, email, password, is_google FROM users WHERE username = $1;`;
+    const { rows } = await query(emailCheckQuery, [userData.username]);
     if (rows.length !== 1) {
       return null;
     }
     return rows[0];
   } catch (error) {
-    console.error("error signin toke", error);
+    console.error("error signin", error);
     throw error;
   }
 };
@@ -43,16 +43,28 @@ export const matchPassword = async (
   }
 };
 
-export const checkAvailableEmail = async (email: string): Promise<boolean> => {
+export const checkAvailableEmail = async (
+  email: string,
+  username: string
+): Promise<string | null> => {
   const emailCheckQuery = `SELECT email FROM users WHERE email = $1;`;
+  const usernameCheckQuery = `SELECT username FROM users WHERE username = $1;`;
 
   try {
-    const { rows } = await query(emailCheckQuery, [email]);
+    const { rows: emailExit } = await query(emailCheckQuery, [email]);
+    const { rows: userenameExist } = await query(usernameCheckQuery, [
+      username,
+    ]);
 
-    if (rows.length > 0) {
-      return true;
+    if (emailExit.length > 0) {
+      return "email already in use";
     }
-    return false;
+
+    if (userenameExist.length > 0) {
+      return "username already in use";
+    }
+
+    return null;
   } catch (error) {
     console.error("Error checking email:", error);
     throw error;
