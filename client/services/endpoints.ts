@@ -23,4 +23,5 @@ export const API_ENDPOINTS = {
   updatePassword: `${BASE_URL}user/update-password`,
   notifications: `${BASE_URL}notif`,
   updateProfile: `${BASE_URL}user/update-profile`,
+  logout: `${BASE_URL}auth/signout`,
 };
