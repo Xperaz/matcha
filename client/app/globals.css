@@ -47,6 +47,18 @@ body {
   background-repeat: no-repeat;
 }
 
+/* dark blue gradient color */
+
+.dark-blue-gradient {
+  background: rgb(2, 0, 36);
+  background: linear-gradient(
+    90deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(9, 26, 121, 1) 100%,
+    rgba(0, 212, 255, 1) 100%
+  );
+}
+
 /* debugging styles */
 .db-red {
   border: 1px solid red;
