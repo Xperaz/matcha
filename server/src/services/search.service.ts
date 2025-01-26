@@ -137,7 +137,7 @@ export const getUsersSearched = async (
     paramCounter += 2;
   }
 
-  const sorting = `ORDER BY distance ASC LIMIT 50;`;
+  const sorting = `ORDER BY distance ASC LIMIT 12;`;
 
   const fullQuery = `
     ${userDataQuery}
