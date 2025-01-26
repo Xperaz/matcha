@@ -234,7 +234,7 @@ export const getProfilesToSwipe = async (
     AND NOT EXISTS (
       SELECT 1 FROM likes
       WHERE (initiator_id = $1 AND receiver_id = u.id)
-      OR (initiator_id = u.id AND receiver_id = $1)
+      OR (initiator_id = u.id AND receiver_id = $1 AND status = 'MATCH')
     )
   `;
 
@@ -269,8 +269,8 @@ export const getProfilesToSwipe = async (
   }
 
   let finalSelection = `
-  SELECT * FROM potential_matches
-  WHERE 1=1
+    SELECT * FROM potential_matches
+    WHERE 1=1
   `;
 
   if (filters?.minDistance || filters?.maxDistance) {
@@ -318,47 +318,6 @@ export const getProfilesToSwipe = async (
     return mapUserProfilesToSwipe(rows);
   } catch (error) {
     console.error("Error in getMatchingProfiles:", error);
-    throw error;
-  }
-};
-
-export const validateSearchFilters = (
-  ageRange: number[],
-  distanceRange: number[],
-  fameRatingRange: number[],
-  commonTags: number
-): boolean => {
-  try {
-    if (
-      ageRange.length !== 2 ||
-      distanceRange.length !== 2 ||
-      fameRatingRange.length !== 2 ||
-      commonTags < 0 ||
-      commonTags > 10
-    ) {
-      return false;
-    }
-    if (ageRange[0] < 18 || ageRange[1] > 100 || ageRange[0] > ageRange[1]) {
-      return false;
-    }
-    if (
-      distanceRange[0] < 0 ||
-      distanceRange[1] > 20000 ||
-      distanceRange[0] > distanceRange[1]
-    ) {
-      return false;
-    }
-    if (
-      fameRatingRange[0] < 0 ||
-      fameRatingRange[1] > 100 ||
-      fameRatingRange[0] > fameRatingRange[1]
-    ) {
-      return false;
-    }
-
-    return true;
-  } catch (error) {
-    console.error("Error in validateSearchFilters:", error);
     throw error;
   }
 };

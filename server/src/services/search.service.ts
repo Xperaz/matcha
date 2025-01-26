@@ -60,7 +60,7 @@ export const getUsersSearched = async (
     AND NOT EXISTS (
       SELECT 1 FROM likes
       WHERE (initiator_id = $1 AND receiver_id = u.id)
-      OR (initiator_id = u.id AND receiver_id = $1)
+      OR (initiator_id = u.id AND receiver_id = $1 AND status = 'MATCH')
     )
   `;
 
@@ -73,13 +73,6 @@ export const getUsersSearched = async (
       END
     )
     `;
-  // AND (
-  //   CASE
-  //     WHEN u.sexual_preferences = 'BOTH'
-  //     OR u.sexual_preferences IS NULL THEN true
-  //     ELSE u.sexual_preferences::text = (SELECT gender FROM user_data)::text
-  //   END
-  // )
 
   const params: any[] = [userId];
   let paramCounter = 2;

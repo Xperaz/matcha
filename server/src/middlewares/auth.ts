@@ -52,6 +52,8 @@ export const protectRoutes = async (
       return;
     }
 
+    console.log("decoded", decoded.id);
+
     const getUserQuery = `SELECT id, first_name, last_name, email, biography, profile_picture, fame_rating, age, profile_completed, gender, sexual_preferences FROM users WHERE id = $1;`;
     const { rows } = await query(getUserQuery, [decoded.id]);
 

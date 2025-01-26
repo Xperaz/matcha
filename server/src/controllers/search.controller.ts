@@ -13,7 +13,7 @@ export const searchForUsers = async (
     if (!userId) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized: User ID not found",
+        message: "Unauthorized: User not found",
       });
     }
     // Parse and validate optional parameters
@@ -64,8 +64,6 @@ export const searchForUsers = async (
         message: "Bad request: Invalid interests",
       });
     }
-
-    console.log("interestsTags", interestsTags);
 
     const results = await searchService.getUsersSearched(userId, {
       minAge: ageRangeArray ? ageRangeArray[0] : undefined,
