@@ -22,12 +22,15 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { FC } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/constants/query_keys";
 
 interface Props {
   onClose: () => void;
 }
 
 export const AdvancedSearch: FC<Props> = ({ onClose }) => {
+  const queryClient = useQueryClient();
   const { filters, setFilters } = useExploreContext();
 
   const handleAgeRangeChange = (value: number[]) => {
@@ -47,7 +50,6 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
 
   const toggleInterest = (interest: string) => {
     if (!interest) return;
-    // if interst moret than 5 then return
     if (filters.interests.length >= 5 && !filters.interests.includes(interest))
       return;
 
@@ -66,92 +68,94 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
         <AlertDialogHeader>
           <AlertDialogTitle> Advanced Search </AlertDialogTitle>
           <AlertDialogDescription>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Age Range</label>
-              <DualRangeSlider
-                defaultValue={filters.ageRange}
-                max={100}
-                min={18}
-                step={1}
-                onValueChange={handleAgeRangeChange}
-              />
-              <div className="flex justify-between text-sm text-muted-foreground">
-                <span>{filters.ageRange[0]}</span>
-                <span>{filters.ageRange[1]}</span>
+            <div className="flex flex-col gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Age Range</label>
+                <DualRangeSlider
+                  defaultValue={filters.ageRange}
+                  max={100}
+                  min={18}
+                  step={1}
+                  onValueChange={handleAgeRangeChange}
+                />
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>{filters.ageRange[0]}</span>
+                  <span>{filters.ageRange[1]}</span>
+                </div>
               </div>
-            </div>
 
-            {/* Fame Rating */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Fame Rating</label>
-              <DualRangeSlider
-                defaultValue={filters.fameRange}
-                max={5}
-                min={1}
-                step={1}
-                onValueChange={handleFameRangeChange}
-              />
-              <div className="flex justify-between text-sm text-muted-foreground">
-                <span>{filters.fameRange[0]}</span>
-                <span>{filters.fameRange[1]}</span>
+              {/* Fame Rating */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Fame Rating</label>
+                <DualRangeSlider
+                  defaultValue={filters.fameRange}
+                  max={5}
+                  min={1}
+                  step={1}
+                  onValueChange={handleFameRangeChange}
+                />
+                <div className="flex justify-between text-sm text-muted-foreground">
+                  <span>{filters.fameRange[0]}</span>
+                  <span>{filters.fameRange[1]}</span>
+                </div>
               </div>
-            </div>
 
-            {/* Distance */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Distance (miles)</label>
-              <DualRangeSlider
-                defaultValue={filters.distance}
-                max={500}
-                min={1}
-                step={1}
-                onValueChange={handleDistanceChange}
-              />
-              <div className="text-sm text-muted-foreground">
-                Within {filters.distance} miles
+              {/* Distance */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Distance (miles)</label>
+                <DualRangeSlider
+                  defaultValue={filters.distance}
+                  max={500}
+                  min={1}
+                  step={1}
+                  onValueChange={handleDistanceChange}
+                />
+                <div className="text-sm text-muted-foreground">
+                  Within {filters.distance} miles
+                </div>
               </div>
-            </div>
 
-            {/* Interests */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Interests</label>
-              <div className="flex flex-wrap gap-2">
-                {INTERESTS.map((interest) => (
-                  <Badge
-                    key={interest}
-                    variant={
-                      filters.interests.includes(interest)
-                        ? "default"
-                        : "outline"
-                    }
-                    className="cursor-pointer"
-                    onClick={() => toggleInterest(interest)}
-                  >
-                    {interest}
-                  </Badge>
-                ))}
+              {/* Interests */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Interests</label>
+                <div className="flex flex-wrap gap-2">
+                  {INTERESTS.map((interest) => (
+                    <Badge
+                      key={interest}
+                      variant={
+                        filters.interests.includes(interest)
+                          ? "default"
+                          : "outline"
+                      }
+                      className="cursor-pointer"
+                      onClick={() => toggleInterest(interest)}
+                    >
+                      {interest}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-            </div>
 
-            {/* Sort By */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Sort By</label>
-              <Select
-                value={filters.sortBy}
-                onValueChange={(value: SearchFilters["sortBy"]) =>
-                  setFilters((prev) => ({ ...prev, sortBy: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Sort by..." />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="age">Age</SelectItem>
-                  <SelectItem value="location">Location</SelectItem>
-                  <SelectItem value="fame">Fame Rating</SelectItem>
-                  <SelectItem value="tags">Tags</SelectItem>
-                </SelectContent>
-              </Select>
+              {/* Sort By */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Sort By</label>
+                <Select
+                  value={filters.sortBy}
+                  onValueChange={(value: SearchFilters["sortBy"]) =>
+                    setFilters((prev) => ({ ...prev, sortBy: value }))
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sort by..." />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="age">Age</SelectItem>
+                    <SelectItem value="location">Location</SelectItem>
+                    <SelectItem value="fame">Fame Rating</SelectItem>
+                    <SelectItem value="tags">Tags</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -171,7 +175,12 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
           >
             Cancel
           </AlertDialogCancel>
-          <AlertDialogAction onClick={() => onClose()}>
+          <AlertDialogAction
+            onClick={() => {
+              queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.explore] });
+              onClose();
+            }}
+          >
             Apply Filters
           </AlertDialogAction>
         </AlertDialogFooter>
