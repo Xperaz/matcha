@@ -30,10 +30,6 @@ const validateUser = (user: GoogleUserInfo): GoogleUserInfo => {
   return user;
 };
 
-const generateRndomUsername = (name: string): string => {
-  return name.replace(/\s/g, "").toLowerCase() + Math.floor(Math.random() * 1000);
-}
-
 const calculateAge = (year: number, day: number, month: number): number => {
   const today = new Date();
   const birthDate = new Date(year, month, day);
@@ -41,7 +37,10 @@ const calculateAge = (year: number, day: number, month: number): number => {
   return age;
 };
 
-function generateRandomUsername(firstName: string, lastName: string): string {
+const generateRandomUsername = (
+  firstName: string,
+  lastName: string
+): string => {
   const lowerFirstName = firstName.toLowerCase();
   const lowerLastName = lastName.toLowerCase();
 
@@ -50,7 +49,7 @@ function generateRandomUsername(firstName: string, lastName: string): string {
   const username = `${lowerFirstName}.${lowerLastName}.${uniqueId}`;
 
   return username;
-}
+};
 
 const createGoogleUser = async (user: GoogleUserInfo): Promise<string> => {
   const username = generateRandomUsername(user.given_name, user.family_name);
@@ -59,7 +58,7 @@ const createGoogleUser = async (user: GoogleUserInfo): Promise<string> => {
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING id;
     `;
-  
+
   const { email, given_name, family_name, gender, age } = user;
   const values = [
     email,
