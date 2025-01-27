@@ -70,12 +70,21 @@ export const addImage = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    const imageId = await imageService.uploadImage(image, userId);
+    const imageUploadResponse: string | null = await imageService.uploadImage(
+      image,
+      userId
+    );
+
+    if (imageUploadResponse) {
+      return res.status(400).json({
+        success: false,
+        message: imageUploadResponse,
+      });
+    }
 
     return res.status(201).json({
       success: true,
       message: "Image added successfully",
-      imageId: imageId,
     });
   } catch (error) {
     console.error("Error adding image: ", error);
@@ -100,7 +109,17 @@ export const addProfileImage = async (
         message: "Profile image is required",
       });
     }
-    await imageService.updateProfileImage(profileImage, userId);
+    const uploadImageResponse = await imageService.updateProfileImage(
+      profileImage,
+      userId
+    );
+
+    if (uploadImageResponse) {
+      return res.status(400).json({
+        success: false,
+        message: uploadImageResponse,
+      });
+    }
     return res.status(200).json({
       success: true,
       message: "Profile image added successfully",

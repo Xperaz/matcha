@@ -3,6 +3,7 @@ import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import { query } from "../config/db";
 import cloudinary from "../config/cloudinary";
 import { UserImages } from "../dtos/user/userImages";
+import { isValidImage } from "./user.service";
 
 export const getAllImages = async (userId: string): Promise<UserImages[]> => {
   const getImagesQuery: string = `
@@ -67,7 +68,7 @@ export const removeImage = async (
 export const uploadImage = async (
   image: string,
   userId: string
-): Promise<string> => {
+): Promise<string | null> => {
   const addImageQuery: string = `
             INSERT INTO pictures (picture_url, user_id)
             VALUES ($1, $2)
@@ -81,14 +82,20 @@ export const uploadImage = async (
   try {
     const { rows: imageCount } = await query(countImagesQuery, [userId]);
     if (imageCount[0].count >= 4) {
-      throw new Error("You can only upload 4 images");
+      return "You can only upload 4 images";
     }
-    const result: any = await cloudinary.uploader.upload(image);
-    const imageUrl: string = result.secure_url;
-
-    const { rows: imageID } = await query(addImageQuery, [imageUrl, userId]);
-
-    return imageID[0].id;
+    if (!isValidImage(image)) {
+      return "Invalid image";
+    }
+    let imageUrl: string;
+    try {
+      const result: any = await cloudinary.uploader.upload(image);
+      imageUrl = result.secure_url;
+    } catch (error) {
+      return "Can not open image";
+    }
+    await query(addImageQuery, [imageUrl, userId]);
+    return null;
   } catch (error) {
     console.error("Error adding image: ", error);
     throw error;
@@ -98,17 +105,26 @@ export const uploadImage = async (
 export const updateProfileImage = async (
   image: string,
   userId: string
-): Promise<void> => {
+): Promise<string | null> => {
   const updateProfileImageQuery: string = `
         UPDATE users
         SET profile_image = $1
         WHERE id = $2;
         `;
   try {
-    const result: any = await cloudinary.uploader.upload(image);
-    const profileImageUrl: string = result.secure_url;
+    if (!isValidImage(image)) {
+      return "Invalid image";
+    }
+    let profileImageUrl: string;
+    try {
+      const result: any = await cloudinary.uploader.upload(image);
+      profileImageUrl = result.secure_url;
+    } catch (error) {
+      return "Can not open image";
+    }
 
     await query(updateProfileImageQuery, [profileImageUrl, userId]);
+    return null;
   } catch (error) {
     console.error("Error adding profile image: ", error);
     throw error;
