@@ -1,12 +1,10 @@
 import { Request, Response } from "express";
-import {
-  userSignupRequest,
-  isValidGender,
-} from "../dtos/requests/userSignupRequest";
+import { userSignupRequest } from "../dtos/requests/userSignupRequest";
 import { userSigninRequest } from "../dtos/requests/userSigninRequest";
 import * as authService from "../services/auth.service";
 import * as googleService from "../services/google.service";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
+import { isValidPassword } from "../services/user.service";
 
 export async function signup(req: Request, res: Response): Promise<Response> {
   try {
@@ -26,29 +24,15 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       });
     }
 
-    // TODO: check with regex
-    if (userData.password.length < 8) {
+    const isValidSignupData: string | null =
+      authService.isValidSignupData(userData);
+
+    if (isValidSignupData) {
       return res.status(400).json({
         success: false,
-        message: "Password must be at least 8 characters long",
+        message: isValidSignupData,
       });
     }
-
-    if (userData.age < 18) {
-      return res.status(400).json({
-        success: false,
-        message: "You are under age",
-      });
-    }
-
-    if (!isValidGender(userData.gender)) {
-      return res.status(400).json({
-        success: false,
-        message: "invalid gender",
-      });
-    }
-
-    //TODO: check if email form is valid
 
     const alreadyExist: string | null = await authService.checkAvailableEmail(
       userData.email,
@@ -99,7 +83,8 @@ export async function signin(req: Request, res: Response): Promise<Response> {
     if (dbUser && dbUser.is_google === true) {
       return res.status(400).json({
         success: false,
-        message: "this user is registered with google, please login with google",
+        message:
+          "this user is registered with google, please login with google",
       });
     }
 
@@ -240,10 +225,10 @@ export const resetPassword = async (
       });
     }
 
-    if (password.length < 8) {
+    if (!isValidPassword(password)) {
       return res.status(400).json({
         success: false,
-        message: "Password must be at least 8 characters long",
+        message: "Invalid password",
       });
     }
 
