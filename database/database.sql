@@ -70,7 +70,6 @@ CREATE TABLE likes (
 
 CREATE TABLE reports (
     id BIGSERIAL PRIMARY KEY,
-    reason TEXT NOT NULL,
     reported_id uuid,
     reporter_id uuid,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

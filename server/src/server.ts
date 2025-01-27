@@ -16,6 +16,7 @@ import profileRoutes from "./routes/profile.routes";
 import chatRoutes from "./routes/chat.routes";
 import notifRoutes from "./routes/notif.routes";
 import searchRoutes from "./routes/search.routes";
+import blockRoutes from "./routes/block.routes";
 
 import authorizeUserSocket, {
   AuthenticatedSocket,
@@ -65,6 +66,7 @@ app.use("/api/seed", seedDataBase);
 app.use("/api/chat", chatRoutes);
 app.use("/api/notif", notifRoutes);
 app.use("/api/search", searchRoutes);
+app.use("/api/block", blockRoutes);
 
 io.use(authorizeUserSocket);
 io.on("connection", (socket: AuthenticatedSocket) => {});

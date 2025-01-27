@@ -126,3 +126,16 @@ export const  checkBlockedUser = async ( userId: string, receiverId: string): Pr
     throw error;
   }
 }
+
+export const updateProfileViews = async (userId: string, receiverId: string): Promise<void> => {
+  const updateProfileViewsQuery: string = `
+    INSERT INTO visits (visitor_id, visited_id)
+    VALUES ($1, $2);
+  `;
+  try {
+    await query(updateProfileViewsQuery, [userId, receiverId]);
+  } catch (error) {
+    console.error("Error updating profile views: ", error);
+    throw error;
+  }
+}
