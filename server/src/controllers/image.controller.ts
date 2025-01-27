@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import * as imageService from "../services/image.service";
+import { UserImages } from "../dtos/user/userImages";
 
 export const getAllImages = async (
   req: AuthenticatedRequest,
@@ -9,7 +10,7 @@ export const getAllImages = async (
   try {
     const userId: string = req.user.id;
 
-    const userImages = await imageService.getAllImages(userId);
+    const userImages: UserImages[] = await imageService.getAllImages(userId);
 
     return res.status(200).json({
       success: true,
