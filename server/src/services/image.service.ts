@@ -73,7 +73,16 @@ export const uploadImage = async (
             VALUES ($1, $2)
             RETURNING id;
         `;
+  const countImagesQuery: string = `
+      SELECT COUNT(*) FROM pictures
+      WHERE user_id = $1;
+  `;
+
   try {
+    const { rows: imageCount } = await query(countImagesQuery, [userId]);
+    if (imageCount[0].count >= 4) {
+      throw new Error("You can only upload 4 images");
+    }
     const result: any = await cloudinary.uploader.upload(image);
     const imageUrl: string = result.secure_url;
 

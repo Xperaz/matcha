@@ -321,3 +321,31 @@ export const getProfilesToSwipe = async (
     throw error;
   }
 };
+
+export const cantSwipe = async (userId: string, receiverId: string): Promise<boolean> => {
+  const canSwipeQuery: string = `
+    SELECT u.id
+    FROM users u
+    WHERE u.id = $2
+    AND NOT EXISTS (
+      SELECT 1 FROM blocks 
+      WHERE (blocker_id = $1 AND blocked_id = u.id)
+      OR (blocker_id = u.id AND blocked_id = $1)
+    )
+    AND NOT EXISTS (
+      SELECT 1 FROM likes
+      WHERE (initiator_id = $1 AND receiver_id = u.id)
+      OR (initiator_id = u.id AND receiver_id = $1 AND status = 'MATCH')
+    );
+  `;
+  try {
+    const { rows } = await query(canSwipeQuery, [userId, receiverId]);
+    if (rows.length > 0) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error swiping user: ", error);
+    throw error;
+  }
+};
