@@ -10,6 +10,7 @@ import {
   validateDistanceRange,
   validateFameRatingRange,
 } from "../services/search.service";
+import { userEsists, isValidUserId } from "../services/user.service";
 
 export const swipeLeft = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -23,17 +24,26 @@ export const swipeLeft = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    // check if the user has already swiped the receiver left
-    const existingDislike: boolean = await matchService.checkExistSwipe(
-      userId,
-      receiverId,
-      "DISLIKED"
-    );
+    if (!isValidUserId(receiverId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid receiver ID",
+      });
+    }
 
-    if (existingDislike === true) {
+    if (!(await userEsists(receiverId))) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const cantDislike: boolean = await matchService.cantSwipe(userId, receiverId);
+
+    if (cantDislike === true) {
       return res.status(409).json({
         success: false,
-        message: "User has already swiped left",
+        message: "you can not swipe left this user",
       });
     }
 
@@ -65,18 +75,28 @@ export const swipeRight = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
+    if (!isValidUserId(receiverId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid receiver ID",
+      });
+    }
+
+    if (!(await userEsists(receiverId))) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
     // check if the user has already swiped the receiver right
     // for safety
-    const existingLike: boolean = await matchService.checkExistSwipe(
-      userId,
-      receiverId,
-      "LIKED"
-    );
+    const cantLike: boolean = await matchService.cantSwipe(userId, receiverId);
 
-    if (existingLike === true) {
+    if (cantLike === true) {
       return res.status(409).json({
         success: false,
-        message: "User has already swiped right",
+        message: "you can not swipe right this user",
       });
     }
 
@@ -164,7 +184,6 @@ export const getUserMatches = async (
 };
 
 // get an array of users to choose from
-// TODO maybe use pagination
 export const getUsersProfileToSwipe = async (
   req: AuthenticatedRequest,
   res: Response
@@ -263,51 +282,62 @@ export const likeUser = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    // check if the user has already liked the receiver
-    const existingLikeQuery: string = `
-            SELECT initiator_id, receiver_id, status FROM likes
-            WHERE initiator_id = $1 AND receiver_id = $2 AND status = 'LIKED';
-        `;
-    const { rows: existingLikeRows } = await query(existingLikeQuery, [
-      userId,
-      receiverId,
-    ]);
-
-    if (existingLikeRows.length > 0) {
-      return res.status(409).json({
+    if (!isValidUserId(receiverId)) {
+      return res.status(400).json({
         success: false,
-        message: "User has already liked the user",
+        message: "Invalid receiver ID",
       });
     }
 
-    const mutualLike: string = `
-            SELECT initiator_id, receiver_id, status FROM likes
-            WHERE initiator_id = $2 AND receiver_id = $1 AND status = 'LIKED';
-        `;
-    const { rows: mutualLikeRows } = await query(mutualLike, [
-      userId,
+    if (!(await userEsists(receiverId))) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // check if the user has already swiped the receiver right
+    // for safety
+    const cantLike: boolean = await matchService.cantSwipe(userId, receiverId);
+
+    if (cantLike === true) {
+      return res.status(409).json({
+        success: false,
+        message: "you can not swipe right this user",
+      });
+    }
+
+    // check if the receiver has already swiped the user right
+    const mutualLike: boolean = await matchService.checkExistSwipe(
       receiverId,
-    ]);
+      userId,
+      "LIKED"
+    );
 
-    if (mutualLikeRows.length > 0) {
+    if (mutualLike === true) {
       // create a match
-      const matchUsersQuery: string = `
-                UPDATE likes SET status = 'MATCH'
-                WHERE (initiator_id = $1 AND receiver_id = $2) OR (initiator_id = $2 AND receiver_id = $1);
-            `;
-      await query(matchUsersQuery, [userId, receiverId]);
-
+      await matchService.insertMatch(userId, receiverId);
+      await createNotificationAndSendMessage(
+        userId,
+        receiverId,
+        "is your match now! Say hi to start a conversation."
+      );
+      await createNotificationAndSendMessage(
+        receiverId,
+        userId,
+        "is your match now! Say hi to start a conversation."
+      );
       return res.status(200).json({
         success: true,
         message: "Match created successfully",
       });
     }
-
-    const likeUserQuery: string = `
-            INSERT INTO likes (initiator_id, receiver_id, status)
-            VALUES ($1, $2, 'LIKED');
-        `;
-    await query(likeUserQuery, [userId, receiverId]);
+    await matchService.insertSwipe(userId, receiverId, "LIKED");
+    await createNotificationAndSendMessage(
+      userId,
+      receiverId,
+      "liked you! check them out."
+    );
 
     return res.status(200).json({
       success: true,
@@ -332,6 +362,20 @@ export const unlikeUser = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(401).json({
         success: false,
         message: "Unauthorized: User ID not found",
+      });
+    }
+
+    if (!isValidUserId(receiverId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid receiver ID",
+      });
+    }
+
+    if (!(await userEsists(receiverId))) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
       });
     }
 
@@ -364,6 +408,20 @@ export const unmatcheUser = async (
       return res.status(401).json({
         success: false,
         message: "Unauthorized: User ID not found",
+      });
+    }
+
+    if (!isValidUserId(receiverId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid receiver ID",
+      });
+    }
+
+    if (!(await userEsists(receiverId))) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
       });
     }
 
