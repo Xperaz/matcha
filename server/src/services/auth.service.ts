@@ -1,10 +1,14 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { query } from "../config/db";
-import { userSignupRequest } from "../dtos/requests/userSignupRequest";
+import {
+  isValidGender,
+  userSignupRequest,
+} from "../dtos/requests/userSignupRequest";
 import { userSigninRequest } from "../dtos/requests/userSigninRequest";
 import { sendMail } from "../config/mailer";
 import { randomBytes } from "crypto";
+import { isValidEmail, isValidPassword } from "./user.service";
 
 export const checkUser = async (userData: userSigninRequest) => {
   try {
@@ -73,8 +77,8 @@ export const checkAvailableEmail = async (
 
 export const insertUser = async (userData: userSignupRequest) => {
   const insertUserQuery = `
-  INSERT INTO users (first_name, last_name, password, email, gender, age)
-  VALUES ($1, $2, $3, $4, $5, $6)
+  INSERT INTO users (first_name, last_name, username, password, email, gender, age)
+  VALUES ($1, $2, $3, $4, $5, $6, $7)
   RETURNING id;
   `;
   try {
@@ -82,6 +86,7 @@ export const insertUser = async (userData: userSignupRequest) => {
     const values = [
       userData.first_name,
       userData.last_name,
+      userData.username,
       hashedPassword,
       userData.email,
       userData.gender,
@@ -304,4 +309,37 @@ export const checkRateLimit = async (
     console.error("Error checking rate limit:", error);
     throw error;
   }
+};
+
+export const isValidSignupData = (
+  userData: userSignupRequest
+): string | null => {
+  if (userData.first_name.length < 2 || userData.first_name.length > 50) {
+    return "First name must be between 2 and 50 characters";
+  }
+
+  if (userData.last_name.length < 2 || userData.last_name.length > 50) {
+    return "Last name must be between 2 and 50 characters";
+  }
+
+  if (userData.username.length < 2 || userData.username.length > 50) {
+    return "Username must be between 2 and 50 characters";
+  }
+
+  if (!isValidPassword(userData.password)) {
+    return "Password is not valid";
+  }
+
+  if (userData.age < 18) {
+    return "You are under age";
+  }
+
+  if (!isValidGender(userData.gender)) {
+    return "invalid gender";
+  }
+
+  if (!isValidEmail(userData.email)) {
+    return "Email is not valid";
+  }
+  return null;
 };

@@ -10,4 +10,5 @@ export interface UserDTO {
   gender: "MALE" | "FEMALE" | "OTHER";
   profile_completed: boolean;
   profile_picture?: string;
+  email_verified: boolean;
 }
