@@ -92,6 +92,8 @@ export const getUserProfile = async (
       });
     }
 
+    await profileService.updateProfileViews(userId, receiverId);
+
     await createNotificationAndSendMessage(
       userId,
       receiverId,

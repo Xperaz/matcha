@@ -38,7 +38,10 @@ export const swipeLeft = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    const cantDislike: boolean = await matchService.cantSwipe(userId, receiverId);
+    const cantDislike: boolean = await matchService.cantSwipe(
+      userId,
+      receiverId
+    );
 
     if (cantDislike === true) {
       return res.status(409).json({
@@ -250,9 +253,15 @@ export const getUsersProfileToSwipe = async (
         maxAge: ageRangeArray ? ageRangeArray[1] : undefined,
         minDistance: distanceRangeArray ? distanceRangeArray[0] : undefined,
         maxDistance: distanceRangeArray ? distanceRangeArray[1] : undefined,
-        minFameRating: fameRatingRangeArray ? fameRatingRangeArray[0]: undefined,
-        maxFameRating: fameRatingRangeArray ? fameRatingRangeArray[1]: undefined,
-        commonInterests: commonInterestsCount ? commonInterestsCount: undefined,
+        minFameRating: fameRatingRangeArray
+          ? fameRatingRangeArray[0]
+          : undefined,
+        maxFameRating: fameRatingRangeArray
+          ? fameRatingRangeArray[1]
+          : undefined,
+        commonInterests: commonInterestsCount
+          ? commonInterestsCount
+          : undefined,
       });
 
     return res.status(200).json({
@@ -380,7 +389,7 @@ export const unlikeUser = async (req: AuthenticatedRequest, res: Response) => {
     }
 
     await matchService.unlike(userId, receiverId);
-    await createNotificationAndSendMessage(userId, receiverId, "unliked you.");
+    await createNotificationAndSendMessage(userId, receiverId, "unliked you!");
 
     return res.status(200).json({
       success: true,
@@ -424,7 +433,7 @@ export const unmatcheUser = async (
         message: "User not found",
       });
     }
-    
+
     await matchService.unmatch(userId, receiverId);
 
     return res.status(200).json({
