@@ -4,11 +4,10 @@ import { Response } from "express";
 import {
   completeProfileReqeuest,
   isValidInterest,
-  isValidPreference,
 } from "../dtos/requests/completeProfileRequest";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import bcrypt from "bcryptjs";
-import { updateProfileValues } from "../services/user.service";
+import * as userService from "../services/user.service";
 
 export const completeProfile = async (
   req: AuthenticatedRequest,
@@ -42,36 +41,31 @@ export const completeProfile = async (
       });
     }
 
-    //tODO: check the length of interests and images.
-
-    if (!isValidPreference(userData.preferences)) {
+    const isValidUserData: string | null =
+      userService.isValidCompleteProfileData(userData);
+    if (isValidUserData) {
       return res.status(400).json({
         success: false,
-        message: "invalid preference",
+        message: isValidUserData,
       });
     }
+    let result: any;
+    let profilePictureUrl: string;
+    let pictures_urls: string[] = [];
+    try {
+      result = await cloudinary.uploader.upload(userData.profile_picture);
+      profilePictureUrl = result.secure_url;
 
-    const invalidInterests: string[] = userData.interests.filter(
-      (interest) => !isValidInterest(interest)
-    );
-
-    if (invalidInterests.length > 0) {
+      for (const image of userData.pictures) {
+        const imageResult: any = await cloudinary.uploader.upload(image);
+        const imageUrl: string = imageResult.secure_url;
+        pictures_urls.push(imageUrl);
+      }
+    } catch (error) {
       return res.status(400).json({
-        error: "Invalid interests",
-        invalidInterests,
+        success: false,
+        message: "can not open image",
       });
-    }
-
-    const result: any = await cloudinary.uploader.upload(
-      userData.profile_picture
-    );
-    const profilePictureUrl: string = result.secure_url;
-
-    const pictures_urls: string[] = [];
-    for (const image of userData.pictures) {
-      const imageResult: any = await cloudinary.uploader.upload(image);
-      const imageUrl: string = imageResult.secure_url;
-      pictures_urls.push(imageUrl);
     }
 
     await query("BEGIN");
@@ -146,23 +140,31 @@ export const updateEmail = async (
         message: "Email and password are required",
       });
     }
-    const checkIsGoogleQuery: string = `
-      SELECT is_google FROM users
+
+    if (!userService.isValidEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email",
+      });
+    }
+
+    const checkUserQuery: string = `
+      SELECT is_google, email FROM users
       WHERE id = $1;
     `;
-    const { rows: isGoogle } = await query(checkIsGoogleQuery, [userId]);
+    const { rows: user } = await query(checkUserQuery, [userId]);
 
-    if (isGoogle[0].is_google) {
+    if (user[0].is_google) {
       return res.status(400).json({
         success: false,
         message: "Email cannot be updated for google accounts",
       });
     }
 
-    if (password.length < 8) {
+    if (email === user[0].email) {
       return res.status(400).json({
         success: false,
-        message: "Password should be at least 8 characters",
+        message: "Email is the same",
       });
     }
 
@@ -239,10 +241,10 @@ export const updatePassword = async (
       });
     }
 
-    if (newPassword.length < 8) {
+    if (!userService.isValidPassword(newPassword)) {
       return res.status(400).json({
         success: false,
-        message: "Password should be at least 8 characters",
+        message: "invalid password",
       });
     }
 
@@ -320,7 +322,7 @@ export const updateProfile = async (
     await query("BEGIN");
 
     const { userId, updates, values, paramCounter, interests } =
-      await updateProfileValues(req, res);
+      await userService.updateProfileValues(req, res);
 
     if (updates.length > 0) {
       const updateUserQuery = `
