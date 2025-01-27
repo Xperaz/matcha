@@ -71,6 +71,17 @@ export const getUserProfile = async (
       });
     }
 
+    if (userId === receiverId) {
+      res.redirect(`${process.env.CLIENT_URL}/profile`);
+    }
+
+    if (await profileService.checkBlockedUser(userId, receiverId)) {
+      return res.status(403).json({
+        success: false,
+        message: "You are blocked by this user",
+      });
+    }
+
     const userData: publicProfileDto | null =
       await profileService.getUserProfile(receiverId);
 

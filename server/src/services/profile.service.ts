@@ -104,3 +104,25 @@ export const getUserProfile = async (
     throw error;
   }
 };
+
+export const  checkBlockedUser = async ( userId: string, receiverId: string): Promise<boolean> => {
+  const checkBlockedQuery: string = `
+    SELECT id FROM blocks
+    WHERE blocker_id = $1 AND blocked_id = $2 OR blocker_id = $2 AND blocked_id = $1;
+  `;
+  try {
+    const { rows: blockedUsers } = await query(checkBlockedQuery, [
+      userId,
+      receiverId,
+    ]);
+
+    if (blockedUsers.length > 0) {
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    console.error("Error checking blocked user: ", error);
+    throw error;
+  }
+}
