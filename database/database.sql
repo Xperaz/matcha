@@ -18,7 +18,7 @@ CREATE TABLE users (
     longitude DECIMAL(9,6),
     city VARCHAR(100),
     country VARCHAR(100),
-    fame_rating INT  DEFAULT 0,
+    fame_rating INT  DEFAULT 1,
     sexual_preferences preferences_enum,
     age INT NOT NULL,
     last_connection TIMESTAMP,

@@ -1,6 +1,7 @@
 import { query } from "../config/db";
 import { UserMatchesDto } from "../dtos/user/userMatchesDto";
 import { UserProfilesToSwipeDto } from "../dtos/user/userProfilesToSwipeDto";
+import { increaseFameRating, decreaseFameRating } from "./user.service";
 
 const mapUserMatches = (rows: any[]): UserMatchesDto[] => {
   return rows.map((row) => {
@@ -77,6 +78,11 @@ export const insertSwipe = async (
 
   try {
     await query(insertSwipeQuery, [userId, receiverId, status]);
+    if (status === "LIKED") {
+      await increaseFameRating(receiverId, 5);
+    } else {
+      await decreaseFameRating(receiverId, 5);
+    }
   } catch (error) {
     console.error("Error inserting swipe: ", error);
     throw error;
@@ -93,6 +99,8 @@ export const insertMatch = async (
     `;
   try {
     await query(matchUsersQuery, [userId, receiverId]);
+    await increaseFameRating(userId, 10);
+    await increaseFameRating(receiverId, 10);
   } catch (error) {
     console.error("Error matching users: ", error);
     throw error;
@@ -140,6 +148,7 @@ export const unlike = async (
 `;
   try {
     await query(unlikeUserQuery, [userId, receiverId]);
+    await decreaseFameRating(receiverId, 5);
   } catch (error) {
     console.error("Error unliking user: ", error);
     throw error;
@@ -157,6 +166,8 @@ export const unmatch = async (
         `;
   try {
     await query(unmatchedUserQuery, [userId, receiverId]);
+    await decreaseFameRating(userId, 5);
+    await decreaseFameRating(receiverId, 10);
   } catch (error) {
     console.error("Error unmatching user: ", error);
     throw error;
@@ -322,7 +333,10 @@ export const getProfilesToSwipe = async (
   }
 };
 
-export const cantSwipe = async (userId: string, receiverId: string): Promise<boolean> => {
+export const cantSwipe = async (
+  userId: string,
+  receiverId: string
+): Promise<boolean> => {
   const canSwipeQuery: string = `
     SELECT u.id
     FROM users u

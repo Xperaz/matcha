@@ -424,7 +424,7 @@ export const unmatcheUser = async (
         message: "User not found",
       });
     }
-
+    
     await matchService.unmatch(userId, receiverId);
 
     return res.status(200).json({

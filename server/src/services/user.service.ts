@@ -166,3 +166,45 @@ export const isValidUserId = (id: string): boolean => {
     /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
   return uuidRegex.test(id);
 };
+
+export const increaseFameRating = async (userId: string, ammount: number): Promise<void> => {
+ 
+  const increaseFameQuery = `
+  UPDATE users
+  SET fame_rating = 
+    CASE 
+      WHEN fame_rating = 100 THEN 100 
+      WHEN fame_rating + $2 > 100 THEN 100
+      ELSE fame_rating + $2
+    END
+  WHERE id = $1;
+  `;
+  try {
+    await query(increaseFameQuery, [userId, ammount]);
+  } catch (error) {
+    console.error("Error increasing fame rating: ", error);
+    throw error;
+  }
+
+};
+
+export const decreaseFameRating = async (userId: string, ammount: number): Promise<void> => {
+   
+  const decreaseFameQuery = `
+  UPDATE users
+  SET fame_rating = 
+    CASE 
+      WHEN fame_rating = 0 THEN 0 
+      WHEN fame_rating - $2 < 0 THEN 0
+      ELSE fame_rating - $2
+    END
+  WHERE id = $1;
+  `;
+  try {
+    await query(decreaseFameQuery, [userId, ammount]);
+  } catch (error) {
+    console.error("Error decreasing fame rating: ", error);
+    throw error;
+  }
+
+}
