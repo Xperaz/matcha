@@ -17,10 +17,13 @@ import chatRoutes from "./routes/chat.routes";
 import notifRoutes from "./routes/notif.routes";
 import searchRoutes from "./routes/search.routes";
 import blockRoutes from "./routes/block.routes";
+import historyRoutes from "./routes/history.routes";
+import reportRoutes from "./routes/report.routes";
 
 import authorizeUserSocket, {
   AuthenticatedSocket,
 } from "./middlewares/socketAuthrization";
+import { report } from "process";
 
 const app: Application = express();
 const port: number = parseInt(process.env.SERVER_PORT || "5000", 10);
@@ -67,6 +70,8 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/notif", notifRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/block", blockRoutes);
+app.use("/api/report", reportRoutes);
+app.use("/api/history", historyRoutes);
 
 io.use(authorizeUserSocket);
 io.on("connection", (socket: AuthenticatedSocket) => {});
