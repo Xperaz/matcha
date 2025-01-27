@@ -1,5 +1,5 @@
-import NavBar from "@/components/organisms/NavBar";
-import PrivateHeader from "@/components/organisms/PrivateHeader";
+import NavBar from "@/components/organisms/layout/NavBar";
+import PrivateHeader from "@/components/organisms/layout/PrivateHeader";
 import { QUERY_KEYS } from "@/constants/query_keys";
 import useWindowResize from "@/hooks/useWindowResize";
 import { getUser } from "@/services/requests/home";

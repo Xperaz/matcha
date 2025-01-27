@@ -6,59 +6,85 @@ export const searchForUsers = async (
   req: AuthenticatedRequest,
   res: Response
 ): Promise<Response> => {
-  const userId: string = req.user?.id;
-  const { ageRange, distanceRange, fameRatingRange, interests } = req.query;
+  try {
+    const userId: string = req.user?.id;
+    const { ageRange, distanceRange, fameRatingRange, interests } = req.query;
 
-  if (!userId) {
-    return res.status(401).json({
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: User not found",
+      });
+    }
+    // Parse and validate optional parameters
+    const ageRangeArray: number[] | undefined = ageRange
+      ? (ageRange as string).split(",").map(Number)
+      : undefined;
+    const distanceRangeArray: number[] | undefined = distanceRange
+      ? (distanceRange as string).split(",").map(Number)
+      : undefined;
+    const fameRatingRangeArray: number[] | undefined = fameRatingRange
+      ? (fameRatingRange as string).split(",").map(Number)
+      : undefined;
+    const interestsTags: string[] | undefined = interests
+      ? (interests as string).split(",")
+      : undefined;
+
+    // Validate parameters if they exist
+    if (ageRangeArray && !searchService.validateAgeRange(ageRangeArray)) {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request: Invalid age range",
+      });
+    }
+
+    if (
+      distanceRangeArray &&
+      !searchService.validateDistanceRange(distanceRangeArray)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request: Invalid distance range",
+      });
+    }
+
+    if (
+      fameRatingRangeArray &&
+      !searchService.validateFameRatingRange(fameRatingRangeArray)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request: Invalid fame rating range",
+      });
+    }
+
+    if (interestsTags && !searchService.validateInterests(interestsTags)) {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request: Invalid interests",
+      });
+    }
+
+    const results = await searchService.getUsersSearched(userId, {
+      minAge: ageRangeArray ? ageRangeArray[0] : undefined,
+      maxAge: ageRangeArray ? ageRangeArray[1] : undefined,
+      minDistance: distanceRangeArray ? distanceRangeArray[0] : undefined,
+      maxDistance: distanceRangeArray ? distanceRangeArray[1] : undefined,
+      minFameRating: fameRatingRangeArray ? fameRatingRangeArray[0] : undefined,
+      maxFameRating: fameRatingRangeArray ? fameRatingRangeArray[1] : undefined,
+      interests: interestsTags,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Search for users successful",
+      data: results,
+    });
+  } catch (error) {
+    console.error("error searching for users", error);
+    return res.status(500).json({
       success: false,
-      message: "Unauthorized: User ID not found",
+      message: "error searching for users",
     });
   }
-
-  if (!ageRange || !distanceRange || !fameRatingRange || !interests) {
-    return res.status(400).json({
-      success: false,
-      message: "Bad request: Missing search parameters",
-    });
-  }
-
-  const ageRangeArray: number[] = (ageRange as string).split(",").map(Number);
-  const distanceRangeArray: number[] = (distanceRange as string)
-    .split(",")
-    .map(Number);
-  const fameRatingRangeArray: number[] = (fameRatingRange as string)
-    .split(",")
-    .map(Number);
-  const interestsTags: string[] = (interests as string).split(",");
-
-  const validFilters: boolean = searchService.validateSearchFilters(
-    ageRangeArray,
-    distanceRangeArray,
-    fameRatingRangeArray,
-    interestsTags
-  );
-
-  if (!validFilters) {
-    return res.status(400).json({
-      success: false,
-      message: "Bad request: Invalid search parameters",
-    });
-  }
-
-  const results = await searchService.getUsersSearched(userId, {
-    minAge: ageRangeArray[0],
-    maxAge: ageRangeArray[1],
-    minFameRating: fameRatingRangeArray[0],
-    maxFameRating: fameRatingRangeArray[1],
-    minDistance: distanceRangeArray[0],
-    maxDistance: distanceRangeArray[1],
-    interests: interestsTags,
-  });
-
-  return res.status(200).json({
-    success: true,
-    message: "Search for users successful",
-    data: results,
-  });
 };

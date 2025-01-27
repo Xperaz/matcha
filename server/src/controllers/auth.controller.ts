@@ -17,7 +17,8 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       !userData.password ||
       !userData.email ||
       !userData.gender ||
-      !userData.age
+      !userData.age ||
+      !userData.username
     ) {
       return res.status(400).json({
         success: false,
@@ -25,6 +26,7 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       });
     }
 
+    // TODO: check with regex
     if (userData.password.length < 8) {
       return res.status(400).json({
         success: false,
@@ -46,12 +48,17 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       });
     }
 
-    const emailExist = await authService.checkAvailableEmail(userData.email);
+    //TODO: check if email form is valid
 
-    if (emailExist) {
+    const alreadyExist: string | null = await authService.checkAvailableEmail(
+      userData.email,
+      userData.username
+    );
+
+    if (alreadyExist) {
       return res.status(400).json({
         success: false,
-        message: "Email is already in use",
+        message: alreadyExist,
       });
     }
 
@@ -81,7 +88,7 @@ export async function signup(req: Request, res: Response): Promise<Response> {
 export async function signin(req: Request, res: Response): Promise<Response> {
   try {
     const userData: userSigninRequest = req.body;
-    if (!userData.email || !userData.password) {
+    if (!userData.username || !userData.password) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -92,7 +99,7 @@ export async function signin(req: Request, res: Response): Promise<Response> {
     if (dbUser && dbUser.is_google === true) {
       return res.status(400).json({
         success: false,
-        message: "this email is registered with google",
+        message: "this user is registered with google, please login with google",
       });
     }
 

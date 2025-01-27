@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -8,7 +7,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,12 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 import { updateEmail } from "@/services/requests/profile";
 import { CustomError } from "@/auth/types";
 import {
@@ -34,38 +27,48 @@ import {
 } from "@/schemas/EmailUpdateSchema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants/query_keys";
+import { toast } from "@/hooks/use-toast";
 
 const EmailSection = ({
   email,
-  is_google,
+  onClose,
 }: {
   email: string;
-  is_google: boolean;
+  onClose: () => void;
 }) => {
-  const [open, setOpen] = useState(false);
-
   const queryClient = useQueryClient();
 
   const form = useForm<EmailUpdateSchemaType>({
     resolver: zodResolver(emailUpdateSchema),
     defaultValues: {
-      newEmail: "",
+      newEmail: email,
       password: "",
     },
   });
 
-  const { mutate: updateEmailMutation, error } = useMutation<
-    unknown,
-    CustomError,
-    EmailUpdateSchemaType
-  >({
+  const {
+    mutate: updateEmailMutation,
+    error,
+    isPending,
+  } = useMutation<unknown, CustomError, EmailUpdateSchemaType>({
     mutationFn: async (data) => {
       await updateEmail(data.newEmail, data.password);
     },
     onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Email updated successfully",
+      });
       form.reset();
-      setOpen(false);
+      onClose();
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.profileData] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update email",
+        variant: "destructive",
+      });
     },
   });
 
@@ -87,35 +90,7 @@ const EmailSection = ({
         <span className="text-sm w-[300px] overflow-hidden">{email}</span>
       </div>
       <div className="flex items-center justify-end mr-10">
-        <Dialog
-          open={open}
-          onOpenChange={(newOpen) => {
-            if (!is_google) {
-              setOpen(newOpen);
-              if (!newOpen) {
-                form.reset();
-              }
-            }
-          }}
-        >
-          {is_google ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button className="h-8 px-2 text-sm opacity-50">
-                    Edit Email
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Email cannot be updated for google accounts</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            <DialogTrigger asChild>
-              <Button className="h-8 px-2 text-sm">Edit Email</Button>
-            </DialogTrigger>
-          )}
+        <Dialog open onOpenChange={() => onClose()}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Edit Email</DialogTitle>
@@ -172,13 +147,15 @@ const EmailSection = ({
                     type="button"
                     variant="outline"
                     onClick={() => {
-                      setOpen(false);
+                      onClose();
                       form.reset();
                     }}
                   >
                     Cancel
                   </Button>
-                  <Button type="submit">Update Email</Button>
+                  <Button type="submit" disabled={isPending}>
+                    Update Email
+                  </Button>
                 </div>
               </form>
             </Form>

@@ -7,4 +7,6 @@ export const QUERY_KEYS = {
   matches: "matches",
   images: "images",
   notifications: "notifications",
+  usersToSwipe: "usersToSwipe",
+  explore: "explore",
 };

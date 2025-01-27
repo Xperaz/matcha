@@ -16,6 +16,7 @@ const mapUser = (dbResults: any): UserDTO => {
     profile_completed: dbResults.profile_completed,
     gender: dbResults.gender,
     sexual_preferences: dbResults.sexual_preferences,
+    profile_picture: dbResults.profile_picture,
     email_verified: dbResults.email_verified,
   };
 

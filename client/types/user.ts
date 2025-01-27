@@ -1,3 +1,4 @@
+import { Preference } from "@/schemas/CompleteFormSchema";
 import { genderEnum } from "@/schemas/SignupSchema";
 
 export interface IUserType {
@@ -10,10 +11,11 @@ export interface IUserType {
   age: number;
   profile_completed: boolean;
   gender: genderEnum;
-  sexual_preferences: genderEnum | null;
+  sexual_preferences: Preference | null;
   profile_picture: string;
   country: string;
   city: string;
   interests: string[];
   is_google: boolean;
+  distance?: string;
 }

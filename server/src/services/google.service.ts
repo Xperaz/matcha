@@ -3,6 +3,7 @@ import qs from "querystring";
 import jwt from "jsonwebtoken";
 import { query } from "../config/db";
 import { signToken } from "./auth.service";
+import { v4 as uuidv4 } from "uuid";
 
 interface GoogleUserBasicInfo {
   email: string;
@@ -40,15 +41,36 @@ const calculateAge = (year: number, day: number, month: number): number => {
   return age;
 };
 
+function generateRandomUsername(firstName: string, lastName: string): string {
+  const lowerFirstName = firstName.toLowerCase();
+  const lowerLastName = lastName.toLowerCase();
+
+  const uniqueId = uuidv4().split("-")[0];
+
+  const username = `${lowerFirstName}.${lowerLastName}.${uniqueId}`;
+
+  return username;
+}
+
 const createGoogleUser = async (user: GoogleUserInfo): Promise<string> => {
+  const username = generateRandomUsername(user.given_name, user.family_name);
   const createUserQuery = `
-      INSERT INTO users (email, first_name, last_name, gender, age, is_google, email_verified)
+      INSERT INTO users (email, first_name, last_name, username, gender, age, is_google, email_verified)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING id;
     `;
   
   const { email, given_name, family_name, gender, age } = user;
-  const values = [email, given_name, family_name, gender, age, true, true];
+  const values = [
+    email,
+    given_name,
+    family_name,
+    username,
+    gender,
+    age,
+    true,
+    true,
+  ];
   const { rows } = await query(createUserQuery, values);
   return rows[0].id;
 };

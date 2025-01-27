@@ -8,14 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -34,9 +27,14 @@ import {
 } from "@/schemas/PasswordUpdateShema";
 import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
-const PasswordSection = ({ is_google }: { is_google: boolean }) => {
-  const [open, setOpen] = useState(false);
+const PasswordSection = ({
+  onClose,
+}: {
+  is_google: boolean;
+  onClose: () => void;
+}) => {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -63,8 +61,19 @@ const PasswordSection = ({ is_google }: { is_google: boolean }) => {
       );
     },
     onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Password updated successfully",
+      });
       form.reset();
-      setOpen(false);
+      onClose();
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update password",
+        variant: "destructive",
+      });
     },
   });
 
@@ -87,40 +96,8 @@ const PasswordSection = ({ is_google }: { is_google: boolean }) => {
 
   return (
     <div className="flex flex-col py-2">
-      <div className="flex justify-between">
-        <span className="text-sm text-gray-500">Password</span>
-        <span className="text-sm w-[300px] overflow-hidden">********</span>
-      </div>
       <div className="flex items-center justify-end mr-10">
-        <Dialog
-          open={open}
-          onOpenChange={(newOpen) => {
-            if (!is_google) {
-              setOpen(newOpen);
-              if (!newOpen) {
-                form.reset();
-              }
-            }
-          }}
-        >
-          {is_google ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button className="h-8 px-2 text-sm opacity-50">
-                    Edit Password
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Password cannot be updated for google accounts</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : (
-            <DialogTrigger asChild>
-              <Button className="h-8 px-2 text-sm">Edit Password</Button>
-            </DialogTrigger>
-          )}
+        <Dialog open onOpenChange={() => onClose()}>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Edit Password</DialogTitle>
@@ -242,8 +219,8 @@ const PasswordSection = ({ is_google }: { is_google: boolean }) => {
                     type="button"
                     variant="outline"
                     onClick={() => {
-                      setOpen(false);
                       form.reset();
+                      onClose();
                     }}
                   >
                     Cancel

@@ -3,8 +3,13 @@ import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import { query } from "../config/db";
 import { UserMatchesDto } from "../dtos/user/userMatchesDto";
 import { UserProfilesToSwipeDto } from "../dtos/user/userProfilesToSwipeDto";
-import * as matchService from "../services/match.service";
 import { createNotificationAndSendMessage } from "../services/notif.service";
+import * as matchService from "../services/match.service";
+import {
+  validateAgeRange,
+  validateDistanceRange,
+  validateFameRatingRange,
+} from "../services/search.service";
 
 export const swipeLeft = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -176,45 +181,59 @@ export const getUsersProfileToSwipe = async (
       });
     }
 
-    if (!ageRange || !distanceRange || !fameRatingRange || !commonInterests) {
+    const ageRangeArray: number[] | undefined = ageRange
+      ? (ageRange as string).split(",").map(Number)
+      : undefined;
+    const distanceRangeArray: number[] | undefined = distanceRange
+      ? (distanceRange as string).split(",").map(Number)
+      : undefined;
+    const fameRatingRangeArray: number[] | undefined = fameRatingRange
+      ? (fameRatingRange as string).split(",").map(Number)
+      : undefined;
+    const commonInterestsCount: number | undefined = commonInterests
+      ? parseInt(commonInterests as string)
+      : undefined;
+
+    if (ageRangeArray && !validateAgeRange(ageRangeArray)) {
       return res.status(400).json({
         success: false,
-        message: "Missing required query parameters",
+        message: "Bad request: Invalid age range",
       });
     }
 
-    const ageRangeArray: number[] = (ageRange as string).split(",").map(Number);
-    const distanceRangeArray: number[] = (distanceRange as string)
-      .split(",")
-      .map(Number);
-    const fameRatingRangeArray: number[] = (fameRatingRange as string)
-      .split(",")
-      .map(Number);
-    const commonInterestsCount: number = parseInt(commonInterests as string);
-
-    const validFilters: boolean = matchService.validateSearchFilters(
-      ageRangeArray,
-      distanceRangeArray,
-      fameRatingRangeArray,
-      commonInterestsCount
-    );
-
-    if (!validFilters) {
+    if (distanceRangeArray && !validateDistanceRange(distanceRangeArray)) {
       return res.status(400).json({
         success: false,
-        message: "Bad request: Invalid search parameters",
+        message: "Bad request: Invalid distance range",
+      });
+    }
+
+    if (
+      fameRatingRangeArray &&
+      !validateFameRatingRange(fameRatingRangeArray)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request: Invalid fame rating range",
+      });
+    }
+
+    if (commonInterestsCount && commonInterestsCount < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request: Invalid common interests count",
       });
     }
 
     const usersProfiles: UserProfilesToSwipeDto[] =
       await matchService.getProfilesToSwipe(userId, {
-        minAge: ageRangeArray[0],
-        maxAge: ageRangeArray[1],
-        minFameRating: fameRatingRangeArray[0],
-        maxFameRating: fameRatingRangeArray[1],
-        minDistance: distanceRangeArray[0],
-        maxDistance: distanceRangeArray[1],
-        commonInterests: commonInterestsCount,
+        minAge: ageRangeArray ? ageRangeArray[0] : undefined,
+        maxAge: ageRangeArray ? ageRangeArray[1] : undefined,
+        minDistance: distanceRangeArray ? distanceRangeArray[0] : undefined,
+        maxDistance: distanceRangeArray ? distanceRangeArray[1] : undefined,
+        minFameRating: fameRatingRangeArray ? fameRatingRangeArray[0]: undefined,
+        maxFameRating: fameRatingRangeArray ? fameRatingRangeArray[1]: undefined,
+        commonInterests: commonInterestsCount ? commonInterestsCount: undefined,
       });
 
     return res.status(200).json({

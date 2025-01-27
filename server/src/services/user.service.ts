@@ -9,3 +9,160 @@ import {
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import bcrypt from "bcryptjs";
 
+export const updateProfileValues = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  const {
+    first_name,
+    last_name,
+    biography,
+    interests,
+    gender,
+    sexual_preferences,
+    profile_picture,
+  } = req.body;
+  const userId = req.user?.id;
+  if (!userId) {
+    res.status(401).json({
+      message: "User not found",
+    });
+  }
+
+  const updates = [];
+  const values = [];
+  let paramCounter = 1;
+
+  if (first_name) {
+    updates.push(`first_name = $${paramCounter}`);
+    values.push(first_name);
+    paramCounter++;
+  }
+  if (last_name) {
+    updates.push(`last_name = $${paramCounter}`);
+    values.push(last_name);
+    paramCounter++;
+  }
+
+  if (biography) {
+    updates.push(`biography = $${paramCounter}`);
+    values.push(biography);
+    paramCounter++;
+  }
+
+  if (gender) {
+    updates.push(`gender = $${paramCounter}`);
+    values.push(gender);
+    paramCounter++;
+  }
+
+  if (sexual_preferences) {
+    if (!isValidPreference(sexual_preferences)) {
+      res.status(400).json({
+        error: "Invalid sexual preferences",
+        invalidPreferences: [sexual_preferences],
+      });
+    }
+    updates.push(`sexual_preferences = $${paramCounter}`);
+    values.push(sexual_preferences);
+    paramCounter++;
+  }
+
+  if (profile_picture) {
+    const result = await cloudinary.uploader.upload(profile_picture);
+    const profilePictureUrl = result.secure_url;
+    updates.push(`profile_picture = $${paramCounter}`);
+    values.push(profilePictureUrl);
+    paramCounter++;
+  }
+
+  values.push(userId);
+
+  return { userId, updates, values, paramCounter, interests };
+};
+
+export const isValidEmail = (email: string): boolean => {
+  try {
+    const emailRegex = /^[^\s@]{1,64}@[^\s@]+\.[^\s@]+$/;
+    const validEmail = emailRegex.test(email);
+    return validEmail;
+  } catch (error) {
+    console.error("Error from validatin email:", error);
+    return false;
+  }
+};
+
+export const isValidPassword = (password: string): boolean => {
+  try {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,16}$/;
+    return passwordRegex.test(password);
+  } catch (error) {
+    console.error("Error from validatin password:", error);
+    return false;
+  }
+};
+
+export const isValidImage = (image: string): boolean => {
+  try {
+    const imageRegex = /^data:image\/(png|jpg|jpeg);base64,/;
+    return imageRegex.test(image);
+  } catch (error) {
+    console.error("Error from validatin image:", error);
+    return false;
+  }
+};
+
+export const isValidCompleteProfileData = (
+  userData: completeProfileReqeuest
+): string | null => {
+  if (userData.biography.length < 10 || userData.biography.length > 500) {
+    return "Biography should be between 10 and 500 characters";
+  }
+
+  if (userData.city.length < 3 || userData.city.length > 50) {
+    return "City should be between 3 and 50 characters";
+  }
+
+  if (userData.country.length < 3 || userData.country.length > 50) {
+    return "Country should be between 3 and 50 characters";
+  }
+
+  if (userData.interests.length < 3 || userData.interests.length > 10) {
+    return "Interests should be between 3 and 10";
+  }
+
+  if (!isValidPreference(userData.preferences)) {
+    return "invalid preference";
+  }
+
+  const invalidInterests: string[] = userData.interests.filter(
+    (interest) => !isValidInterest(interest)
+  );
+
+  if (invalidInterests.length > 0) {
+    return "Invalid interests";
+  }
+
+  if (userData.pictures.length !== 4) return "Images should be exactly 4";
+
+  if (!userData.pictures.every((image) => isValidImage(image))) {
+    return "Invalid images";
+  }
+
+  if (!isValidImage(userData.profile_picture)) {
+    return "Invalid profile picture";
+  }
+  return null;
+};
+
+export const userEsists = async (id: string): Promise<boolean> => {
+  const user = await query("SELECT email FROM users WHERE id = $1", [id]);
+  return user.rows.length > 0;
+};
+
+export const isValidUserId = (id: string): boolean => {
+  const uuidRegex =
+    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  return uuidRegex.test(id);
+};
