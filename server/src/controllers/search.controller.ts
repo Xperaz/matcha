@@ -8,8 +8,9 @@ export const searchForUsers = async (
 ): Promise<Response> => {
   try {
     const userId: string = req.user?.id;
-    const { ageRange, distanceRange, fameRatingRange, interests, sort } =
-      req.query;
+    const limit: number = parseInt(req.query.limit as string) || 10;
+    const page: number = parseInt(req.query.page as string) || 1;
+    const { ageRange, distanceRange, fameRatingRange, interests, sort } = req.query;
 
     if (!userId) {
       return res.status(401).json({
@@ -69,12 +70,20 @@ export const searchForUsers = async (
       });
     }
 
-    if (sort !== "distance" && sort !== "fame_rating" && sort !== "age" && sort !== "interests") {
+    if (
+      sortVar !== "distance" &&
+      sortVar !== "fame_rating" &&
+      sortVar !== "age" &&
+      sortVar !== "interests"
+    ) {
       return res.status(400).json({
         success: false,
         message: "Bad request: Invalid sort parameter",
       });
     }
+
+    console.log("limit", limit); 
+    console.log("page", page);
 
     const results = await searchService.getUsersSearched(userId, {
       minAge: ageRangeArray ? ageRangeArray[0] : undefined,
@@ -85,6 +94,8 @@ export const searchForUsers = async (
       maxFameRating: fameRatingRangeArray ? fameRatingRangeArray[1] : undefined,
       interests: interestsTags,
       sortBy: sortVar,
+      page: page,
+      limit: limit,
     });
 
     console.log("search results", results.length);

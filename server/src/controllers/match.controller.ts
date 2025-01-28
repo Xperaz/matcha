@@ -254,6 +254,7 @@ export const getUsersProfileToSwipe = async (
         message: "Bad request: Invalid sort parameter",
       });
     }
+    
 
     const usersProfiles: UserProfilesToSwipeDto[] =
       await matchService.getProfilesToSwipe(userId, {

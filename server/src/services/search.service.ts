@@ -13,6 +13,8 @@ export const getUsersSearched = async (
     maxDistance?: number;
     interests?: string[];
     sortBy?: string;
+    page?: number;
+    limit?: number;
   }
 ) => {
   const userDataQuery = `
@@ -120,7 +122,7 @@ export const getUsersSearched = async (
     params.push(filters.minDistance ?? 0, filters.maxDistance ?? 20000);
     paramCounter += 2;
   }
-  
+
   const sorting = `
     ORDER BY
       CASE
@@ -131,6 +133,15 @@ export const getUsersSearched = async (
       END DESC
   `;
   params.push(filters?.sortBy ?? "distance");
+  paramCounter++;
+
+  const pagination = `
+    LIMIT $${paramCounter} OFFSET $${paramCounter + 1};
+  `;
+  params.push(filters?.limit ?? 50);
+  params.push(
+    (filters?.page ?? 1) * (filters?.limit ?? 50) - (filters?.limit ?? 50)
+  );
 
   const fullQuery = `
     ${userDataQuery}
@@ -141,6 +152,7 @@ export const getUsersSearched = async (
     )
     ${finalSelection}
     ${sorting}
+    ${pagination}
   `;
 
   try {
