@@ -1,14 +1,14 @@
 import { Response, NextFunction } from "express";
 import { AuthenticatedRequest } from "./ahthenticatedRequest";
 
-export const usableProfile = async (
+export const usableProfile =  (
   req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
-): Promise<void> => {
+): void => {
   try {
-    const user_profile_completed = req.user.profile_completed;
-    const user_email_verified = req.user.email_verified;
+    const user_profile_completed = req.user?.profile_completed;
+    const user_email_verified = req.user?.email_verified;
 
     if (!user_profile_completed) {
       res.status(403).json({
