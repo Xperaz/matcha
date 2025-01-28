@@ -7,7 +7,7 @@ const router: Router = Router();
 
 router.delete("/remove/:imageId", protectRoutes, usableProfile, removeImage);
 router.post("/upload", protectRoutes, usableProfile, addImage);
-router.post("/profile-picture", usableProfile, protectRoutes, addProfileImage);
-router.get("/images", usableProfile, protectRoutes, getAllImages);
+router.post("/profile-picture", protectRoutes, usableProfile, addProfileImage);
+router.get("/images", protectRoutes, usableProfile, getAllImages);
 
 export default router;
