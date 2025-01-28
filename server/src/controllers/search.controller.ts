@@ -8,7 +8,8 @@ export const searchForUsers = async (
 ): Promise<Response> => {
   try {
     const userId: string = req.user?.id;
-    const { ageRange, distanceRange, fameRatingRange, interests } = req.query;
+    const { ageRange, distanceRange, fameRatingRange, interests, sort } =
+      req.query;
 
     if (!userId) {
       return res.status(401).json({
@@ -16,6 +17,8 @@ export const searchForUsers = async (
         message: "Unauthorized: User not found",
       });
     }
+
+    console.log("searching for users with filters", req.query);
     // Parse and validate optional parameters
     const ageRangeArray: number[] | undefined = ageRange
       ? (ageRange as string).split(",").map(Number)
@@ -29,6 +32,7 @@ export const searchForUsers = async (
     const interestsTags: string[] | undefined = interests
       ? (interests as string).split(",")
       : undefined;
+    const sortVar: string = sort ? (sort as string) : "distance";
 
     // Validate parameters if they exist
     if (ageRangeArray && !searchService.validateAgeRange(ageRangeArray)) {
@@ -65,6 +69,13 @@ export const searchForUsers = async (
       });
     }
 
+    if (sort !== "distance" && sort !== "fame_rating" && sort !== "age" && sort !== "interests") {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request: Invalid sort parameter",
+      });
+    }
+
     const results = await searchService.getUsersSearched(userId, {
       minAge: ageRangeArray ? ageRangeArray[0] : undefined,
       maxAge: ageRangeArray ? ageRangeArray[1] : undefined,
@@ -73,7 +84,10 @@ export const searchForUsers = async (
       minFameRating: fameRatingRangeArray ? fameRatingRangeArray[0] : undefined,
       maxFameRating: fameRatingRangeArray ? fameRatingRangeArray[1] : undefined,
       interests: interestsTags,
+      sortBy: sortVar,
     });
+
+    console.log("search results", results.length);
 
     return res.status(200).json({
       success: true,

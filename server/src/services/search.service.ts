@@ -12,6 +12,7 @@ export const getUsersSearched = async (
     minDistance?: number;
     maxDistance?: number;
     interests?: string[];
+    sortBy?: string;
   }
 ) => {
   const userDataQuery = `
@@ -119,8 +120,17 @@ export const getUsersSearched = async (
     params.push(filters.minDistance ?? 0, filters.maxDistance ?? 20000);
     paramCounter += 2;
   }
-
-  const sorting = `ORDER BY distance ASC;`;
+  
+  const sorting = `
+    ORDER BY
+      CASE
+        WHEN $${paramCounter} = 'distance' THEN distance
+        WHEN $${paramCounter} = 'age' THEN age::float
+        WHEN $${paramCounter} = 'fame_rating' THEN fame_rating::float
+        ELSE distance
+      END DESC
+  `;
+  params.push(filters?.sortBy ?? "distance");
 
   const fullQuery = `
     ${userDataQuery}
