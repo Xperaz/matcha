@@ -38,12 +38,12 @@ export const swipeLeft = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    const cantDislike: boolean = await matchService.cantSwipe(
+    const canDislike: boolean = await matchService.canSwipe(
       userId,
       receiverId
     );
 
-    if (cantDislike === true) {
+    if (canDislike === false) {
       return res.status(409).json({
         success: false,
         message: "you can not swipe left this user",
@@ -94,9 +94,9 @@ export const swipeRight = async (req: AuthenticatedRequest, res: Response) => {
 
     // check if the user has already swiped the receiver right
     // for safety
-    const cantLike: boolean = await matchService.cantSwipe(userId, receiverId);
+    const canLike: boolean = await matchService.canSwipe(userId, receiverId);
 
-    if (cantLike === true) {
+    if (canLike === false) {
       return res.status(409).json({
         success: false,
         message: "you can not swipe right this user",
@@ -317,9 +317,9 @@ export const likeUser = async (req: AuthenticatedRequest, res: Response) => {
 
     // check if the user has already swiped the receiver right
     // for safety
-    const cantLike: boolean = await matchService.cantSwipe(userId, receiverId);
+    const canLike: boolean = await matchService.canSwipe(userId, receiverId);
 
-    if (cantLike === true) {
+    if (canLike === false) {
       return res.status(409).json({
         success: false,
         message: "you can not swipe right this user",

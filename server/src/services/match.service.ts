@@ -333,7 +333,7 @@ export const getProfilesToSwipe = async (
   }
 };
 
-export const cantSwipe = async (
+export const canSwipe = async (
   userId: string,
   receiverId: string
 ): Promise<boolean> => {
