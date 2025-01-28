@@ -95,7 +95,7 @@ export const insertMatch = async (
 ): Promise<void> => {
   const matchUsersQuery: string = `
     UPDATE likes SET status = 'MATCH'
-    WHERE (initiator_id = $1 AND receiver_id = $2) OR (initiator_id = $2 AND receiver_id = $1);
+    WHERE (initiator_id = $1 AND receiver_id = $2 AND status = 'LIKED') OR (initiator_id = $2 AND receiver_id = $1 AND status = 'LIKED');
     `;
   try {
     await query(matchUsersQuery, [userId, receiverId]);
@@ -363,3 +363,104 @@ export const canSwipe = async (
     throw error;
   }
 };
+
+export const canLike = async ( userId: string, receiverId: string): Promise<boolean> => {
+  const canLikeQuery: string = `
+    SELECT u.id
+    FROM users u
+    WHERE u.id = $2
+    AND NOT EXISTS (
+      SELECT 1 FROM blocks 
+      WHERE (blocker_id = $1 AND blocked_id = u.id)
+      OR (blocker_id = u.id AND blocked_id = $1)
+    )
+    AND NOT EXISTS (
+      SELECT 1 FROM likes
+      WHERE (initiator_id = $1 AND receiver_id = u.id AND status IN ('LIKED', 'MATCH'))
+      OR (initiator_id = u.id AND receiver_id = $1 AND status = 'MATCH')
+    );
+  `;
+  try {
+    const { rows } = await query(canLikeQuery, [userId, receiverId]);
+    if (rows.length > 0) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error liking user: ", error);
+    throw error;
+  }
+}
+
+export const canDislike = async ( userId: string, receiverId: string): Promise<boolean> => {
+  const canDislikeQuery: string = `
+    SELECT u.id
+    FROM users u
+    WHERE u.id = $2
+    AND NOT EXISTS (
+      SELECT 1 FROM blocks 
+      WHERE (blocker_id = $1 AND blocked_id = u.id)
+      OR (blocker_id = u.id AND blocked_id = $1)
+    )
+    AND EXISTS (
+      SELECT 1 FROM likes
+      WHERE (initiator_id = $1 AND receiver_id = u.id AND status = 'LIKED')
+    );
+  `;
+  try {
+    const { rows } = await query(canDislikeQuery, [userId, receiverId]);
+    if (rows.length > 0) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error disliking user: ", error);
+    throw error;
+  }
+}
+
+export const canUnmatch = async ( userId: string, receiverId: string): Promise<boolean> => {
+  const canUnmatchQuery: string = `
+    SELECT u.id
+    FROM users u
+    WHERE u.id = $2
+    AND EXISTS (
+      SELECT 1 FROM likes
+      WHERE (initiator_id = $1 AND receiver_id = u.id AND status = 'MATCH')
+      OR (initiator_id = u.id AND receiver_id = $1 AND status = 'MATCH')
+    )
+    AND NOT EXISTS (
+      SELECT 1 FROM blocks 
+      WHERE (blocker_id = $1 AND blocked_id = u.id)
+      OR (blocker_id = u.id AND blocked_id = $1)
+    );
+  `;
+  try {
+    const { rows } = await query(canUnmatchQuery, [userId, receiverId]);
+    if (rows.length > 0) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error unmatching user: ", error);
+    throw error;
+  }
+}
+
+export const insertLike = async ( userId: string, receiverId: string): Promise<void> => {
+  // check if the user dislikes the receiver and change the status to liked if not insert like
+  const insertLikeQuery: string = `
+    INSERT INTO likes (initiator_id, receiver_id, status)
+    VALUES ($1, $2, 'LIKED')
+    ON CONFLICT (initiator_id, receiver_id) DO UPDATE
+    SET status = 'LIKED' WHERE likes.status = 'DISLIKED';
+  `;
+
+  try {
+    await query(insertLikeQuery, [userId, receiverId]);
+    await increaseFameRating(receiverId, 5);
+  } catch (error) {
+    console.error("Error inserting like: ", error);
+    throw error;
+  }
+}

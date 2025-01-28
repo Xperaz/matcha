@@ -1,5 +1,3 @@
-import { Response } from "express";
-import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import { query } from "../config/db";
 import cloudinary from "../config/cloudinary";
 import { UserImages } from "../dtos/user/userImages";

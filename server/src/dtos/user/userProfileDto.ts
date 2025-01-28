@@ -26,10 +26,14 @@ export interface UserProfileDTO {
     sexual_preferences?: "MALE" | "FEMALE" | "BOTH";
     age: number;
     gender: "MALE" | "FEMALE" | "OTHER"; 
-    profile_completed: boolean;
     profile_picture: string;
     country: string;
     city: string;
+    is_like: boolean;
+    is_match: boolean;
+    has_liked_you: boolean;
+    is_active: boolean;
+    last_connection: Date;
     interests: string[];
-    pictures: UserImages[];
+    pictures: string[];
   }

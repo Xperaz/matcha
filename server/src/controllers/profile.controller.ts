@@ -83,7 +83,7 @@ export const getUserProfile = async (
     }
 
     const userData: publicProfileDto | null =
-      await profileService.getUserProfile(receiverId);
+      await profileService.getUserProfile(receiverId, userId);
 
     if (!userData) {
       return res.status(404).json({
