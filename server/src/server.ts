@@ -74,8 +74,11 @@ app.use("/api/report", reportRoutes);
 app.use("/api/history", historyRoutes);
 
 io.use(authorizeUserSocket);
-io.on("connection", (socket: AuthenticatedSocket) => {});
+io.on("connection", (socket: AuthenticatedSocket) => {
+  // TODO: set user as connected userService.setUserOffline
+});
 // TODO: remove user socket from socketMap
+//TODO: set user a disconnected userService.setUserOffline
 
 server.listen(port, () => {
   console.log(`Listening on port ${port}`);

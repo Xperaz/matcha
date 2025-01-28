@@ -8,6 +8,7 @@ import {
 } from "../dtos/requests/completeProfileRequest";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import bcrypt from "bcryptjs";
+import exp from "constants";
 
 export const updateProfileValues = async (
   req: AuthenticatedRequest,
@@ -167,8 +168,10 @@ export const isValidUserId = (id: string): boolean => {
   return uuidRegex.test(id);
 };
 
-export const increaseFameRating = async (userId: string, ammount: number): Promise<void> => {
- 
+export const increaseFameRating = async (
+  userId: string,
+  ammount: number
+): Promise<void> => {
   const increaseFameQuery = `
   UPDATE users
   SET fame_rating = 
@@ -185,11 +188,12 @@ export const increaseFameRating = async (userId: string, ammount: number): Promi
     console.error("Error increasing fame rating: ", error);
     throw error;
   }
-
 };
 
-export const decreaseFameRating = async (userId: string, ammount: number): Promise<void> => {
-   
+export const decreaseFameRating = async (
+  userId: string,
+  ammount: number
+): Promise<void> => {
   const decreaseFameQuery = `
   UPDATE users
   SET fame_rating = 
@@ -206,5 +210,33 @@ export const decreaseFameRating = async (userId: string, ammount: number): Promi
     console.error("Error decreasing fame rating: ", error);
     throw error;
   }
+};
 
-}
+export const setUserOnline = async (userId: string): Promise<void> => {
+  const setUserOnlineQuery = `
+  UPDATE users
+  SET is_active = true
+  WHERE id = $1;
+  `;
+  try {
+    await query(setUserOnlineQuery, [userId]);
+  } catch (error) {
+    console.error("Error setting user online: ", error);
+    throw error;
+  }
+};
+
+export const setUserOffline = async (userId: string): Promise<void> => {
+  const setUserOfflineQuery = `
+  UPDATE users
+  SET is_active = false, last_connection = $1
+  WHERE id = $2;
+  `;
+  try {
+    const nowTime = new Date().toISOString();
+    await query(setUserOfflineQuery, [userId, nowTime]);
+  } catch (error) {
+    console.error("Error setting user offline: ", error);
+    throw error;
+  }
+};
