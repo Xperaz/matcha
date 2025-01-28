@@ -120,11 +120,11 @@ export const isValidCompleteProfileData = (
     return "Biography should be between 10 and 500 characters";
   }
 
-  if (userData.city.length < 3 || userData.city.length > 50) {
+  if (userData.city.length < 2 || userData.city.length > 50) {
     return "City should be between 3 and 50 characters";
   }
 
-  if (userData.country.length < 3 || userData.country.length > 50) {
+  if (userData.country.length < 2 || userData.country.length > 50) {
     return "Country should be between 3 and 50 characters";
   }
 

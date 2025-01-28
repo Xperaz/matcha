@@ -75,12 +75,12 @@ export const completeProfile = async (
           SET biography = $1,
               latitude = $2,
               longitude = $3,
-              profile_completed = true,
               sexual_preferences = $4,
               profile_picture = $5,
               city = $6,
-              country = $7
-          WHERE id = $8;
+              country = $7,
+              profile_completed = $8
+          WHERE id = $9;
         `;
     await query(insertUserInfoQuery, [
       userData.biography,
@@ -90,6 +90,7 @@ export const completeProfile = async (
       profilePictureUrl,
       userData.city,
       userData.country,
+      true,
       userId,
     ]);
 
