@@ -188,6 +188,7 @@ export const getProfilesToSwipe = async (
     minDistance?: number;
     maxDistance?: number;
     commonInterests?: number;
+    sortBy?: string;
   }
 ) => {
   const userDataQuery = `
@@ -298,18 +299,18 @@ export const getProfilesToSwipe = async (
     paramCounter++;
   }
 
-  // CASE
-  //   WHEN $${paramCounter} = 'distance' THEN distance
-  //   WHEN $${paramCounter} = 'age' THEN age::float
-  //   WHEN $${paramCounter} = 'fame_rating' THEN fame_rating::float
-  //   WHEN $${paramCounter} = 'common_tags' THEN common_tags_count::float
-  //   ELSE distance
-  // END ASC,
   const sorting = `
-    ORDER BY distance ASC
-    LIMIT 50;
+    ORDER BY
+      CASE
+        WHEN $${paramCounter} = 'distance' THEN distance
+        WHEN $${paramCounter} = 'age' THEN age::float
+        WHEN $${paramCounter} = 'fame_rating' THEN fame_rating::float
+        WHEN $${paramCounter} = 'common_interests' THEN common_tags_count::float
+        ELSE distance
+      END DESC
+      LIMIT 50;
   `;
-  // params.push("distance");
+  params.push(filters?.sortBy ?? "distance");
 
   const fullQuery = `
     ${userDataQuery}
@@ -321,8 +322,7 @@ export const getProfilesToSwipe = async (
     ${finalSelection}
     ${sorting}
   `;
-  // console.log(fullQuery);
-  // console.log("params", params);
+
 
   try {
     const { rows } = await query(fullQuery, params);

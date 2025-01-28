@@ -193,7 +193,7 @@ export const getUsersProfileToSwipe = async (
 ) => {
   try {
     const userId: string = req.user?.id;
-    const { ageRange, distanceRange, fameRatingRange, commonInterests } =
+    const { ageRange, distanceRange, fameRatingRange, commonInterests, sort } =
       req.query;
 
     if (!userId) {
@@ -215,6 +215,7 @@ export const getUsersProfileToSwipe = async (
     const commonInterestsCount: number | undefined = commonInterests
       ? parseInt(commonInterests as string)
       : undefined;
+    const sortVar: string = sort ? (sort as string) : "distance";
 
     if (ageRangeArray && !validateAgeRange(ageRangeArray)) {
       return res.status(400).json({
@@ -247,6 +248,13 @@ export const getUsersProfileToSwipe = async (
       });
     }
 
+    if (sortVar !== "distance" && sortVar !== "fame_rating" && sortVar !== "age" && sortVar !== "common_interests") {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request: Invalid sort parameter",
+      });
+    }
+
     const usersProfiles: UserProfilesToSwipeDto[] =
       await matchService.getProfilesToSwipe(userId, {
         minAge: ageRangeArray ? ageRangeArray[0] : undefined,
@@ -262,6 +270,7 @@ export const getUsersProfileToSwipe = async (
         commonInterests: commonInterestsCount
           ? commonInterestsCount
           : undefined,
+        sortBy: sortVar,
       });
 
     return res.status(200).json({
