@@ -3,8 +3,14 @@ import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import { query } from "../config/db";
 import { UserMatchesDto } from "../dtos/user/userMatchesDto";
 import { UserProfilesToSwipeDto } from "../dtos/user/userProfilesToSwipeDto";
-import * as matchService from "../services/match.service";
 import { createNotificationAndSendMessage } from "../services/notif.service";
+import * as matchService from "../services/match.service";
+import {
+  validateAgeRange,
+  validateDistanceRange,
+  validateFameRatingRange,
+} from "../services/search.service";
+import { userEsists, isValidUserId } from "../services/user.service";
 
 export const swipeLeft = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -18,17 +24,29 @@ export const swipeLeft = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    // check if the user has already swiped the receiver left
-    const existingDislike: boolean = await matchService.checkExistSwipe(
+    if (!isValidUserId(receiverId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid receiver ID",
+      });
+    }
+
+    if (!(await userEsists(receiverId))) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const canDislike: boolean = await matchService.canSwipe(
       userId,
-      receiverId,
-      "DISLIKED"
+      receiverId
     );
 
-    if (existingDislike === true) {
+    if (canDislike === false) {
       return res.status(409).json({
         success: false,
-        message: "User has already swiped left",
+        message: "you can not swipe left this user",
       });
     }
 
@@ -60,18 +78,28 @@ export const swipeRight = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
+    if (!isValidUserId(receiverId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid receiver ID",
+      });
+    }
+
+    if (!(await userEsists(receiverId))) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
     // check if the user has already swiped the receiver right
     // for safety
-    const existingLike: boolean = await matchService.checkExistSwipe(
-      userId,
-      receiverId,
-      "LIKED"
-    );
+    const canLike: boolean = await matchService.canSwipe(userId, receiverId);
 
-    if (existingLike === true) {
+    if (canLike === false) {
       return res.status(409).json({
         success: false,
-        message: "User has already swiped right",
+        message: "you can not swipe right this user",
       });
     }
 
@@ -159,14 +187,13 @@ export const getUserMatches = async (
 };
 
 // get an array of users to choose from
-// TODO maybe use pagination
 export const getUsersProfileToSwipe = async (
   req: AuthenticatedRequest,
   res: Response
 ) => {
   try {
     const userId: string = req.user?.id;
-    const { ageRange, distanceRange, fameRatingRange, commonInterests } =
+    const { ageRange, distanceRange, fameRatingRange, commonInterests, sort } =
       req.query;
 
     if (!userId) {
@@ -176,45 +203,75 @@ export const getUsersProfileToSwipe = async (
       });
     }
 
-    if (!ageRange || !distanceRange || !fameRatingRange || !commonInterests) {
+    const ageRangeArray: number[] | undefined = ageRange
+      ? (ageRange as string).split(",").map(Number)
+      : undefined;
+    const distanceRangeArray: number[] | undefined = distanceRange
+      ? (distanceRange as string).split(",").map(Number)
+      : undefined;
+    const fameRatingRangeArray: number[] | undefined = fameRatingRange
+      ? (fameRatingRange as string).split(",").map(Number)
+      : undefined;
+    const commonInterestsCount: number | undefined = commonInterests
+      ? parseInt(commonInterests as string)
+      : undefined;
+    const sortVar: string = sort ? (sort as string) : "distance";
+
+    if (ageRangeArray && !validateAgeRange(ageRangeArray)) {
       return res.status(400).json({
         success: false,
-        message: "Missing required query parameters",
+        message: "Bad request: Invalid age range",
       });
     }
 
-    const ageRangeArray: number[] = (ageRange as string).split(",").map(Number);
-    const distanceRangeArray: number[] = (distanceRange as string)
-      .split(",")
-      .map(Number);
-    const fameRatingRangeArray: number[] = (fameRatingRange as string)
-      .split(",")
-      .map(Number);
-    const commonInterestsCount: number = parseInt(commonInterests as string);
-
-    const validFilters: boolean = matchService.validateSearchFilters(
-      ageRangeArray,
-      distanceRangeArray,
-      fameRatingRangeArray,
-      commonInterestsCount
-    );
-
-    if (!validFilters) {
+    if (distanceRangeArray && !validateDistanceRange(distanceRangeArray)) {
       return res.status(400).json({
         success: false,
-        message: "Bad request: Invalid search parameters",
+        message: "Bad request: Invalid distance range",
       });
     }
+
+    if (
+      fameRatingRangeArray &&
+      !validateFameRatingRange(fameRatingRangeArray)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request: Invalid fame rating range",
+      });
+    }
+
+    if (commonInterestsCount && commonInterestsCount < 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request: Invalid common interests count",
+      });
+    }
+
+    if (sortVar !== "distance" && sortVar !== "fame_rating" && sortVar !== "age" && sortVar !== "common_interests") {
+      return res.status(400).json({
+        success: false,
+        message: "Bad request: Invalid sort parameter",
+      });
+    }
+    
 
     const usersProfiles: UserProfilesToSwipeDto[] =
       await matchService.getProfilesToSwipe(userId, {
-        minAge: ageRangeArray[0],
-        maxAge: ageRangeArray[1],
-        minFameRating: fameRatingRangeArray[0],
-        maxFameRating: fameRatingRangeArray[1],
-        minDistance: distanceRangeArray[0],
-        maxDistance: distanceRangeArray[1],
-        commonInterests: commonInterestsCount,
+        minAge: ageRangeArray ? ageRangeArray[0] : undefined,
+        maxAge: ageRangeArray ? ageRangeArray[1] : undefined,
+        minDistance: distanceRangeArray ? distanceRangeArray[0] : undefined,
+        maxDistance: distanceRangeArray ? distanceRangeArray[1] : undefined,
+        minFameRating: fameRatingRangeArray
+          ? fameRatingRangeArray[0]
+          : undefined,
+        maxFameRating: fameRatingRangeArray
+          ? fameRatingRangeArray[1]
+          : undefined,
+        commonInterests: commonInterestsCount
+          ? commonInterestsCount
+          : undefined,
+        sortBy: sortVar,
       });
 
     return res.status(200).json({
@@ -244,51 +301,62 @@ export const likeUser = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    // check if the user has already liked the receiver
-    const existingLikeQuery: string = `
-            SELECT initiator_id, receiver_id, status FROM likes
-            WHERE initiator_id = $1 AND receiver_id = $2 AND status = 'LIKED';
-        `;
-    const { rows: existingLikeRows } = await query(existingLikeQuery, [
-      userId,
-      receiverId,
-    ]);
-
-    if (existingLikeRows.length > 0) {
-      return res.status(409).json({
+    if (!isValidUserId(receiverId)) {
+      return res.status(400).json({
         success: false,
-        message: "User has already liked the user",
+        message: "Invalid receiver ID",
       });
     }
 
-    const mutualLike: string = `
-            SELECT initiator_id, receiver_id, status FROM likes
-            WHERE initiator_id = $2 AND receiver_id = $1 AND status = 'LIKED';
-        `;
-    const { rows: mutualLikeRows } = await query(mutualLike, [
-      userId,
+    if (!(await userEsists(receiverId))) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // check if the user has already swiped the receiver right
+    // for safety
+    const canLike: boolean = await matchService.canSwipe(userId, receiverId);
+
+    if (canLike === false) {
+      return res.status(409).json({
+        success: false,
+        message: "you can not swipe right this user",
+      });
+    }
+
+    // check if the receiver has already swiped the user right
+    const mutualLike: boolean = await matchService.checkExistSwipe(
       receiverId,
-    ]);
+      userId,
+      "LIKED"
+    );
 
-    if (mutualLikeRows.length > 0) {
+    if (mutualLike === true) {
       // create a match
-      const matchUsersQuery: string = `
-                UPDATE likes SET status = 'MATCH'
-                WHERE (initiator_id = $1 AND receiver_id = $2) OR (initiator_id = $2 AND receiver_id = $1);
-            `;
-      await query(matchUsersQuery, [userId, receiverId]);
-
+      await matchService.insertMatch(userId, receiverId);
+      await createNotificationAndSendMessage(
+        userId,
+        receiverId,
+        "is your match now! Say hi to start a conversation."
+      );
+      await createNotificationAndSendMessage(
+        receiverId,
+        userId,
+        "is your match now! Say hi to start a conversation."
+      );
       return res.status(200).json({
         success: true,
         message: "Match created successfully",
       });
     }
-
-    const likeUserQuery: string = `
-            INSERT INTO likes (initiator_id, receiver_id, status)
-            VALUES ($1, $2, 'LIKED');
-        `;
-    await query(likeUserQuery, [userId, receiverId]);
+    await matchService.insertSwipe(userId, receiverId, "LIKED");
+    await createNotificationAndSendMessage(
+      userId,
+      receiverId,
+      "liked you! check them out."
+    );
 
     return res.status(200).json({
       success: true,
@@ -316,8 +384,22 @@ export const unlikeUser = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
+    if (!isValidUserId(receiverId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid receiver ID",
+      });
+    }
+
+    if (!(await userEsists(receiverId))) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
     await matchService.unlike(userId, receiverId);
-    await createNotificationAndSendMessage(userId, receiverId, "unliked you.");
+    await createNotificationAndSendMessage(userId, receiverId, "unliked you!");
 
     return res.status(200).json({
       success: true,
@@ -345,6 +427,20 @@ export const unmatcheUser = async (
       return res.status(401).json({
         success: false,
         message: "Unauthorized: User ID not found",
+      });
+    }
+
+    if (!isValidUserId(receiverId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid receiver ID",
+      });
+    }
+
+    if (!(await userEsists(receiverId))) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
       });
     }
 

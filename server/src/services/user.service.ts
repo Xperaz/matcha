@@ -8,6 +8,7 @@ import {
 } from "../dtos/requests/completeProfileRequest";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
 import bcrypt from "bcryptjs";
+import exp from "constants";
 
 export const updateProfileValues = async (
   req: AuthenticatedRequest,
@@ -79,4 +80,163 @@ export const updateProfileValues = async (
   values.push(userId);
 
   return { userId, updates, values, paramCounter, interests };
+};
+
+export const isValidEmail = (email: string): boolean => {
+  try {
+    const emailRegex = /^[^\s@]{1,64}@[^\s@]+\.[^\s@]+$/;
+    const validEmail = emailRegex.test(email);
+    return validEmail;
+  } catch (error) {
+    console.error("Error from validatin email:", error);
+    return false;
+  }
+};
+
+export const isValidPassword = (password: string): boolean => {
+  try {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,16}$/;
+    return passwordRegex.test(password);
+  } catch (error) {
+    console.error("Error from validatin password:", error);
+    return false;
+  }
+};
+
+export const isValidImage = (image: string): boolean => {
+  try {
+    const imageRegex = /^data:image\/(png|jpg|jpeg);base64,/;
+    return imageRegex.test(image);
+  } catch (error) {
+    console.error("Error from validatin image:", error);
+    return false;
+  }
+};
+
+export const isValidCompleteProfileData = (
+  userData: completeProfileReqeuest
+): string | null => {
+  if (userData.biography.length < 10 || userData.biography.length > 500) {
+    return "Biography should be between 10 and 500 characters";
+  }
+
+  if (userData.city.length < 2 || userData.city.length > 50) {
+    return "City should be between 3 and 50 characters";
+  }
+
+  if (userData.country.length < 2 || userData.country.length > 50) {
+    return "Country should be between 3 and 50 characters";
+  }
+
+  if (userData.interests.length < 3 || userData.interests.length > 10) {
+    return "Interests should be between 3 and 10";
+  }
+
+  if (!isValidPreference(userData.preferences)) {
+    return "invalid preference";
+  }
+
+  const invalidInterests: string[] = userData.interests.filter(
+    (interest) => !isValidInterest(interest)
+  );
+
+  if (invalidInterests.length > 0) {
+    return "Invalid interests";
+  }
+
+  if (userData.pictures.length !== 4) return "Images should be exactly 4";
+
+  if (!userData.pictures.every((image) => isValidImage(image))) {
+    return "Invalid images";
+  }
+
+  if (!isValidImage(userData.profile_picture)) {
+    return "Invalid profile picture";
+  }
+  return null;
+};
+
+export const userEsists = async (id: string): Promise<boolean> => {
+  const user = await query("SELECT email FROM users WHERE id = $1", [id]);
+  return user.rows.length > 0;
+};
+
+export const isValidUserId = (id: string): boolean => {
+  const uuidRegex =
+    /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+  return uuidRegex.test(id);
+};
+
+export const increaseFameRating = async (
+  userId: string,
+  ammount: number
+): Promise<void> => {
+  const increaseFameQuery = `
+  UPDATE users
+  SET fame_rating = 
+    CASE 
+      WHEN fame_rating = 100 THEN 100 
+      WHEN fame_rating + $2 > 100 THEN 100
+      ELSE fame_rating + $2
+    END
+  WHERE id = $1;
+  `;
+  try {
+    await query(increaseFameQuery, [userId, ammount]);
+  } catch (error) {
+    console.error("Error increasing fame rating: ", error);
+    throw error;
+  }
+};
+
+export const decreaseFameRating = async (
+  userId: string,
+  ammount: number
+): Promise<void> => {
+  const decreaseFameQuery = `
+  UPDATE users
+  SET fame_rating = 
+    CASE 
+      WHEN fame_rating = 0 THEN 0 
+      WHEN fame_rating - $2 < 0 THEN 0
+      ELSE fame_rating - $2
+    END
+  WHERE id = $1;
+  `;
+  try {
+    await query(decreaseFameQuery, [userId, ammount]);
+  } catch (error) {
+    console.error("Error decreasing fame rating: ", error);
+    throw error;
+  }
+};
+
+export const setUserOnline = async (userId: string): Promise<void> => {
+  const setUserOnlineQuery = `
+  UPDATE users
+  SET is_active = true
+  WHERE id = $1;
+  `;
+  try {
+    await query(setUserOnlineQuery, [userId]);
+  } catch (error) {
+    console.error("Error setting user online: ", error);
+    throw error;
+  }
+};
+
+export const setUserOffline = async (userId: string): Promise<void> => {
+  const setUserOfflineQuery = `
+  UPDATE users
+  SET is_active = false, last_connection = $1
+  WHERE id = $2;
+  `;
+  try {
+    const nowTime = new Date().toISOString();
+    await query(setUserOfflineQuery, [userId, nowTime]);
+  } catch (error) {
+    console.error("Error setting user offline: ", error);
+    throw error;
+  }
 };

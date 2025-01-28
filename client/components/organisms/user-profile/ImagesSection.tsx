@@ -103,7 +103,7 @@ const ImagesSection = () => {
         </div>
 
         <div>
-          {images.length < 5 && (
+          {images.length < 4 && (
             <Controller
               name="pictures"
               control={control}

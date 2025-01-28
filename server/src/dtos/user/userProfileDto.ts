@@ -1,3 +1,4 @@
+import { UserImages } from "./userImages";
 export interface UserProfileDTO {
     id: string;
     email: string;
@@ -16,3 +17,19 @@ export interface UserProfileDTO {
     is_google: boolean;
   }
   
+  export interface publicProfileDto{
+    id: string;
+    first_name: string;
+    last_name: string;
+    biography?: string;
+    fame_rating: number;
+    sexual_preferences?: "MALE" | "FEMALE" | "BOTH";
+    age: number;
+    gender: "MALE" | "FEMALE" | "OTHER"; 
+    profile_completed: boolean;
+    profile_picture: string;
+    country: string;
+    city: string;
+    interests: string[];
+    pictures: UserImages[];
+  }

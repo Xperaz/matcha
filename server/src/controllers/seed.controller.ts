@@ -4,6 +4,7 @@ import { query } from "../config/db";
 import cloudinary from "../config/cloudinary";
 import bcrypt from "bcryptjs";
 import path from "path";
+import { v4 as uuidv4 } from "uuid";
 
 const MALE_COUNT = 100;
 const FEMALE_COUNT = 200;
@@ -164,6 +165,20 @@ function generateRandomLocation() {
   };
 }
 
+const generateRandomUsername = (
+  firstName: string,
+  lastName: string
+): string => {
+  const lowerFirstName = firstName.toLowerCase();
+  const lowerLastName = lastName.toLowerCase();
+
+  const uniqueId = uuidv4().split("-")[0];
+
+  const username = `${lowerFirstName}.${lowerLastName}.${uniqueId}`;
+
+  return username;
+};
+
 export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userEmail = req.user.email;
@@ -204,6 +219,7 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
       const user_pictures = Array.from({ length: 5 }, () =>
         path.resolve(pictures[Math.floor(Math.random() * pictures.length)])
       );
+      const username = generateRandomUsername(firstName, lastName);
 
       // upload profile picture to cloudinary
       const result: any = await cloudinary.uploader.upload(profilePicture);
@@ -221,8 +237,8 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
       const insertUserQuery = `
                 INSERT INTO users (email, password, first_name, last_name, biography, age,
                     profile_picture, city, country, sexual_preferences, gender, profile_completed,
-                    latitude, longitude)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+                    latitude, longitude, username, email_verified)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
                 RETURNING id;
             `;
 
@@ -241,6 +257,8 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
         profileCompleted,
         latitude,
         longitude,
+        username,
+        true,
       ]);
       const userId = result2.rows[0].id;
 
@@ -288,6 +306,7 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
       const biography = "this is random biography lorem ipsum dolor sit amet";
       const encryptedPassword = await bcrypt.hash(password, 10);
       const profileCompleted = true;
+      const username = generateRandomUsername(firstName, lastName);
 
       const user_pictures = Array.from({ length: 6 }, () =>
         path.resolve(pictures[Math.floor(Math.random() * pictures.length)])
@@ -309,8 +328,8 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
       const insertUserQuery = `
                 INSERT INTO users (email, password, first_name, last_name, biography, age,
                     profile_picture, city, country, sexual_preferences, gender, profile_completed,
-                    latitude, longitude)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+                    latitude, longitude, username, email_verified)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
                 RETURNING id;
             `;
 
@@ -329,6 +348,8 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
         profileCompleted,
         latitude,
         longitude,
+        username,
+        true,
       ]);
       const userId = result2.rows[0].id;
 

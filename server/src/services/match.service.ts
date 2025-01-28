@@ -1,6 +1,7 @@
 import { query } from "../config/db";
 import { UserMatchesDto } from "../dtos/user/userMatchesDto";
 import { UserProfilesToSwipeDto } from "../dtos/user/userProfilesToSwipeDto";
+import { increaseFameRating, decreaseFameRating } from "./user.service";
 
 const mapUserMatches = (rows: any[]): UserMatchesDto[] => {
   return rows.map((row) => {
@@ -77,6 +78,11 @@ export const insertSwipe = async (
 
   try {
     await query(insertSwipeQuery, [userId, receiverId, status]);
+    if (status === "LIKED") {
+      await increaseFameRating(receiverId, 5);
+    } else {
+      await decreaseFameRating(receiverId, 5);
+    }
   } catch (error) {
     console.error("Error inserting swipe: ", error);
     throw error;
@@ -93,6 +99,8 @@ export const insertMatch = async (
     `;
   try {
     await query(matchUsersQuery, [userId, receiverId]);
+    await increaseFameRating(userId, 10);
+    await increaseFameRating(receiverId, 10);
   } catch (error) {
     console.error("Error matching users: ", error);
     throw error;
@@ -140,6 +148,7 @@ export const unlike = async (
 `;
   try {
     await query(unlikeUserQuery, [userId, receiverId]);
+    await decreaseFameRating(receiverId, 5);
   } catch (error) {
     console.error("Error unliking user: ", error);
     throw error;
@@ -157,6 +166,8 @@ export const unmatch = async (
         `;
   try {
     await query(unmatchedUserQuery, [userId, receiverId]);
+    await decreaseFameRating(userId, 5);
+    await decreaseFameRating(receiverId, 10);
   } catch (error) {
     console.error("Error unmatching user: ", error);
     throw error;
@@ -177,6 +188,7 @@ export const getProfilesToSwipe = async (
     minDistance?: number;
     maxDistance?: number;
     commonInterests?: number;
+    sortBy?: string;
   }
 ) => {
   const userDataQuery = `
@@ -234,7 +246,7 @@ export const getProfilesToSwipe = async (
     AND NOT EXISTS (
       SELECT 1 FROM likes
       WHERE (initiator_id = $1 AND receiver_id = u.id)
-      OR (initiator_id = u.id AND receiver_id = $1)
+      OR (initiator_id = u.id AND receiver_id = $1 AND status = 'MATCH')
     )
   `;
 
@@ -269,8 +281,8 @@ export const getProfilesToSwipe = async (
   }
 
   let finalSelection = `
-  SELECT * FROM potential_matches
-  WHERE 1=1
+    SELECT * FROM potential_matches
+    WHERE 1=1
   `;
 
   if (filters?.minDistance || filters?.maxDistance) {
@@ -287,18 +299,18 @@ export const getProfilesToSwipe = async (
     paramCounter++;
   }
 
-  // CASE
-  //   WHEN $${paramCounter} = 'distance' THEN distance
-  //   WHEN $${paramCounter} = 'age' THEN age::float
-  //   WHEN $${paramCounter} = 'fame_rating' THEN fame_rating::float
-  //   WHEN $${paramCounter} = 'common_tags' THEN common_tags_count::float
-  //   ELSE distance
-  // END ASC,
   const sorting = `
-    ORDER BY distance ASC
-    LIMIT 50;
+    ORDER BY
+      CASE
+        WHEN $${paramCounter} = 'distance' THEN distance
+        WHEN $${paramCounter} = 'age' THEN age::float
+        WHEN $${paramCounter} = 'fame_rating' THEN fame_rating::float
+        WHEN $${paramCounter} = 'common_interests' THEN common_tags_count::float
+        ELSE distance
+      END DESC
+      LIMIT 50;
   `;
-  // params.push("distance");
+  params.push(filters?.sortBy ?? "distance");
 
   const fullQuery = `
     ${userDataQuery}
@@ -310,8 +322,7 @@ export const getProfilesToSwipe = async (
     ${finalSelection}
     ${sorting}
   `;
-  // console.log(fullQuery);
-  // console.log("params", params);
+
 
   try {
     const { rows } = await query(fullQuery, params);
@@ -322,43 +333,33 @@ export const getProfilesToSwipe = async (
   }
 };
 
-export const validateSearchFilters = (
-  ageRange: number[],
-  distanceRange: number[],
-  fameRatingRange: number[],
-  commonTags: number
-): boolean => {
+export const canSwipe = async (
+  userId: string,
+  receiverId: string
+): Promise<boolean> => {
+  const canSwipeQuery: string = `
+    SELECT u.id
+    FROM users u
+    WHERE u.id = $2
+    AND NOT EXISTS (
+      SELECT 1 FROM blocks 
+      WHERE (blocker_id = $1 AND blocked_id = u.id)
+      OR (blocker_id = u.id AND blocked_id = $1)
+    )
+    AND NOT EXISTS (
+      SELECT 1 FROM likes
+      WHERE (initiator_id = $1 AND receiver_id = u.id)
+      OR (initiator_id = u.id AND receiver_id = $1 AND status = 'MATCH')
+    );
+  `;
   try {
-    if (
-      ageRange.length !== 2 ||
-      distanceRange.length !== 2 ||
-      fameRatingRange.length !== 2 ||
-      commonTags < 0 ||
-      commonTags > 10
-    ) {
-      return false;
+    const { rows } = await query(canSwipeQuery, [userId, receiverId]);
+    if (rows.length > 0) {
+      return true;
     }
-    if (ageRange[0] < 18 || ageRange[1] > 100 || ageRange[0] > ageRange[1]) {
-      return false;
-    }
-    if (
-      distanceRange[0] < 0 ||
-      distanceRange[1] > 20000 ||
-      distanceRange[0] > distanceRange[1]
-    ) {
-      return false;
-    }
-    if (
-      fameRatingRange[0] < 0 ||
-      fameRatingRange[1] > 100 ||
-      fameRatingRange[0] > fameRatingRange[1]
-    ) {
-      return false;
-    }
-
-    return true;
+    return false;
   } catch (error) {
-    console.error("Error in validateSearchFilters:", error);
+    console.error("Error swiping user: ", error);
     throw error;
   }
 };

@@ -1,12 +1,10 @@
 import { Request, Response } from "express";
-import {
-  userSignupRequest,
-  isValidGender,
-} from "../dtos/requests/userSignupRequest";
+import { userSignupRequest } from "../dtos/requests/userSignupRequest";
 import { userSigninRequest } from "../dtos/requests/userSigninRequest";
 import * as authService from "../services/auth.service";
 import * as googleService from "../services/google.service";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
+import { isValidPassword } from "../services/user.service";
 
 export async function signup(req: Request, res: Response): Promise<Response> {
   try {
@@ -17,7 +15,8 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       !userData.password ||
       !userData.email ||
       !userData.gender ||
-      !userData.age
+      !userData.age ||
+      !userData.username
     ) {
       return res.status(400).json({
         success: false,
@@ -25,33 +24,25 @@ export async function signup(req: Request, res: Response): Promise<Response> {
       });
     }
 
-    if (userData.password.length < 8) {
+    const isValidSignupData: string | null =
+      authService.isValidSignupData(userData);
+
+    if (isValidSignupData) {
       return res.status(400).json({
         success: false,
-        message: "Password must be at least 8 characters long",
+        message: isValidSignupData,
       });
     }
 
-    if (userData.age < 18) {
+    const alreadyExist: string | null = await authService.checkAvailableEmail(
+      userData.email,
+      userData.username
+    );
+
+    if (alreadyExist) {
       return res.status(400).json({
         success: false,
-        message: "You are under age",
-      });
-    }
-
-    if (!isValidGender(userData.gender)) {
-      return res.status(400).json({
-        success: false,
-        message: "invalid gender",
-      });
-    }
-
-    const emailExist = await authService.checkAvailableEmail(userData.email);
-
-    if (emailExist) {
-      return res.status(400).json({
-        success: false,
-        message: "Email is already in use",
+        message: alreadyExist,
       });
     }
 
@@ -81,7 +72,7 @@ export async function signup(req: Request, res: Response): Promise<Response> {
 export async function signin(req: Request, res: Response): Promise<Response> {
   try {
     const userData: userSigninRequest = req.body;
-    if (!userData.email || !userData.password) {
+    if (!userData.username || !userData.password) {
       return res.status(400).json({
         success: false,
         message: "All fields are required",
@@ -92,7 +83,8 @@ export async function signin(req: Request, res: Response): Promise<Response> {
     if (dbUser && dbUser.is_google === true) {
       return res.status(400).json({
         success: false,
-        message: "this email is registered with google",
+        message:
+          "this user is registered with google, please login with google",
       });
     }
 
@@ -146,10 +138,10 @@ export const googleOauthHandler = async (req: Request, res: Response) => {
       sameSite: "strict",
     });
 
-    res.redirect("http://localhost:3000/home");
+    res.redirect(`${process.env.CLIENT_URL}/home`);
   } catch (error) {
     console.error("error getting google auth credentials", error);
-    res.redirect("http://localhost:3000/login");
+    res.redirect(`${process.env.CLIENT_URL}/login`);
   }
 };
 
@@ -187,12 +179,15 @@ export const forgotPassword = async (
       });
     }
 
-    const reateLimit = await authService.checkRateLimit(user.id, "password_reset");
+    const reateLimit = await authService.checkRateLimit(
+      user.id,
+      "password_reset"
+    );
 
     if (reateLimit) {
       return res.status(200).json({
         success: false,
-        message: "a reset password email already sent, please check your email",
+        message: "Reset password email sent",
       });
     }
 
@@ -230,10 +225,10 @@ export const resetPassword = async (
       });
     }
 
-    if (password.length < 8) {
+    if (!isValidPassword(password)) {
       return res.status(400).json({
         success: false,
-        message: "Password must be at least 8 characters long",
+        message: "Invalid password",
       });
     }
 
@@ -368,12 +363,15 @@ export const sendVerificationEmail = async (
       });
     }
 
-    const reateLimit = await authService.checkRateLimit(user.id, "email_verification");
+    const reateLimit = await authService.checkRateLimit(
+      user.id,
+      "email_verification"
+    );
 
     if (reateLimit) {
       return res.status(200).json({
         success: false,
-        message: "an email verification already sent, please check your email",
+        message: "Verification email sent",
       });
     }
 

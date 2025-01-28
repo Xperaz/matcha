@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { protectRoutes } from "../middlewares/auth";
-import { searchForUsers } from "../controllers/search.controller";
 import { usableProfile } from "../middlewares/usableProfile";
+import { reportUser } from "../controllers/blockReport.controller";
 
 
 const router: Router = Router();
 
-router.get("/", protectRoutes, usableProfile, searchForUsers);
+router.post("/", protectRoutes, usableProfile, reportUser);
 
 export default router;
