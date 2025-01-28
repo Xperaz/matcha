@@ -55,7 +55,7 @@ const createGoogleUser = async (user: GoogleUserInfo): Promise<string> => {
   const username = generateRandomUsername(user.given_name, user.family_name);
   const createUserQuery = `
       INSERT INTO users (email, first_name, last_name, username, gender, age, is_google, email_verified)
-      VALUES ($1, $2, $3, $4, $5, $6)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING id;
     `;
 
