@@ -52,6 +52,7 @@ export const getUsersSearched = async (
       FROM users u
       WHERE u.id != $1
       AND u.profile_completed = true
+      AND u.email_verified = true
   `;
 
   const blockUsersFilter = `
