@@ -1,6 +1,5 @@
 import { Response } from "express";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
-import { query } from "../config/db";
 import { UserMatchesDto } from "../dtos/user/userMatchesDto";
 import { UserProfilesToSwipeDto } from "../dtos/user/userProfilesToSwipeDto";
 import { createNotificationAndSendMessage } from "../services/notif.service";
@@ -317,12 +316,12 @@ export const likeUser = async (req: AuthenticatedRequest, res: Response) => {
 
     // check if the user has already swiped the receiver right
     // for safety
-    const canLike: boolean = await matchService.canSwipe(userId, receiverId);
+    const canLike: boolean = await matchService.canLike(userId, receiverId);
 
     if (canLike === false) {
       return res.status(409).json({
         success: false,
-        message: "you can not swipe right this user",
+        message: "you can not like this user",
       });
     }
 
@@ -351,7 +350,7 @@ export const likeUser = async (req: AuthenticatedRequest, res: Response) => {
         message: "Match created successfully",
       });
     }
-    await matchService.insertSwipe(userId, receiverId, "LIKED");
+    await matchService.insertLike(userId, receiverId);
     await createNotificationAndSendMessage(
       userId,
       receiverId,
@@ -395,6 +394,15 @@ export const unlikeUser = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(404).json({
         success: false,
         message: "User not found",
+      });
+    }
+
+    const canUnlike: boolean = await matchService.canDislike(userId, receiverId);
+
+    if (canUnlike === false) {
+      return res.status(409).json({
+        success: false,
+        message: "you can not unlike this user",
       });
     }
 
@@ -444,6 +452,15 @@ export const unmatcheUser = async (
       });
     }
 
+    const canUnmatch: boolean = await matchService.canUnmatch(userId, receiverId);
+
+    if (canUnmatch === false) {
+      return res.status(409).json({
+        success: false,
+        message: "you can not unmatch this user",
+      });
+    }
+    
     await matchService.unmatch(userId, receiverId);
 
     return res.status(200).json({

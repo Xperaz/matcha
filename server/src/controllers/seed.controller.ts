@@ -182,8 +182,7 @@ const generateRandomUsername = (
 export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
   try {
     const userEmail = req.user.email;
-    console.log("user", userEmail);
-    if (userEmail != "abde@gmail.com") {
+    if (userEmail != "aboudoun.aouhadou.matcha@gmail.com") {
       return res.status(403).json({
         success: false,
         message: "unothorized",

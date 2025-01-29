@@ -43,11 +43,11 @@ export const isUserBlocked = async (
 
 export const reportUser = async ( userId: string, receiverId: string): Promise<void> => {
   const reportUserQuery: string = `
-    INSERT INTO reports (reporter_id, reported_id)
-    VALUES ($1, $2);
+    INSERT INTO reports (reporter_id, reported_id, reason)
+    VALUES ($1, $2, $3);
   `;
   try {
-    await query(reportUserQuery, [userId, receiverId]);
+    await query(reportUserQuery, [userId, receiverId, "Fake account"]);
   } catch (error) {
     console.error("Error reporting user: ", error);
     throw error;

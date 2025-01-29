@@ -39,6 +39,13 @@ export const blockUser = async (
       });
     }
 
+    if (receiverId === userId) {
+      return res.status(400).json({
+        success: false,
+        message: "Seriously? You want to block yourself?",
+      });
+    }
+
     if (await blockService.isUserBlocked(userId, receiverId)) {
       return res.status(400).json({
         success: false,
@@ -91,6 +98,13 @@ export const reportUser = async (req: AuthenticatedRequest, res: Response) => {
       return res.status(404).json({
         success: false,
         message: "User not found",
+      });
+    }
+
+    if (receiverId === userId) {
+      return res.status(400).json({
+        success: false,
+        message: "Seriously? You want to report yourself?",
       });
     }
 
