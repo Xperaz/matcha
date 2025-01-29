@@ -25,4 +25,9 @@ export const API_ENDPOINTS = {
   updateProfile: `${BASE_URL}user/update-profile`,
   logout: `${BASE_URL}auth/signout`,
   explore: `${BASE_URL}search`,
+  reportUser: `${BASE_URL}report`,
+  blockUser: `${BASE_URL}block`,
+  likeUser: `${BASE_URL}match/like`,
+  unlikeUser: `${BASE_URL}match/unlike`,
+  unmatchUser: `${BASE_URL}match/unmatch`,
 };

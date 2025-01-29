@@ -1,9 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import withAppLayout from "../templates/layout/withAppLayout";
 import withProtectedRoute from "@/auth/withProtectedRoute";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Heart,
@@ -14,70 +13,190 @@ import {
   MapPin,
   Star,
   CircleDot,
+  ShieldBan,
 } from "lucide-react";
 
 import Image from "next/image";
 import { formatLastConnection } from "../organisms/public-profile/utils";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/constants/query_keys";
+import { useParams } from "next/navigation";
+import { getUserProfile } from "@/services/requests/profile";
+import {
+  blockUser,
+  likeUser,
+  reportUser,
+  unlikeUser,
+  unmatchUser,
+} from "@/services/requests/publicProfile";
+import { useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
+import { IPublicProfileType } from "@/types/user";
 
-export interface publicProfileDto {
-  id: string;
-  first_name: string;
-  last_name: string;
-  biography?: string;
-  fame_rating: number;
-  sexual_preferences?: "MALE" | "FEMALE" | "BOTH";
-  age: number;
-  gender: "MALE" | "FEMALE" | "OTHER";
-  profile_picture: string;
-  country: string;
-  city: string;
-  is_like: boolean;
-  is_match: boolean;
-  has_liked_you: boolean;
-  is_active: boolean;
-  last_connection: Date;
-  interests: string[];
-  pictures: string[];
-}
+type MatchStatusType = "MATCHED" | "LIKED" | "NONE";
 
-const user = {
-  id: "3330495f-0b80-498b-ad64-db4845e0b5ed",
-  first_name: "abderrahim",
-  last_name: "boudounit",
-  biography: "just test",
-  fame_rating: 7,
-  age: 18,
-  geneger: "MALE",
-  profile_picture:
-    "https://res.cloudinary.com/dzcvzkrow/image/upload/v1737884465/ysksa7wvxjrajnou71xb.jpg",
-
-  country: "Morocco",
-  city: "Casablanca",
-  is_like: false,
-  is_match: true,
-  has_liked_you: false,
-  is_active: true,
-  last_connection: new Date(),
-  interests: ["Tech", "Foodie", "Travel", "Concerts", "Hiking", "Dogs"],
-  pictures: [
-    "https://res.cloudinary.com/dzcvzkrow/image/upload/v1737884465/ysksa7wvxjrajnou71xb.jpg",
-    "https://res.cloudinary.com/dzcvzkrow/image/upload/v1737884465/ysksa7wvxjrajnou71xb.jpg",
-    "https://res.cloudinary.com/dzcvzkrow/image/upload/v1737884465/ysksa7wvxjrajnou71xb.jpg",
-    "https://res.cloudinary.com/dzcvzkrow/image/upload/v1737884465/ysksa7wvxjrajnou71xb.jpg",
-    "https://res.cloudinary.com/dzcvzkrow/image/upload/v1737884465/ysksa7wvxjrajnou71xb.jpg",
-    "https://res.cloudinary.com/dzcvzkrow/image/upload/v1737884465/ysksa7wvxjrajnou71xb.jpg",
-  ],
-};
-
-const getMatchStatus = () => {
+const getMatchStatus = (user: IPublicProfileType) => {
   if (user.is_match) return "MATCHED";
   if (user.is_like) return "LIKED";
   return "NONE";
 };
 
 export const PublicProfile = () => {
-  const allImages = [user.profile_picture, ...user.pictures];
-  const [matchStatus, setMatchStatus] = useState(() => getMatchStatus());
+  const router = useRouter();
+  const params = useParams();
+  const queryClient = useQueryClient();
+  const userId = params.userId as string | undefined;
+
+  const { isLoading, data: user } = useQuery<IPublicProfileType>({
+    queryKey: [QUERY_KEYS.publicProfile, userId],
+    queryFn: async () => {
+      if (!userId) return;
+      const data = await getUserProfile(userId);
+      return data.data.data;
+    },
+  });
+
+  const { mutate: reportUserMutation } = useMutation({
+    mutationFn: reportUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          QUERY_KEYS.chatList,
+          QUERY_KEYS.matches,
+          QUERY_KEYS.usersToSwipe,
+          QUERY_KEYS.explore,
+        ],
+      });
+      router.replace("/home");
+      toast({
+        title: "Success",
+        description: "User reported successfully",
+      });
+    },
+    onError: (err) => {
+      toast({
+        title: "Error",
+        description: "Failed to report user",
+        variant: "destructive",
+      });
+
+      // eslint-disable-next-line no-console
+      console.error("Failed to report user: ", err);
+    },
+  });
+
+  const { mutate: blockUserMutation } = useMutation({
+    mutationFn: blockUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          QUERY_KEYS.chatList,
+          QUERY_KEYS.matches,
+          QUERY_KEYS.usersToSwipe,
+          QUERY_KEYS.explore,
+        ],
+      });
+      router.replace("/home");
+      toast({
+        title: "Success",
+        description: "User blocked successfully",
+      });
+    },
+    onError: (err) => {
+      toast({
+        title: "Error",
+        description: "Failed to block user",
+        variant: "destructive",
+      });
+
+      // eslint-disable-next-line no-console
+      console.error("Failed to block user: ", err);
+    },
+  });
+
+  const { mutate: likeUserMutation } = useMutation({
+    mutationFn: likeUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.usersToSwipe, QUERY_KEYS.explore],
+      });
+      toast({
+        title: "Success",
+        description: "You Liked user successfully",
+      });
+    },
+    onError: (err) => {
+      toast({
+        title: "Error",
+        description: "Failed to like user",
+        variant: "destructive",
+      });
+
+      // eslint-disable-next-line no-console
+      console.error("Failed to like user: ", err);
+    },
+  });
+
+  const { mutate: unlikeUserMutation } = useMutation({
+    mutationFn: unlikeUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.usersToSwipe, QUERY_KEYS.explore],
+      });
+      toast({
+        title: "Success",
+        description: "You Unliked user successfully",
+      });
+    },
+    onError: (err) => {
+      toast({
+        title: "Error",
+        description: "Failed to unlike user",
+        variant: "destructive",
+      });
+
+      // eslint-disable-next-line no-console
+      console.error("Failed to unlike user: ", err);
+    },
+  });
+
+  const { mutate: unmatchUserMutation } = useMutation({
+    mutationFn: unmatchUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [
+          QUERY_KEYS.matches,
+          QUERY_KEYS.usersToSwipe,
+          QUERY_KEYS.explore,
+        ],
+      });
+      toast({
+        title: "Success",
+        description: "You Unmatched user successfully",
+      });
+    },
+    onError: (err) => {
+      toast({
+        title: "Error",
+        description: "Failed to unmatch user",
+        variant: "destructive",
+      });
+
+      // eslint-disable-next-line no-console
+      console.error("Failed to unmatch user: ", err);
+    },
+  });
+
+  const [matchStatus, setMatchStatus] = useState<MatchStatusType>("NONE");
+
+  useEffect(() => {
+    if (user) {
+      setMatchStatus(getMatchStatus(user));
+    }
+  }, [user]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (!user && !isLoading) return null;
 
   // Helper function to format last connection time
 
@@ -112,29 +231,37 @@ export const PublicProfile = () => {
     }
   };
 
+  const handleSendMessage = () => {
+    console.log("Sending message...");
+    // TODO: Implement send message functionality, and redirect to chat page
+  };
+
   const handleLike = () => {
     setMatchStatus("LIKED");
-    console.log("Liking user...");
+    if (!user) return;
+    likeUserMutation(user?.id);
   };
 
   const handleDislike = () => {
     setMatchStatus("NONE");
-    console.log("Removing like...");
+    if (!user) return;
+    unlikeUserMutation(user?.id);
   };
 
   const handleUnmatch = () => {
     setMatchStatus("NONE");
-    console.log("Unmatching...");
+    if (!user) return;
+    unmatchUserMutation(user?.id);
   };
 
   const handleReport = () => {
-    console.log("Reporting user...");
-    // TODO: Implement report user functionality, and redirect to home page
+    if (!user) return;
+    reportUserMutation(user?.id);
   };
 
-  const handleSendMessage = () => {
-    console.log("Sending message...");
-    // TODO: Implement send message functionality, and redirect to chat page
+  const handleBlock = () => {
+    if (!user) return;
+    blockUserMutation(user?.id);
   };
 
   return (
@@ -144,7 +271,7 @@ export const PublicProfile = () => {
         <div className="grid grid-cols-3 gap-2 mb-4">
           <div className="col-span-2 relative">
             <Image
-              src={allImages[0]}
+              src={user?.profile_picture ?? ""}
               alt="Profile"
               className="w-full h-[400px] object-cover rounded-lg"
               width={0}
@@ -153,45 +280,49 @@ export const PublicProfile = () => {
             />
             {/* Online Status Indicator */}
             <div className="absolute top-4 right-4">
-              {user.is_active ? (
+              {user?.is_active ? (
                 <Badge className="bg-green-500">
                   <CircleDot className="w-3 h-3 mr-1" />
                   Online
                 </Badge>
               ) : (
-                <Badge variant="secondary" className="bg-gray-500/10">
-                  Last seen {formatLastConnection(user.last_connection)}
+                <Badge variant="secondary">
+                  Last seen {formatLastConnection(user?.last_connection)}
                 </Badge>
               )}
             </div>
           </div>
           <div className="grid grid-rows-2 gap-2">
-            {allImages.slice(1, 3).map((img, idx) => (
+            {user?.pictures
+              .slice(0, 2)
+              .map((img, idx) => (
+                <Image
+                  key={idx}
+                  src={img ?? ""}
+                  alt={`Gallery ${idx + 1}`}
+                  className="w-full h-[196px] object-cover rounded-lg"
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                />
+              ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          {user?.pictures
+            .slice(0, 2)
+            .map((img, idx) => (
               <Image
                 key={idx}
-                src={img}
-                alt={`Gallery ${idx + 1}`}
-                className="w-full h-[196px] object-cover rounded-lg"
+                src={img ?? ""}
+                alt={`Gallery ${idx + 3}`}
+                className="w-full h-[200px] object-cover rounded-lg"
                 width={0}
                 height={0}
                 sizes="100vw"
               />
             ))}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          {allImages.slice(3, 5).map((img, idx) => (
-            <Image
-              key={idx}
-              src={img}
-              alt={`Gallery ${idx + 3}`}
-              className="w-full h-[200px] object-cover rounded-lg"
-              width={0}
-              height={0}
-              sizes="100vw"
-            />
-          ))}
         </div>
       </div>
 
@@ -200,19 +331,19 @@ export const PublicProfile = () => {
         <div className="flex items-start justify-between">
           <div className="space-y-2">
             <h1 className="text-2xl font-semibold">
-              {user.first_name}, {user.age}
+              {user?.first_name}, {user?.age}
             </h1>
             <div className="flex items-center text-gray-600 space-x-4">
               <div className="flex items-center">
                 <MapPin className="w-4 h-4 mr-1" />
-                {user.city}, {user.country}
+                {user?.city}, {user?.country}
               </div>
               <div className="flex items-center">
                 <Star className="w-4 h-4 mr-1" />
-                Fame: {user.fame_rating}/100
+                Fame: {user?.fame_rating}/100
               </div>
             </div>
-            {user.has_liked_you && (
+            {user?.has_liked_you && (
               <Badge
                 variant="secondary"
                 className="bg-pink-500/10 text-pink-500"
@@ -224,7 +355,7 @@ export const PublicProfile = () => {
           </div>
           <div className="flex gap-2">
             {renderMatchButton()}
-            {user.is_match && (
+            {user?.is_match && (
               <Button variant="default">
                 <MessageCircle
                   className="mr-2 h-4 w-4"
@@ -238,15 +369,15 @@ export const PublicProfile = () => {
 
         <div>
           <h2 className="text-lg font-semibold mb-2">
-            About {user.first_name}
+            About {user?.first_name}
           </h2>
-          <p className="text-gray-600">{user.biography}</p>
+          <p className="text-gray-600">{user?.biography}</p>
         </div>
 
         <div>
           <h2 className="text-lg font-semibold mb-2">Interests</h2>
           <div className="flex flex-wrap gap-2">
-            {user.interests.map((interest, idx) => (
+            {user?.interests.map((interest, idx) => (
               <Badge key={idx} variant="secondary">
                 {interest}
               </Badge>
@@ -260,8 +391,17 @@ export const PublicProfile = () => {
             className="text-red-600 hover:text-red-700"
             onClick={() => handleReport()}
           >
-            <Flag className="mr-2 h-4 w-4" />
+            <Flag className="mr-1 h-4 w-4" />
             Report
+          </Button>
+
+          <Button
+            onClick={() => handleBlock()}
+            variant="ghost"
+            className="text-red-600 hover:text-red-700"
+          >
+            <ShieldBan className="mr-1 h-4 w-4" />
+            Block
           </Button>
         </div>
       </div>

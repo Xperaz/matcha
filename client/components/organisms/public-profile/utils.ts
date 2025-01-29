@@ -1,4 +1,6 @@
-export const formatLastConnection = (date: Date) => {
+"use client";
+export const formatLastConnection = (date: Date | undefined) => {
+  if (!date) return "N/A";
   const now = new Date();
   const diff = now.getTime() - date.getTime();
   const minutes = Math.floor(diff / 60000);
