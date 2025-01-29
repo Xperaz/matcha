@@ -32,6 +32,7 @@ export const mapUserProfilesToSwipe = (
       biography: row.biography,
       gender: row.gender,
       fame_rating: row.fame_rating,
+      interests: row.interests.map((tag: string) => tag),
       distance: row.distance.toFixed(2),
     };
     return user;
@@ -216,7 +217,11 @@ export const getProfilesToSwipe = async (
         u.fame_rating,
         u.latitude,
         u.longitude,
-        (SELECT array_agg(interest_id) FROM interests WHERE user_id = u.id) as interests,
+        (SELECT array_agg(it.tag) 
+         FROM interests i 
+         JOIN interest_tags it ON i.interest_id = it.id 
+         WHERE i.user_id = u.id
+        ) AS interests,
         (
           6371 * acos(
             cos(radians((SELECT latitude FROM user_data))) * 
@@ -372,8 +377,8 @@ export const canLike = async ( userId: string, receiverId: string): Promise<bool
   const canLikeQuery: string = `
   SELECT u.id
   FROM users u
-  WHERE u.id = $2
   AND u.id != $1
+  WHERE u.id = $2
   AND u.profile_completed = true
   AND u.email_verified = true
   AND NOT EXISTS (

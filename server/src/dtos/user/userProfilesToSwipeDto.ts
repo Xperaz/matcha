@@ -10,4 +10,5 @@ export interface UserProfilesToSwipeDto {
   gender: string;
   fame_rating: number;
   distance: number;
+  interests: string[];
 }
