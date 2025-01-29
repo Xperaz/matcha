@@ -63,6 +63,7 @@ CREATE TABLE likes (
     receiver_id uuid,
     status like_status,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT unique_like UNIQUE (initiator_id, receiver_id),
     FOREIGN KEY (initiator_id) REFERENCES users(id) ,
     FOREIGN KEY (receiver_id) REFERENCES users(id) 
 );
