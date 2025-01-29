@@ -25,7 +25,6 @@ router.get("/reset-password", getResetPassword);
 router.get("/verify-email", verifyEmail);
 router.post("/send-verification-email", protectRoutes, sendVerificationEmail);
 
-router.get("/google", googleOauthHandler);
 router.get("/google/callback", googleOauthHandler);
 
 export default router;

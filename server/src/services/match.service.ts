@@ -342,6 +342,9 @@ export const canSwipe = async (
     SELECT u.id
     FROM users u
     WHERE u.id = $2
+    AND u.id != $1
+    AND u.profile_completed = true
+    AND u.email_verified = true
     AND NOT EXISTS (
       SELECT 1 FROM blocks 
       WHERE (blocker_id = $1 AND blocked_id = u.id)
@@ -367,19 +370,22 @@ export const canSwipe = async (
 
 export const canLike = async ( userId: string, receiverId: string): Promise<boolean> => {
   const canLikeQuery: string = `
-    SELECT u.id
-    FROM users u
-    WHERE u.id = $2
-    AND NOT EXISTS (
-      SELECT 1 FROM blocks 
-      WHERE (blocker_id = $1 AND blocked_id = u.id)
-      OR (blocker_id = u.id AND blocked_id = $1)
-    )
-    AND NOT EXISTS (
-      SELECT 1 FROM likes
-      WHERE (initiator_id = $1 AND receiver_id = u.id AND status IN ('LIKED', 'MATCH'))
-      OR (initiator_id = u.id AND receiver_id = $1 AND status = 'MATCH')
-    );
+  SELECT u.id
+  FROM users u
+  WHERE u.id = $2
+  AND u.id != $1
+  AND u.profile_completed = true
+  AND u.email_verified = true
+  AND NOT EXISTS (
+    SELECT 1 FROM blocks 
+    WHERE (blocker_id = $1 AND blocked_id = u.id)
+    OR (blocker_id = u.id AND blocked_id = $1)
+  )
+  AND NOT EXISTS (
+    SELECT 1 FROM likes
+    WHERE (initiator_id = $1 AND receiver_id = u.id AND status IN ('LIKED', 'MATCH'))
+    OR (initiator_id = u.id AND receiver_id = $1 AND status = 'MATCH')
+  );
   `;
   try {
     const { rows } = await query(canLikeQuery, [userId, receiverId]);
@@ -449,7 +455,6 @@ export const canUnmatch = async ( userId: string, receiverId: string): Promise<b
 }
 
 export const insertLike = async ( userId: string, receiverId: string): Promise<void> => {
-  // check if the user dislikes the receiver and change the status to liked if not insert like
   const insertLikeQuery: string = `
     INSERT INTO likes (initiator_id, receiver_id, status)
     VALUES ($1, $2, 'LIKED')

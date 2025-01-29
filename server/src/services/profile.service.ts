@@ -26,8 +26,8 @@ const mapPublicProfile = (
   interests: any,
   images: string[],
   is_like: boolean,
-  is_match: boolean,
-  has_liked_you: boolean
+  has_liked_you: boolean,
+  is_match: boolean
 ): publicProfileDto => {
   return {
     id: user.id,
@@ -58,7 +58,7 @@ const getUserImages = async (userId: string): Promise<string[]> => {
   `;
   try {
     const { rows: images } = await query(getUserImagesQuery, [userId]);
-    return images.map((image: any) => image.image_url);
+    return images.map((image: any) => image.picture_url);
   } catch (error) {
     console.error("Error getting user images: ", error);
     throw error;
