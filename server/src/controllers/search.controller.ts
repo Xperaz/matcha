@@ -19,7 +19,6 @@ export const searchForUsers = async (
       });
     }
 
-    console.log("searching for users with filters", req.query);
     // Parse and validate optional parameters
     const ageRangeArray: number[] | undefined = ageRange
       ? (ageRange as string).split(",").map(Number)
@@ -82,9 +81,6 @@ export const searchForUsers = async (
       });
     }
 
-    console.log("limit", limit); 
-    console.log("page", page);
-
     const results = await searchService.getUsersSearched(userId, {
       minAge: ageRangeArray ? ageRangeArray[0] : undefined,
       maxAge: ageRangeArray ? ageRangeArray[1] : undefined,
@@ -98,7 +94,6 @@ export const searchForUsers = async (
       limit: limit,
     });
 
-    console.log("search results", results.length);
 
     return res.status(200).json({
       success: true,

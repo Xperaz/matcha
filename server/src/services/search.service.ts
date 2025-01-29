@@ -30,7 +30,7 @@ export const getUsersSearched = async (
 
   const baseUsersQuery = `
     potential_users AS (
-      SELECT DISTINCT
+      SELECT 
         u.id,
         u.first_name,
         u.last_name,
@@ -40,6 +40,11 @@ export const getUsersSearched = async (
         u.fame_rating,
         u.latitude,
         u.longitude,
+        (SELECT array_agg(it.tag) 
+         FROM interests i 
+         JOIN interest_tags it ON i.interest_id = it.id 
+         WHERE i.user_id = u.id
+        ) AS interests,
         (
           6371 * acos(
             cos(radians((SELECT latitude FROM user_data))) * 
