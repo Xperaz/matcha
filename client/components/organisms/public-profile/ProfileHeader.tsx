@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { MatchStatusType } from "@/components/pages/PublicProfile";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
