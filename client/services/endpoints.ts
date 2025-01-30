@@ -5,7 +5,7 @@ export const API_ENDPOINTS = {
   register: `${BASE_URL}auth/signup`,
   user: `${BASE_URL}user/me`,
   myProfile: `${BASE_URL}profile/me`,
-  userProfile: `${BASE_URL}profile/`,
+  userProfile: `${BASE_URL}profile`,
   completeProfile: `${BASE_URL}user/complete-profile`,
   chatList: `${BASE_URL}chat/list`,
   messagesHisotry: `${BASE_URL}chat/messages`,
@@ -25,4 +25,9 @@ export const API_ENDPOINTS = {
   updateProfile: `${BASE_URL}user/update-profile`,
   logout: `${BASE_URL}auth/signout`,
   explore: `${BASE_URL}search`,
+  reportUser: `${BASE_URL}report`,
+  blockUser: `${BASE_URL}block`,
+  likeUser: `${BASE_URL}match/like`,
+  unlikeUser: `${BASE_URL}match/unlike`,
+  unmatchUser: `${BASE_URL}match/unmatch`,
 };

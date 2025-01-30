@@ -9,4 +9,5 @@ export const QUERY_KEYS = {
   notifications: "notifications",
   usersToSwipe: "usersToSwipe",
   explore: "explore",
+  publicProfile: "publicProfile",
 };
