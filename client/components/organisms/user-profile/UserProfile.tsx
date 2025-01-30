@@ -18,9 +18,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import HistoryModal from "./HistoryModal";
 
 const ProfileBasicInfo = () => {
   const [user, setUser] = useState<IUserType>({} as IUserType);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [isEditEmailModalOpen, setIsEditEmailModalOpen] = useState(false);
   const [isEditPasswordModalOpen, setIsEditPasswordModalOpen] = useState(false);
@@ -56,6 +58,10 @@ const ProfileBasicInfo = () => {
         />
       )}
 
+      {isHistoryModalOpen && (
+        <HistoryModal onClose={() => setIsHistoryModalOpen(false)} />
+      )}
+
       <div className="flex py-4 flex-col gap-4 justify-center p-4">
         <section className="flex flex-col items-center justify-center gap-4">
           <div className="flex flex-col gap-1">
@@ -67,12 +73,18 @@ const ProfileBasicInfo = () => {
                 height={300}
               />
             </div>
-            <div className="flex justify-center items-center">
+            <div className="flex justify-center items-center gap-2">
               <button
                 onClick={() => setIsEditProfileModalOpen(true)}
                 className="px-2 py-1 bg-gray-200 text-sm rounded-full"
               >
                 Edit profile
+              </button>
+              <button
+                onClick={() => setIsHistoryModalOpen(true)}
+                className="px-2 py-1 bg-gray-200 text-sm rounded-full"
+              >
+                View History
               </button>
             </div>
           </div>
