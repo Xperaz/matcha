@@ -20,7 +20,7 @@ export const ProfileGallery = ({
     <div className="grid grid-cols-3 gap-2 mb-4">
       <div className="col-span-2 relative">
         <Image
-          src={profilePicture}
+          src={profilePicture ?? null}
           alt="Profile"
           className="w-full h-[400px] object-cover rounded-lg"
           width={0}
@@ -44,7 +44,7 @@ export const ProfileGallery = ({
         {pictures.slice(0, 2).map((img, idx) => (
           <Image
             key={idx}
-            src={img}
+            src={img ?? null}
             alt={`Gallery ${idx + 1}`}
             className="w-full h-[196px] object-cover rounded-lg"
             width={0}
@@ -58,7 +58,7 @@ export const ProfileGallery = ({
       {pictures.slice(0, 2).map((img, idx) => (
         <Image
           key={idx}
-          src={img}
+          src={img ?? null}
           alt={`Gallery ${idx + 3}`}
           className="w-full h-[200px] object-cover rounded-lg"
           width={0}

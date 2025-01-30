@@ -5,7 +5,7 @@ export const API_ENDPOINTS = {
   register: `${BASE_URL}auth/signup`,
   user: `${BASE_URL}user/me`,
   myProfile: `${BASE_URL}profile/me`,
-  userProfile: `${BASE_URL}profile/`,
+  userProfile: `${BASE_URL}profile`,
   completeProfile: `${BASE_URL}user/complete-profile`,
   chatList: `${BASE_URL}chat/list`,
   messagesHisotry: `${BASE_URL}chat/messages`,

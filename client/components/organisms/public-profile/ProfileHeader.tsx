@@ -12,7 +12,8 @@ import {
 import { IPublicProfileType } from "@/types/user";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Heart, MessageCircle, MapPin, Star, UserMinus, X } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
+import { SendMessageModal } from "./SendMessageModal";
 
 interface ProfileHeaderProps {
   user: IPublicProfileType;
@@ -25,6 +26,7 @@ export const ProfileHeader = ({
   matchStatus,
   setMatchStatus,
 }: ProfileHeaderProps) => {
+  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const renderMatchButton = () => {
     switch (matchStatus) {
@@ -129,10 +131,6 @@ export const ProfileHeader = ({
       console.error("Failed to unmatch user: ", err);
     },
   });
-  const handleSendMessage = () => {
-    console.log("Sending message...");
-    // TODO: Implement send message functionality, and redirect to chat page
-  };
 
   const handleLike = () => {
     setMatchStatus("LIKED");
@@ -153,37 +151,50 @@ export const ProfileHeader = ({
   };
 
   return (
-    <div className="flex items-start justify-between">
-      <div className="space-y-2">
-        <h1 className="text-2xl font-semibold">
-          {user.first_name}, {user.age}
-        </h1>
-        <div className="flex items-center text-gray-600 space-x-4">
-          <div className="flex items-center">
-            <MapPin className="w-4 h-4 mr-1" />
-            {user.city}, {user.country}
+    <>
+      {isMessageModalOpen && (
+        <SendMessageModal
+          recipientId={user.id}
+          onClose={() => setIsMessageModalOpen(false)}
+          recipientName={`${user.first_name} ${user.last_name}`}
+          isOpen={isMessageModalOpen}
+        />
+      )}
+      <div className="flex items-start justify-between">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-semibold">
+            {user.first_name}, {user.age}
+          </h1>
+          <div className="flex items-center text-gray-600 space-x-4">
+            <div className="flex items-center">
+              <MapPin className="w-4 h-4 mr-1" />
+              {user.city}, {user.country}
+            </div>
+            <div className="flex items-center">
+              <Star className="w-4 h-4 mr-1" />
+              Fame: {user.fame_rating}/100
+            </div>
           </div>
-          <div className="flex items-center">
-            <Star className="w-4 h-4 mr-1" />
-            Fame: {user.fame_rating}/100
-          </div>
+          {user.has_liked_you && (
+            <Badge variant="secondary" className="bg-pink-500/10 text-pink-500">
+              <Heart className="w-3 h-3 mr-1 fill-current" />
+              Likes you
+            </Badge>
+          )}
         </div>
-        {user.has_liked_you && (
-          <Badge variant="secondary" className="bg-pink-500/10 text-pink-500">
-            <Heart className="w-3 h-3 mr-1 fill-current" />
-            Likes you
-          </Badge>
-        )}
+        <div className="flex gap-2">
+          {renderMatchButton()}
+          {user.is_match && (
+            <Button
+              variant="default"
+              onClick={() => setIsMessageModalOpen(true)}
+            >
+              <MessageCircle className="mr-2 h-4 w-4" />
+              Send Message
+            </Button>
+          )}
+        </div>
       </div>
-      <div className="flex gap-2">
-        {renderMatchButton()}
-        {user.is_match && (
-          <Button variant="default" onClick={() => handleSendMessage()}>
-            <MessageCircle className="mr-2 h-4 w-4" />
-            Send Message
-          </Button>
-        )}
-      </div>
-    </div>
+    </>
   );
 };

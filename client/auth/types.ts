@@ -1,6 +1,7 @@
 export interface CustomError extends Error {
   response?: {
-    data?: {
+    status?: number;
+    data: {
       message?: string;
     };
   };
