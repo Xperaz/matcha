@@ -19,21 +19,23 @@ const ExploreSearch = () => {
   const { data, status, fetchNextPage, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery({
       queryKey: [QUERY_KEYS.explore],
-      queryFn: () => explore({ ...filters }),
+      queryFn: ({ pageParam = 1 }) => explore(filters, pageParam),
       initialPageParam: 1,
-      getNextPageParam: (lastPage) => {
-        const { current_page, last_page } = lastPage.data;
-        return current_page < last_page ? current_page + 1 : undefined;
+      getNextPageParam: (lastPage, allPages) => {
+        if (lastPage.data.data.length > 0) {
+          return allPages.length + 1;
+        }
+        return null;
       },
     });
 
   const { ref, inView } = useInView();
 
   useEffect(() => {
-    if (inView) {
+    if (inView && !isFetchingNextPage) {
       fetchNextPage();
     }
-  }, [inView, fetchNextPage]);
+  }, [inView, fetchNextPage, isFetchingNextPage]);
 
   if (status === "error") {
     return (
