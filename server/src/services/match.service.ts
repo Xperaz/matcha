@@ -377,8 +377,8 @@ export const canLike = async ( userId: string, receiverId: string): Promise<bool
   const canLikeQuery: string = `
   SELECT u.id
   FROM users u
-  AND u.id != $1
   WHERE u.id = $2
+  AND u.id != $1
   AND u.profile_completed = true
   AND u.email_verified = true
   AND NOT EXISTS (
