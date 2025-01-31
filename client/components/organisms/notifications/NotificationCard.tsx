@@ -24,7 +24,7 @@ const NotificationCard = ({ notifData }: { notifData: Notification }) => {
           <span
             className={`text-sm ${notifData.is_read ? "text-gray-500" : "text-gray-600"}`}
           >
-            {formatDate(notifData.createdAt)}
+            {formatDate(notifData.created_at)}
           </span>
         </div>
 

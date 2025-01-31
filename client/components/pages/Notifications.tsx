@@ -57,7 +57,7 @@ const Notifications = () => {
         if (updatedNotifications.length > 0) {
           const lastNotif =
             updatedNotifications[updatedNotifications.length - 1];
-          const dateN: string = lastNotif.createdAt;
+          const dateN: string = lastNotif.created_at;
           setLatestNotif(dateN);
         }
         return updatedNotifications;
