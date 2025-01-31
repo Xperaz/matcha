@@ -23,7 +23,7 @@ const Notifications = () => {
   const [latestNotif, setLatestNotif] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<Notification[]>({
     queryKey: [QUERY_KEYS.notifications, page],
     queryFn: async () => {
       const response = await getNotifications(LIMIT, latestNotif);

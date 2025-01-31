@@ -32,7 +32,7 @@ const NotificationCard = ({ notifData }: { notifData: Notification }) => {
           className={`leading-relaxed ${notifData.is_read ? "text-gray-600" : "text-gray-700"}`}
         >
           <Link
-            href={`/profile/${notifData.sender_id}`}
+            href={`/${notifData.sender_id}`}
             className={`font-medium hover:text-pink-500 transition-colors duration-200
               ${notifData.is_read ? "text-gray-700" : "text-gray-900"}`}
           >

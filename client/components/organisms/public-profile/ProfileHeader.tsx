@@ -61,8 +61,12 @@ export const ProfileHeader = ({
   const { mutate: likeUserMutation } = useMutation({
     mutationFn: likeUser,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.usersToSwipe, QUERY_KEYS.explore],
+      queryClient.refetchQueries({
+        queryKey: [
+          QUERY_KEYS.usersToSwipe,
+          QUERY_KEYS.explore,
+          QUERY_KEYS.publicProfile,
+        ],
       });
       toast({
         title: "Success",
@@ -85,7 +89,11 @@ export const ProfileHeader = ({
     mutationFn: unlikeUser,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEYS.usersToSwipe, QUERY_KEYS.explore],
+        queryKey: [
+          QUERY_KEYS.usersToSwipe,
+          QUERY_KEYS.explore,
+          QUERY_KEYS.publicProfile,
+        ],
       });
       toast({
         title: "Success",
@@ -112,6 +120,7 @@ export const ProfileHeader = ({
           QUERY_KEYS.matches,
           QUERY_KEYS.usersToSwipe,
           QUERY_KEYS.explore,
+          QUERY_KEYS.publicProfile,
         ],
       });
       toast({

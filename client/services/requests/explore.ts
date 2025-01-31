@@ -2,14 +2,22 @@ import { SearchFilters } from "@/context/exploreContext";
 import { axiosInstance } from "../config";
 import { API_ENDPOINTS } from "../endpoints";
 
-export const explore = async (searQuery: SearchFilters) => {
+export const explore = async (
+  searchQuery: SearchFilters,
+  pageParam: number,
+) => {
   const formattedFilters = {
-    ageRange: searQuery.ageRange.join(","),
-    fameRatingRange: searQuery.fameRange.join(","),
-    distanceRange: searQuery.distance.join(","),
-    interests: searQuery.interests.join(","),
+    ageRange: searchQuery.ageRange.join(","),
+    fameRatingRange: searchQuery.fameRange.join(","),
+    distanceRange: searchQuery.distance.join(","),
+    interests: searchQuery.interests.join(","),
+    sort: searchQuery.sortBy,
   };
-  return await axiosInstance.get(`${API_ENDPOINTS.explore}`, {
-    params: formattedFilters,
-  });
+
+  return await axiosInstance.get(
+    `${API_ENDPOINTS.explore}?limit=10&page=${pageParam}`,
+    {
+      params: formattedFilters,
+    },
+  );
 };

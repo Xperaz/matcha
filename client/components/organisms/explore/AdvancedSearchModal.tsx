@@ -150,9 +150,8 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     <SelectItem value="age">Age</SelectItem>
-                    <SelectItem value="location">Location</SelectItem>
-                    <SelectItem value="fame">Fame Rating</SelectItem>
-                    <SelectItem value="tags">Tags</SelectItem>
+                    <SelectItem value="distance">Distance</SelectItem>
+                    <SelectItem value="fame_rating">Fame Rating</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

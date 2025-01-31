@@ -26,12 +26,12 @@ export const updatePassword = async (
 export const updateProfile = async (data: Partial<EditProfileSchemaType>) =>
   axiosInstance.patch(API_ENDPOINTS.updateProfile, data);
 
-export const getLikesHistory = async ({ pageParam = 1 }) =>
+export const getLikesHistory = async (pageParam: number) =>
   await axiosInstance.get(
     `${API_ENDPOINTS.likesHistory}?limit=10&page=${pageParam}`,
   );
 
-export const getVisitsHistory = async ({ pageParam = 1 }) =>
+export const getVisitsHistory = async (pageParam: number) =>
   await axiosInstance.get(
     `${API_ENDPOINTS.visitsHistory}?limit=10&page=${pageParam}`,
   );
