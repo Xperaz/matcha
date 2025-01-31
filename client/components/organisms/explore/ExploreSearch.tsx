@@ -1,8 +1,9 @@
+"use client";
 import { useExploreContext } from "@/context/exploreContext";
 import { useEffect, useState } from "react";
 import { AdvancedSearch } from "./AdvancedSearchModal";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { explore } from "@/services/requests/explore";
 import { QUERY_KEYS } from "@/constants/query_keys";
 import { Loader2 } from "lucide-react";
@@ -13,39 +14,36 @@ import { useInView } from "react-intersection-observer";
 
 const ExploreSearch = () => {
   const [isAdvancedSearchOpen, setIsAdvancedSearchOpen] = useState(false);
-  const [users, setUsers] = useState<IUserType[]>([]);
-  const [hasMore, setHasMore] = useState(true);
   const { filters } = useExploreContext();
+
+  const { data, status, fetchNextPage, isFetchingNextPage, hasNextPage } =
+    useInfiniteQuery({
+      queryKey: [QUERY_KEYS.explore],
+      queryFn: () => explore({ ...filters }),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => {
+        const { current_page, last_page } = lastPage.data;
+        return current_page < last_page ? current_page + 1 : undefined;
+      },
+    });
+
   const { ref, inView } = useInView();
 
-  const { isLoading, error, refetch } = useQuery({
-    queryKey: [QUERY_KEYS.explore, filters],
-    queryFn: async () => {
-      const res = await explore(filters);
-      const users = res.data.data;
-
-      if (users.length === 0 || users.length < 12) {
-        setHasMore(false);
-      }
-
-      setUsers((prev) => [...prev, ...users]);
-      return users;
-    },
-  });
-
   useEffect(() => {
-    if (inView && hasMore && !isLoading) {
-      refetch();
+    if (inView) {
+      fetchNextPage();
     }
-  }, [inView, refetch, hasMore, isLoading]);
+  }, [inView, fetchNextPage]);
 
-  if (error) {
+  if (status === "error") {
     return (
       <div className="text-center text-red-500 p-4">
         Error loading results. Please try again.
       </div>
     );
   }
+
+  const users = data?.pages.flatMap((page) => page.data.data) ?? [];
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -78,25 +76,25 @@ const ExploreSearch = () => {
         ))}
       </div>
 
-      {isLoading && users.length === 0 ? (
+      {status === "pending" && users.length === 0 ? (
         <div className="flex justify-center items-center h-64">
           <Loader2 className="w-8 h-8 animate-spin" />
         </div>
       ) : (
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {users.map((user: IUserType, index) => (
-              <UserCard key={user.id + "_" + index} user={user} />
+            {users.map((user: IUserType) => (
+              <UserCard key={user.id} user={user} />
             ))}
           </div>
 
-          {hasMore && users.length > 0 && (
+          {isFetchingNextPage && (
             <div className="flex justify-center items-center py-6">
               <Loader2 className="w-8 h-8 animate-spin" />
             </div>
           )}
 
-          {!hasMore && users.length > 0 && (
+          {!hasNextPage && users.length > 0 && (
             <div className="text-center py-6 text-muted-foreground">
               No more users to show
             </div>
@@ -107,7 +105,7 @@ const ExploreSearch = () => {
         </>
       )}
 
-      {users.length === 0 && !isLoading && (
+      {users.length === 0 && status === "success" && (
         <div className="text-center py-12">
           <div className="text-xl font-semibold mb-2">No matches found</div>
           <p className="text-muted-foreground">
