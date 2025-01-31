@@ -8,10 +8,8 @@ const mapVisits = (rows: any[]): visits[] => {
       id: row.id,
       sender_id: row.visitor_id,
       sender_name: `${row.first_name} ${row.last_name}`,
-      createdAt: row.visit_timestamp,
+      created_at: row.visit_timestamp,
     };
-    console.log("rwo: ", row);
-    console.log("visits: ", visit);
     return visit;
   });
 };
@@ -22,7 +20,7 @@ const mapLikes = (rows: any[]): likes[] => {
       id: row.id,
       sender_id: row.initiator_id,
       sender_name: `${row.first_name} ${row.last_name}`,
-      createdAt: row.created_at,
+      created_at: row.created_at,
     };
     return like;
   });

@@ -11,7 +11,7 @@ const mapNotification = (rows: any[]): Notification[] => {
       is_read: row.is_read,
       sender_id: row.sender_id,
       sender_name: `${row.first_name} ${row.last_name}`,
-      createdAt: row.created_at,
+      created_at: row.created_at,
     };
   });
   return notifications;
@@ -43,7 +43,7 @@ const sendNotification = async (
       is_read: false,
       sender_id: senderId,
       sender_name: senderName,
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
     };
     io.to(recieverSocketId).emit("new_notification", {
       notification,
