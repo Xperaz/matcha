@@ -43,7 +43,7 @@ export const completeFormSchema = z.object({
 
   city: z.string().min(1, { message: "City field is required" }),
   country: z.string().min(1, { message: "Country field is required" }),
-  pictures: z.string().array().min(6, {
+  pictures: z.string().array().min(4, {
     message: "At least 6 pictures are required",
   }),
   latitude: z.number().optional(),

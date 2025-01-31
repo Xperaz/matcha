@@ -52,6 +52,7 @@ export default function ResigterForm() {
       email: "",
       password: "",
       age: 0,
+      username: "",
     },
   });
 
@@ -103,6 +104,21 @@ export default function ResigterForm() {
               <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input placeholder="Email" type="" {...field} />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="Username" type="" {...field} />
               </FormControl>
 
               <FormMessage />

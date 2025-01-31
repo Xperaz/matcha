@@ -1,17 +1,24 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import React from "react";
+import { getMessagePassedHours } from "@/helpers/getMessagePassedHours";
+import { IHistoryItem } from "@/types/profile";
+import { useRouter } from "next/navigation";
+import React, { FC } from "react";
 
 interface HistoryItemProps {
-  data: {
-    id: string;
-    sender_name: string;
-    created_at: string;
-  };
+  data: IHistoryItem;
 }
 
-const HistoryItem = ({ data }: HistoryItemProps) => {
+const HistoryItem: FC<HistoryItemProps> = ({ data }) => {
+  const router = useRouter();
+
+  const displayUserProfile = () => {
+    router.push(`/${data.id}`);
+  };
   return (
-    <div className="flex items-center space-x-4 p-3 rounded-lg border">
+    <div
+      className="flex items-center space-x-4 p-3 rounded-lg border"
+      onClick={displayUserProfile}
+    >
       <Avatar>
         <AvatarImage src="" />
         <AvatarFallback>
@@ -25,7 +32,7 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
       <div className="flex-1">
         <p className="text-sm font-medium">{data.sender_name}</p>
         <p className="text-sm text-muted-foreground">
-          {new Date(data.created_at).toLocaleDateString()}
+          {getMessagePassedHours(data.created_at ?? "").toString() + " ago"}
         </p>
       </div>
     </div>

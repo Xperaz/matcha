@@ -1,24 +1,75 @@
 import { TabsContent } from "@/components/ui/tabs";
-import React from "react";
+import React, { useEffect } from "react";
 import HistoryItem from "./HistoryItem";
-
-const mockData = {
-  success: true,
-  data: Array.from({ length: 10 }, (_, i) => ({
-    id: `${i + 20}`,
-    sender_name: "azedine ouhadou",
-    created_at: new Date().toISOString(),
-  })),
-};
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/constants/query_keys";
+import { getLikesHistory } from "@/services/requests/profile";
+import { useInView } from "react-intersection-observer";
+import { IHistoryItem, PaginatedResponse } from "@/types/profile";
+import Loader from "../Loader";
 
 const LikesHistoryTab = () => {
+  const {
+    data: likesHistory,
+    status,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: [QUERY_KEYS.likesHistory],
+    queryFn: getLikesHistory,
+    initialPageParam: 1,
+    enabled: true,
+    getNextPageParam: (lastPage: PaginatedResponse) => {
+      const { current_page, last_page } = lastPage.data;
+      return current_page < last_page ? current_page + 1 : undefined;
+    },
+  });
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView, fetchNextPage]);
+
+  if (status === "pending") {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-90">
+        <Loader />
+      </div>
+    );
+  }
+  if (status === "error") {
+    return (
+      <div className="flex justify-center items-center">
+        Error fetching data please try again later
+      </div>
+    );
+  }
+
+  if (!likesHistory.pages.length || !likesHistory.pages[0].data.data.length) {
+    return (
+      <div className="flex justify-center items-center">
+        No likes history found 😢
+      </div>
+    );
+  }
+
   return (
-    <TabsContent value="likes" className="h-full m-0">
+    <TabsContent value="views" className="h-full m-0">
       <div className="space-y-4 pr-4">
-        {mockData.data.map((item) => (
-          <HistoryItem key={item.id} data={item} />
+        {likesHistory.pages.map((page, i) => (
+          <div key={i}>
+            {page.data.data.map((item: IHistoryItem) => (
+              <HistoryItem key={item.id} data={item} />
+            ))}
+          </div>
         ))}
       </div>
+
+      {isFetchingNextPage && <div>Loading more...</div>}
+      <div ref={ref}></div>
     </TabsContent>
   );
 };

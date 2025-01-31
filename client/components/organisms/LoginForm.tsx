@@ -17,6 +17,7 @@ import { userLogin } from "@/auth/login";
 import { useRouter } from "next/navigation";
 import { CustomError } from "@/auth/types";
 import { ROUTES } from "@/constants/routes";
+import Link from "next/link";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -34,7 +35,7 @@ export default function LoginForm() {
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
     },
   });
@@ -52,12 +53,12 @@ export default function LoginForm() {
       >
         <FormField
           control={form.control}
-          name="email"
+          name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="Email" type="" {...field} />
+                <Input placeholder="Username" type="" {...field} />
               </FormControl>
 
               <FormMessage />
@@ -70,17 +71,34 @@ export default function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <div className="flex justify-between items-center">
+                <FormLabel>Password</FormLabel>
+                <Link
+                  href="/forgot-password"
+                  className="text-sm text-[#E51A5C] hover:underline"
+                >
+                  Forgot Password?
+                </Link>
+              </div>
               <FormControl>
                 <Input type="Password" placeholder="Password" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
 
         {error && <FormMessage>{error.response?.data?.message}</FormMessage>}
+
+        <div className="text-center text-sm">
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/register"
+            className="text-[#E51A5C] hover:underline font-medium"
+          >
+            Sign up
+          </Link>
+        </div>
 
         <Button
           type="submit"

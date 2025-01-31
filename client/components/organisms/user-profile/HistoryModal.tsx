@@ -5,7 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import LikesHistoryTab from "./LikesHistoryTab";
 import ViewsHistoryTab from "./ViewsHistoryTab";
 
@@ -14,13 +14,19 @@ interface IHistoryModalProps {
 }
 
 const HistoryModal: FC<IHistoryModalProps> = ({ onClose }) => {
+  const [activeTab, setActiveTab] = useState("views");
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] h-[600px] flex flex-col overflow-auto">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle>History</DialogTitle>
         </DialogHeader>
-        <Tabs defaultValue="views" className="flex-1 flex flex-col">
+        <Tabs
+          defaultValue="views"
+          className="flex-1 flex flex-col"
+          value={activeTab}
+          onValueChange={setActiveTab}
+        >
           <TabsList className="grid w-full grid-cols-2 mb-4">
             <TabsTrigger
               value="views"
@@ -36,8 +42,8 @@ const HistoryModal: FC<IHistoryModalProps> = ({ onClose }) => {
             </TabsTrigger>
           </TabsList>
           <div className="flex-1 overflow-auto">
-            <LikesHistoryTab />
-            <ViewsHistoryTab />
+            {activeTab === "likes" && <LikesHistoryTab />}
+            {activeTab === "views" && <ViewsHistoryTab />}
           </div>
         </Tabs>
       </DialogContent>

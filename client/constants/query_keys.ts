@@ -10,4 +10,6 @@ export const QUERY_KEYS = {
   usersToSwipe: "usersToSwipe",
   explore: "explore",
   publicProfile: "publicProfile",
+  likesHistory: "likesHistory",
+  visitsHistory: "visitsHistory",
 };

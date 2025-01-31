@@ -64,7 +64,7 @@ const ProfileBasicInfo = () => {
 
       <div className="flex py-4 flex-col gap-4 justify-center p-4">
         <section className="flex flex-col items-center justify-center gap-4">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 justify-center items-center">
             <div className="w-32 h-32 rounded-full bg-center bg-cover overflow-hidden">
               <Image
                 alt="profile picture"

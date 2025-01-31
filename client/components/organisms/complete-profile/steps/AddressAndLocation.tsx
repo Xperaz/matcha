@@ -28,7 +28,7 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
     if (!files) return;
 
     try {
-      const remainings = 6 - currentValue.length;
+      const remainings = 4 - currentValue.length;
 
       const selectedFiles = Array.from(files).slice(0, remainings);
       const filesToBase64 = await Promise.all(
@@ -112,7 +112,7 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
           <Label>Add photos to your profile</Label>
           <span className="text-center text-red-500">*</span>
         </div>
-        <p className="text-sm">Upload up to 6 photos.</p>
+        <p className="text-sm">Upload up to 4 photos.</p>
         <Controller
           name="pictures"
           control={control}

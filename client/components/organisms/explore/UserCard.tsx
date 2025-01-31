@@ -5,15 +5,24 @@ import Image from "next/image";
 import { MapPin, Star } from "lucide-react";
 import { IUserType } from "@/types/user";
 import { FC } from "react";
+import { useRouter } from "next/navigation";
 
 interface Props {
   user: IUserType;
 }
 
 const UserCard: FC<Props> = ({ user }) => {
+  const router = useRouter();
+
+  const displayUserProfile = () => {
+    router.push(`/${user.id}`);
+  };
   return (
     <Tilt key={user.id} opeions={tiltOptions}>
-      <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+      <Card
+        className="hover:shadow-lg transition-shadow cursor-pointer"
+        onClick={displayUserProfile}
+      >
         <CardHeader className="p-0">
           <div className="aspect-square relative overflow-hidden rounded-t-lg">
             <Image
