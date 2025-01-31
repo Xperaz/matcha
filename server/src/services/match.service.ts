@@ -329,7 +329,6 @@ export const getProfilesToSwipe = async (
     ${sorting}
   `;
 
-
   try {
     const { rows } = await query(fullQuery, params);
     return mapUserProfilesToSwipe(rows);
@@ -373,12 +372,15 @@ export const canSwipe = async (
   }
 };
 
-export const canLike = async ( userId: string, receiverId: string): Promise<boolean> => {
+export const canLike = async (
+  userId: string,
+  receiverId: string
+): Promise<boolean> => {
   const canLikeQuery: string = `
   SELECT u.id
   FROM users u
-  AND u.id != $1
   WHERE u.id = $2
+  AND u.id != $1
   AND u.profile_completed = true
   AND u.email_verified = true
   AND NOT EXISTS (
@@ -402,9 +404,12 @@ export const canLike = async ( userId: string, receiverId: string): Promise<bool
     console.error("Error liking user: ", error);
     throw error;
   }
-}
+};
 
-export const canDislike = async ( userId: string, receiverId: string): Promise<boolean> => {
+export const canDislike = async (
+  userId: string,
+  receiverId: string
+): Promise<boolean> => {
   const canDislikeQuery: string = `
     SELECT u.id
     FROM users u
@@ -429,9 +434,12 @@ export const canDislike = async ( userId: string, receiverId: string): Promise<b
     console.error("Error disliking user: ", error);
     throw error;
   }
-}
+};
 
-export const canUnmatch = async ( userId: string, receiverId: string): Promise<boolean> => {
+export const canUnmatch = async (
+  userId: string,
+  receiverId: string
+): Promise<boolean> => {
   const canUnmatchQuery: string = `
     SELECT u.id
     FROM users u
@@ -457,9 +465,12 @@ export const canUnmatch = async ( userId: string, receiverId: string): Promise<b
     console.error("Error unmatching user: ", error);
     throw error;
   }
-}
+};
 
-export const insertLike = async ( userId: string, receiverId: string): Promise<void> => {
+export const insertLike = async (
+  userId: string,
+  receiverId: string
+): Promise<void> => {
   const insertLikeQuery: string = `
     INSERT INTO likes (initiator_id, receiver_id, status)
     VALUES ($1, $2, 'LIKED')
@@ -474,4 +485,4 @@ export const insertLike = async ( userId: string, receiverId: string): Promise<v
     console.error("Error inserting like: ", error);
     throw error;
   }
-}
+};

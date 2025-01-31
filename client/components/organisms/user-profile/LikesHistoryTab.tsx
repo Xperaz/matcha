@@ -5,7 +5,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants/query_keys";
 import { getLikesHistory } from "@/services/requests/profile";
 import { useInView } from "react-intersection-observer";
-import { IHistoryItem, PaginatedResponse } from "@/types/profile";
+import { IHistoryItem } from "@/types/profile";
 import Loader from "../Loader";
 
 const LikesHistoryTab = () => {
@@ -16,12 +16,14 @@ const LikesHistoryTab = () => {
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: [QUERY_KEYS.likesHistory],
-    queryFn: getLikesHistory,
+    queryFn: ({ pageParam = 1 }) => getLikesHistory(pageParam),
     initialPageParam: 1,
     enabled: true,
-    getNextPageParam: (lastPage: PaginatedResponse) => {
-      const { current_page, last_page } = lastPage.data;
-      return current_page < last_page ? current_page + 1 : undefined;
+    getNextPageParam: (lastPage, allPages) => {
+      if (lastPage.data.data.length > 0) {
+        return allPages.length + 1;
+      }
+      return null;
     },
   });
 

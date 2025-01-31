@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { getMessagePassedHours } from "@/helpers/getMessagePassedHours";
+import { getPassedHours } from "@/helpers/dates";
 import { IHistoryItem } from "@/types/profile";
 import { useRouter } from "next/navigation";
 import React, { FC } from "react";
@@ -12,7 +12,7 @@ const HistoryItem: FC<HistoryItemProps> = ({ data }) => {
   const router = useRouter();
 
   const displayUserProfile = () => {
-    router.push(`/${data.id}`);
+    router.push(`/${data.sender_id}`);
   };
   return (
     <div
@@ -32,7 +32,7 @@ const HistoryItem: FC<HistoryItemProps> = ({ data }) => {
       <div className="flex-1">
         <p className="text-sm font-medium">{data.sender_name}</p>
         <p className="text-sm text-muted-foreground">
-          {getMessagePassedHours(data.created_at ?? "").toString() + " ago"}
+          {getPassedHours(data.created_at) + " ago"}
         </p>
       </div>
     </div>
