@@ -6,10 +6,12 @@ const mapVisits = (rows: any[]): visits[] => {
   return rows.map((row) => {
     const visit: visits = {
       id: row.id,
-      sender_id: row.sender_id,
+      sender_id: row.visitor_id,
       sender_name: `${row.first_name} ${row.last_name}`,
-      createdAt: row.created_at,
+      createdAt: row.visit_timestamp,
     };
+    console.log("rwo: ", row);
+    console.log("visits: ", visit);
     return visit;
   });
 };
@@ -18,7 +20,7 @@ const mapLikes = (rows: any[]): likes[] => {
   return rows.map((row) => {
     const like: likes = {
       id: row.id,
-      sender_id: row.sender_id,
+      sender_id: row.initiator_id,
       sender_name: `${row.first_name} ${row.last_name}`,
       createdAt: row.created_at,
     };
