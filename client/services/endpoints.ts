@@ -30,4 +30,6 @@ export const API_ENDPOINTS = {
   likeUser: `${BASE_URL}match/like`,
   unlikeUser: `${BASE_URL}match/unlike`,
   unmatchUser: `${BASE_URL}match/unmatch`,
+  likesHistory: `${BASE_URL}history/likes`,
+  visitsHistory: `${BASE_URL}history/visits`,
 };
