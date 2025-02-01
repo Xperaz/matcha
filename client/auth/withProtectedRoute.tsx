@@ -1,7 +1,7 @@
 "use client";
-import { ComponentType, PropsWithChildren, useEffect, useState } from "react";
+import { ComponentType, PropsWithChildren, useEffect } from "react";
 import { useAuthData } from "./useAuthData";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Loader } from "lucide-react";
 
 export interface WithProtectedRouteProps extends PropsWithChildren {
@@ -14,9 +14,9 @@ const withProtectedRoute = <P extends WithProtectedRouteProps>(
   Component: ComponentType<P>,
 ) => {
   const Enhanced = (props: P) => {
+    const pathname = usePathname();
     const router = useRouter();
     const { isAuthenticated, isLoading, userData } = useAuthData();
-    const [showContent, setShowContent] = useState(false);
 
     useEffect(() => {
       if (!isAuthenticated && !isLoading) {
@@ -24,16 +24,19 @@ const withProtectedRoute = <P extends WithProtectedRouteProps>(
       }
 
       if (isAuthenticated && !isLoading && userData) {
-        setShowContent(true);
-        // TODO: redirect to verify email page if user email is not verified
-        // TODO: also if user email is not verified, should not redirect to complete profile page
-        if (!userData?.profile_completed) {
+        if (
+          userData?.email_verified === false &&
+          pathname !== "/confirm-email"
+        ) {
+          router.replace("/confirm-email");
+        }
+        if (!userData?.profile_completed && userData?.email_verified) {
           router.replace("/complete-profile");
         }
       }
-    }, [isAuthenticated, isLoading, router, userData]);
+    }, [isAuthenticated, isLoading, router, userData, pathname]);
 
-    if (isLoading || !showContent) {
+    if (isLoading) {
       return (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-background/80 backdrop-blur-sm">
           <div className="flex flex-col items-center gap-2">

@@ -13,4 +13,5 @@ export const QUERY_KEYS = {
   likesHistory: "likesHistory",
   visitsHistory: "visitsHistory",
   verifyResetToken: "verifyResetToken",
+  verifyEmail: "verifyEmail",
 };

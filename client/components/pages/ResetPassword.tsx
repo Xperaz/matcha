@@ -62,6 +62,7 @@ const ResetPassword = () => {
       token ? verifyResetPassword(token) : Promise.reject("No token provided"),
     enabled: !!token,
     retry: false,
+    gcTime: 0,
   });
 
   const {

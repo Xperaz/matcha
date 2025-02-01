@@ -3,7 +3,7 @@
 import withAppLayout from "../templates/layout/withAppLayout";
 import ConversationLayout from "../templates/layout/ConversationLayout";
 import useSocketSetup from "@/hooks/useSocketSetup";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import FriendList from "../organisms/messages/FriendList";
 import Conversations from "../organisms/messages/Conversation";
 import { useQueryClient } from "@tanstack/react-query";
@@ -13,6 +13,7 @@ import { IMessageType } from "@/types/messages";
 const Conversation = () => {
   const socket = useSocketSetup();
   const queryClient = useQueryClient();
+  const [hasFriend, setHasFriend] = useState(false);
 
   useEffect(() => {
     const onNewMessage = (message: IMessageType) => {
@@ -45,8 +46,8 @@ const Conversation = () => {
   return (
     <ConversationLayout>
       <div className="grid grid-cols-[2fr,20fr] gap-4 h-full overflow-hidden">
-        <FriendList />
-        <Conversations />
+        <FriendList setHasFriend={setHasFriend} hasFriend={hasFriend} />
+        {hasFriend && <Conversations />}
       </div>
     </ConversationLayout>
   );

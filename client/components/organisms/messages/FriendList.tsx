@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import FriendCard from "./FriendCard";
 import { IReceivedMessage } from "@/types/messages";
 import { useQuery } from "@tanstack/react-query";
@@ -8,7 +8,12 @@ import { useParams } from "next/navigation";
 import ShimmerCard from "../ShimmerCard";
 import CustomError from "../CustomError";
 
-const FriendList = () => {
+export interface FriendListProps {
+  setHasFriend: React.Dispatch<React.SetStateAction<boolean>>;
+  hasFriend: boolean;
+}
+
+const FriendList: FC<FriendListProps> = ({ setHasFriend, hasFriend }) => {
   const params = useParams();
   const selectedId = params.conversationId as string | undefined;
   const {
@@ -19,6 +24,9 @@ const FriendList = () => {
     queryKey: [QUERY_KEYS.chatList],
     queryFn: async () => {
       const data = await getChatList();
+      if (data.data.length > 0) {
+        setHasFriend(true);
+      }
       return data.data;
     },
   });
@@ -37,6 +45,14 @@ const FriendList = () => {
     return (
       <div className="border border-r-2 w-full py-2">
         <CustomError error="Something went wrong while trying to fetch your chat list, please try again" />
+      </div>
+    );
+  }
+
+  if (!hasFriend) {
+    return (
+      <div className="absolute h-full w-full py-2">
+        <CustomError title="No chat started yet" error="" />
       </div>
     );
   }
