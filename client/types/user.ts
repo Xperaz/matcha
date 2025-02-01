@@ -18,6 +18,7 @@ export interface IUserType {
   interests: string[];
   is_google: boolean;
   distance?: string;
+  email_verified?: boolean;
 }
 
 export interface IPublicProfileType {

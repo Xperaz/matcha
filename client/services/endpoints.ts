@@ -34,4 +34,6 @@ export const API_ENDPOINTS = {
   visitsHistory: `${BASE_URL}history/visits`,
   forgotPassword: `${BASE_URL}auth/forgot-password`,
   resetPassword: `${BASE_URL}auth/reset-password`,
+  confirmEamil: `${BASE_URL}auth/send-verification-email`,
+  verifyEmail: `${BASE_URL}auth/verify-email`,
 };
