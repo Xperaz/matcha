@@ -32,4 +32,6 @@ export const API_ENDPOINTS = {
   unmatchUser: `${BASE_URL}match/unmatch`,
   likesHistory: `${BASE_URL}history/likes`,
   visitsHistory: `${BASE_URL}history/visits`,
+  forgotPassword: `${BASE_URL}auth/forgot-password`,
+  resetPassword: `${BASE_URL}auth/reset-password`,
 };

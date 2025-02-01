@@ -12,4 +12,5 @@ export const QUERY_KEYS = {
   publicProfile: "publicProfile",
   likesHistory: "likesHistory",
   visitsHistory: "visitsHistory",
+  verifyResetToken: "verifyResetToken",
 };
