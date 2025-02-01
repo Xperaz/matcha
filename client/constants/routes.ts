@@ -8,4 +8,5 @@ export const ROUTES = {
   notifications: "/notifications",
   messages: "/messages",
   profile: "/profile",
+  matches: "/matches",
 };
