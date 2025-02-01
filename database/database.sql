@@ -21,7 +21,7 @@ CREATE TABLE users (
     fame_rating INT  DEFAULT 1,
     sexual_preferences preferences_enum,
     age INT NOT NULL,
-    last_connection TIMESTAMP,
+    last_connection TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     gender gender_enum NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

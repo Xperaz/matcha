@@ -7,7 +7,7 @@ import {
 } from "../dtos/requests/userSignupRequest";
 import { userSigninRequest } from "../dtos/requests/userSigninRequest";
 import { sendMail } from "../config/mailer";
-import { randomBytes } from "crypto";
+import { randomBytes, createHash } from "crypto";
 import { isValidEmail, isValidPassword } from "./user.service";
 
 export const checkUser = async (userData: userSigninRequest) => {
@@ -240,7 +240,7 @@ export const generateToken = async (
 
     const token = randomBytes(48).toString("hex");
 
-    const hashedToken = bcrypt.hashSync(token, 10);
+    const hashedToken = createHash("sha256").update(token).digest("hex");
 
     const expireTime = new Date(Date.now() + 3600000); // 1 hour
 
@@ -251,6 +251,11 @@ export const generateToken = async (
     console.error("Error generating token:", error);
     throw error;
   }
+};
+
+const compareTokens = (token: string, hashedToken: string): boolean => {
+  const hashedTokenCompare = createHash("sha256").update(token).digest("hex");
+  return hashedToken === hashedTokenCompare;
 };
 
 export const verifyToken = async (
@@ -274,8 +279,7 @@ export const verifyToken = async (
     }
 
     for (const row of rows) {
-      const isMatch = await bcrypt.compare(token, row.token);
-
+      const isMatch = compareTokens(token, row.token);
       if (isMatch) {
         return { userId: row.user_id, tokenId: row.id };
       }
