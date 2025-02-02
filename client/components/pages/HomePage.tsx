@@ -1,5 +1,5 @@
-import Hero from "../organisms/Hero";
-import PublicHeader from "../organisms/PublicHeader";
+import Hero from "../organisms/layout/Hero";
+import PublicHeader from "../organisms/layout/PublicHeader";
 
 const HomePage = () => {
   return (

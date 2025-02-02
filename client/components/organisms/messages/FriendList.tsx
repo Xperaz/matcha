@@ -5,8 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants/query_keys";
 import { getChatList } from "@/services/requests/messages";
 import { useParams } from "next/navigation";
-import ShimmerCard from "../ShimmerCard";
-import CustomError from "../CustomError";
+import ShimmerCard from "../common/ShimmerCard";
+import CustomError from "../common/CustomError";
 
 export interface FriendListProps {
   setHasFriend: React.Dispatch<React.SetStateAction<boolean>>;

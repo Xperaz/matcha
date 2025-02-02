@@ -45,6 +45,8 @@ const editProfileSchema = z.object({
     .min(5, { message: "Please select at least 5 interests" })
     .max(10, { message: "You can't select more than 10 interests" })
     .optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
 });
 
 export type EditProfileSchemaType = z.infer<typeof editProfileSchema>;

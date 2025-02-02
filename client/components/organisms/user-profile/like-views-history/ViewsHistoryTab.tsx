@@ -1,12 +1,12 @@
 import { TabsContent } from "@/components/ui/tabs";
 import React, { useEffect } from "react";
-import HistoryItem from "./HistoryItem";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants/query_keys";
 import { getVisitsHistory } from "@/services/requests/profile";
 import { useInView } from "react-intersection-observer";
 import { IHistoryItem } from "@/types/profile";
-import Loader from "../Loader";
+import Loader from "../../common/Loader";
+import HistoryItem from "./HistoryItem";
 
 const ViewsHistoryTab = () => {
   const {

@@ -16,7 +16,7 @@ const HistoryItem: FC<HistoryItemProps> = ({ data }) => {
   };
   return (
     <div
-      className="flex items-center space-x-4 p-3 rounded-lg border"
+      className="flex items-center space-x-4 p-3 rounded-lg border cursor-pointer"
       onClick={displayUserProfile}
     >
       <Avatar>
