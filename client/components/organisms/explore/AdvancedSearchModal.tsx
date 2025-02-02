@@ -18,7 +18,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 import { FC } from "react";
@@ -63,7 +62,6 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
 
   return (
     <AlertDialog open>
-      <AlertDialogTrigger>Open</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle> Advanced Search </AlertDialogTitle>
@@ -84,7 +82,6 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
                 </div>
               </div>
 
-              {/* Fame Rating */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Fame Rating</label>
                 <DualRangeSlider
@@ -100,7 +97,6 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
                 </div>
               </div>
 
-              {/* Distance */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Distance (miles)</label>
                 <DualRangeSlider
@@ -115,7 +111,6 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
                 </div>
               </div>
 
-              {/* Interests */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Interests</label>
                 <div className="flex flex-wrap gap-2">
@@ -136,7 +131,6 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
                 </div>
               </div>
 
-              {/* Sort By */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Sort By</label>
                 <Select
