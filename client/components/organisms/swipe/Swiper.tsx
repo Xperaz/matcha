@@ -69,7 +69,7 @@ export function Swiper() {
   }
 
   return (
-    <div className="relative w-[75vw] h-[65vh] rounded-lg max-w-lg overflow-hidden">
+    <div className="relative w-[70vw] h-[55vh] rounded-lg max-w-lg overflow-hidden outline-none disableSelection">
       {userProfiles?.map((user) => (
         <TinderCard
           className="absolute h-full w-full p-4"

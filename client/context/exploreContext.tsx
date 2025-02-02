@@ -27,7 +27,7 @@ export const ExploreProvider = ({ children }: Props) => {
     ageRange: [18, 100],
     fameRange: [1, 5],
     distance: [1, 500],
-    interests: ["TRAVEL"],
+    interests: [""],
     sortBy: "age",
   });
 

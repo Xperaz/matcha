@@ -13,6 +13,8 @@ interface SwipeCardContextType {
   filters: Filters;
   // eslint-disable-next-line no-unused-vars
   setFilters: (filters: Filters) => void;
+
+  sortBy: string;
 }
 
 interface Props {
@@ -28,6 +30,7 @@ export const SwipeCardProvider = ({ children }: Props) => {
     distanceRange: [0, 1000],
     fameRatingRange: [1, 100],
     commonInterests: 0,
+    sortBy: "age",
   });
 
   const swipeRight = async (userId: string) => {
@@ -64,6 +67,7 @@ export const SwipeCardProvider = ({ children }: Props) => {
     swipeLeft,
     filters,
     setFilters,
+    sortBy: filters.sortBy,
   };
 
   return (
