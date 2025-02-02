@@ -8,6 +8,7 @@ export default function useGeoLocation() {
 
   useEffect(() => {
     getLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function success(position: GeolocationPosition) {

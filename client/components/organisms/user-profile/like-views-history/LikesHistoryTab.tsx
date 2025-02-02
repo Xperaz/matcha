@@ -6,7 +6,7 @@ import { QUERY_KEYS } from "@/constants/query_keys";
 import { getLikesHistory } from "@/services/requests/profile";
 import { useInView } from "react-intersection-observer";
 import { IHistoryItem } from "@/types/profile";
-import Loader from "../Loader";
+import Loader from "../../common/Loader";
 
 const LikesHistoryTab = () => {
   const {
@@ -53,16 +53,16 @@ const LikesHistoryTab = () => {
   if (!likesHistory.pages.length || !likesHistory.pages[0].data.data.length) {
     return (
       <div className="flex justify-center items-center">
-        No likes history found 😢
+        No views history found 😢
       </div>
     );
   }
 
   return (
-    <TabsContent value="views" className="h-full m-0">
+    <TabsContent value="likes" className="h-full m-0">
       <div className="space-y-4 pr-4">
         {likesHistory.pages.map((page, i) => (
-          <div key={i}>
+          <div key={i} className="flex flex-col gap-2">
             {page.data.data.map((item: IHistoryItem) => (
               <HistoryItem key={item.id} data={item} />
             ))}

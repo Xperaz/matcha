@@ -65,6 +65,8 @@ const EditProfile: FC<EditProfileProps> = ({ user, onClose }) => {
       gender: user.gender,
       interests: user.interests ?? [],
       sexual_preferences: user.sexual_preferences ?? undefined,
+      latitude: user.latitude ?? 0,
+      longitude: user.longitude ?? 0,
     },
   });
 
@@ -97,39 +99,41 @@ const EditProfile: FC<EditProfileProps> = ({ user, onClose }) => {
   };
 
   return (
-    <AlertDialog open>
-      <AlertDialogTrigger>Open</AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Update your info</AlertDialogTitle>
-          <AlertDialogDescription>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="flex flex-col justify-between gap-4"
+    <div className="max-h-[80vh] overflow-scroll relative">
+      <AlertDialog open>
+        <AlertDialogTrigger>Open</AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Update your info</AlertDialogTitle>
+            <AlertDialogDescription>
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex flex-col justify-between gap-4"
+              >
+                <EditProfilePicture
+                  control={control}
+                  errors={errors}
+                  defaultImage={user.profile_picture}
+                />
+
+                <EditPersonalInfo control={control} errors={errors} />
+
+                <EditIntrests control={control} errors={errors} />
+              </form>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleSubmit(onSubmit)}
+              disabled={isPending}
             >
-              <EditProfilePicture
-                control={control}
-                errors={errors}
-                defaultImage={user.profile_picture}
-              />
-
-              <EditPersonalInfo control={control} errors={errors} />
-
-              <EditIntrests control={control} errors={errors} />
-            </form>
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleSubmit(onSubmit)}
-            disabled={isPending}
-          >
-            Save Changes
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+              Save Changes
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 };
 

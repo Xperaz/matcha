@@ -11,7 +11,7 @@ import { IMessageType } from "@/types/messages";
 import MessageInput from "./MessageInput";
 import { getUser } from "@/services/requests/home";
 import { Loader } from "lucide-react";
-import CustomError from "../CustomError";
+import CustomError from "../common/CustomError";
 
 const Conversations = () => {
   const params = useParams();

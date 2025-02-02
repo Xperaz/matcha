@@ -7,7 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { confirmEamil } from "@/services/requests/emailVerification";
 import { useAuthData } from "@/auth/useAuthData";
 import { useRouter } from "next/navigation";
-import Loader from "../organisms/Loader";
+import Loader from "../organisms/common/Loader";
 
 const ConfirmEmail = () => {
   const { isAuthenticated, userData, isLoading } = useAuthData();

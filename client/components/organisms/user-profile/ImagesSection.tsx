@@ -10,7 +10,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Input } from "../../ui/input";
 import { convertToBase64 } from "@/helpers/convertToBase64";
 import { uploadImage } from "@/services/requests/images";
-import Loader from "../Loader";
+import Loader from "../common/Loader";
 
 const ImagesSection = () => {
   const [images, setImages] = useState<UserImage[]>([]);

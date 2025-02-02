@@ -19,6 +19,8 @@ export interface IUserType {
   is_google: boolean;
   distance?: string;
   email_verified?: boolean;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface IPublicProfileType {
