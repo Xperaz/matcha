@@ -1,7 +1,7 @@
 import React from "react";
-import ResigterForm from "../organisms/ResigterForm";
 import Image from "next/image";
 import signUpImg from "@/public/images/signup.jpg";
+import ResigterForm from "../organisms/signup-signin/ResigterForm";
 
 const Register = () => {
   return (
