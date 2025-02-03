@@ -7,17 +7,17 @@ CREATE TYPE like_status AS ENUM ('LIKED', 'MATCH', 'DISLIKED');
 -- Users Table
 CREATE TABLE users (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    email VARCHAR(255) UNIQUE NOT NULL,
-    username VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255),
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
+    email VARCHAR(70) UNIQUE NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(100),
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
     biography VARCHAR(500),
-    profile_picture VARCHAR(500),
+    profile_picture VARCHAR(100),
     latitude DECIMAL(9,6),
     longitude DECIMAL(9,6),
-    city VARCHAR(100),
-    country VARCHAR(100),
+    city VARCHAR(50),
+    country VARCHAR(50),
     fame_rating INT  DEFAULT 1,
     sexual_preferences preferences_enum,
     age INT NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE users (
     is_active BOOLEAN DEFAULT FALSE,
     profile_completed BOOLEAN DEFAULT FALSE,
     is_google BOOLEAN DEFAULT FALSE,
-    email_verified BOOLEAN DEFAULT FALSE,
+    email_verified BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE messages (
@@ -44,7 +44,7 @@ CREATE TABLE messages (
 
 CREATE TABLE interest_tags (
     id BIGSERIAL PRIMARY KEY,
-    tag VARCHAR(50) UNIQUE NOT NULL
+    tag VARCHAR(20) UNIQUE NOT NULL
 );
 
 -- User Interests Junction Table
@@ -113,7 +113,7 @@ CREATE TABLE visits (
 CREATE TABLE pictures (
     id BIGSERIAL PRIMARY KEY,
     user_id uuid,
-    picture_url VARCHAR(255) NOT NULL,
+    picture_url VARCHAR(100) NOT NULL,
     uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) 
 );
