@@ -8,5 +8,7 @@ export interface UserSwipeCard {
   age: number;
   biography: string;
   distance: number;
+  gender: string;
+  fame_rating: number;
   interests: string[];
 }
