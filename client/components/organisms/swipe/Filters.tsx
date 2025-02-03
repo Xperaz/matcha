@@ -67,7 +67,7 @@ const Filters: FC<FiltersProps> = ({ onClose }) => {
       distanceRange: [0, 500],
       fameRatingRange: [1, 100],
       commonInterests: 0,
-      sortBy: "age",
+      sortBy: "distance",
     });
     onClose();
   };
@@ -148,8 +148,11 @@ const Filters: FC<FiltersProps> = ({ onClose }) => {
                     <SelectValue placeholder="Sort by..." />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="age">Age</SelectItem>
                     <SelectItem value="distance">Distance</SelectItem>
+                    <SelectItem value="age">Age</SelectItem>
+                    <SelectItem value="common_interests">
+                      Common interests
+                    </SelectItem>
                     <SelectItem value="fame_rating">Fame Rating</SelectItem>
                   </SelectContent>
                 </Select>
