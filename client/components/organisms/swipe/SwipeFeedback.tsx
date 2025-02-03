@@ -12,9 +12,9 @@ const feedBackText = (swipeFeedbackState: string) => {
 
 const feedBackColor = (swipeFeedbackState: string) => {
   if (swipeFeedbackState === "right") {
-    return "text-green-500 border-green-500 border-4 rounded-lg";
+    return "text-primary ";
   } else if (swipeFeedbackState === "left") {
-    return "text-red-500 border-red-500 border-4 rounded-lg";
+    return "text-warning";
   } else {
     return "";
   }

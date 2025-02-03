@@ -21,14 +21,16 @@ const EditPersonalInfo: FC<PersonalInfoFormProps> = ({ control, errors }) => {
   return (
     <>
       {/* Name Fields */}
-      <div className="flex gap-4">
+      <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1">
           <Controller
             name="first_name"
             control={control}
             render={({ field }) => (
               <div className="flex flex-col gap-2">
-                <Label htmlFor="first_name">First Name</Label>
+                <Label htmlFor="first_name" className="text-start">
+                  First Name
+                </Label>
                 <Input {...field} placeholder="First Name" />
                 {errors.first_name && (
                   <p className="text-red-500 text-sm">
@@ -45,7 +47,9 @@ const EditPersonalInfo: FC<PersonalInfoFormProps> = ({ control, errors }) => {
             control={control}
             render={({ field }) => (
               <div className="flex flex-col gap-2">
-                <Label htmlFor="last_name">Last Name</Label>
+                <Label htmlFor="last_name" className="text-start">
+                  Last Name
+                </Label>
                 <Input {...field} placeholder="Last Name" />
                 {errors.last_name && (
                   <p className="text-red-500 text-sm">
@@ -65,7 +69,9 @@ const EditPersonalInfo: FC<PersonalInfoFormProps> = ({ control, errors }) => {
           name="biography"
           render={({ field }) => (
             <div className="flex flex-col gap-2">
-              <Label htmlFor="biography">Bio</Label>
+              <Label htmlFor="biography" className="text-start">
+                Bio
+              </Label>
               <Textarea
                 {...field}
                 placeholder="Tell us about yourself"
@@ -79,6 +85,49 @@ const EditPersonalInfo: FC<PersonalInfoFormProps> = ({ control, errors }) => {
             </div>
           )}
         />
+      </div>
+
+      {/* lon and lat Section */}
+
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex-1">
+          <Controller
+            name="longitude"
+            control={control}
+            render={({ field }) => (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="longitude" className="text-start">
+                  Longitude
+                </Label>
+                <Input {...field} placeholder="Longitude" />
+                {errors.longitude && (
+                  <p className="text-red-500 text-sm">
+                    {errors.longitude.message}
+                  </p>
+                )}
+              </div>
+            )}
+          />
+        </div>
+        <div className="flex-1">
+          <Controller
+            name="latitude"
+            control={control}
+            render={({ field }) => (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="latitude" className="text-start">
+                  Latitude
+                </Label>
+                <Input {...field} placeholder="Latitude" />
+                {errors.latitude && (
+                  <p className="text-red-500 text-sm">
+                    {errors.latitude.message}
+                  </p>
+                )}
+              </div>
+            )}
+          />
+        </div>
       </div>
 
       {/* Gender Selection */}

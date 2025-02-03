@@ -18,7 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import HistoryModal from "./HistoryModal";
+import HistoryModal from "./like-views-history/HistoryModal";
 
 const ProfileBasicInfo = () => {
   const [user, setUser] = useState<IUserType>({} as IUserType);
@@ -62,7 +62,7 @@ const ProfileBasicInfo = () => {
         <HistoryModal onClose={() => setIsHistoryModalOpen(false)} />
       )}
 
-      <div className="flex py-4 flex-col gap-4 justify-center p-4">
+      <div className="flex py-4 flex-col gap-8 justify-center p-4">
         <section className="flex flex-col items-center justify-center gap-4">
           <div className="flex flex-col gap-1 justify-center items-center">
             <div className="w-32 h-32 rounded-full bg-center bg-cover overflow-hidden">
@@ -98,9 +98,9 @@ const ProfileBasicInfo = () => {
           </div>
         </section>
 
-        <section className="mx-4">
-          <h3 className="text-lg font-bold pb-2">Interest</h3>
-          <div className="flex flex-wrap gap-2">
+        <section className="mx-4 flex flex-col gap-2">
+          <h3 className="text-lg text-center font-bold pb-2">Interest</h3>
+          <div className="flex justify-center flex-wrap gap-2">
             {user.interests?.map((interest) => (
               <span
                 key={interest}
@@ -112,9 +112,9 @@ const ProfileBasicInfo = () => {
           </div>
         </section>
 
-        <section className="flex flex-col p-4">
-          <h3 className="text-lg font-bold">About</h3>
-          <div className="flex flex-col gap-4">
+        <section className="flex flex-col p-4 gap-6">
+          <h3 className="text-lg text-center font-bold">About</h3>
+          <div className="flex flex-col text-center gap-4">
             <div className="flex flex-col justify-between gap-2 md:flex-row">
               <span className="text-sm text-gray-500 flex-1">fame rating</span>
               <span className="text-sm flex-1">{user.fame_rating}</span>
@@ -135,11 +135,11 @@ const ProfileBasicInfo = () => {
             </div>
           </div>
         </section>
-        <section className="flex flex-col p-4 gap-4">
-          <h3 className="text-lg font-bold">Credentials</h3>
-          <div className="flex flex-col justify-between gap-2 md:flex-row">
+        <section className="flex flex-col items-center p-4 gap-6 mx-auto max-w-2xl w-full">
+          <h3 className="text-lg font-bold text-center">Credentials</h3>
+          <div className="flex flex-col w-full justify-between gap-2 md:flex-row items-center">
             <span className="text-sm text-gray-500">Email</span>
-            <div className="flex md:justify-center items-center flex-1 gap-2">
+            <div className="flex md:justify-center items-center gap-2">
               <span className="text-sm">{user.email}</span>
               {!user.is_google ? (
                 <Pencil
@@ -167,9 +167,9 @@ const ProfileBasicInfo = () => {
             </div>
           </div>
 
-          <div className="flex flex-col justify-between gap-2 md:flex-row">
+          <div className="flex flex-col items-center w-full justify-between gap-2 md:flex-row">
             <span className="text-sm text-gray-500">Password</span>
-            <div className="flex md:justify-center items-center flex-1 gap-2">
+            <div className="flex md:justify-center items-center  gap-2">
               <span className="text-sm">********</span>
               {!user.is_google ? (
                 <Pencil
@@ -197,8 +197,8 @@ const ProfileBasicInfo = () => {
             </div>
           </div>
         </section>
-        <section className="mx-4 w-full">
-          <h3 className="text-lg font-bold pb-4">Images</h3>
+        <section className="w-full flex flex-col gap-6">
+          <h3 className="text-lg font-bold pb-4 text-center">Images</h3>
           <ImagesSection />
         </section>
       </div>

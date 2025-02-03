@@ -2,7 +2,7 @@
 
 import withProtectedRoute from "@/auth/withProtectedRoute";
 import withAppLayout from "../templates/layout/withAppLayout";
-import UserInfoCard from "../organisms/UserInfoCard";
+import UserInfoCard from "../organisms/common/UserInfoCard";
 import { IUserType } from "@/types/user";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, useRef } from "react";

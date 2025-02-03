@@ -1,10 +1,10 @@
 "use client";
 import Image from "next/image";
 import logiImg from "@/public/images/login.jpeg";
-import LoginForm from "../organisms/LoginForm";
 import { Button } from "../ui/button";
 import getGoogleOAuthURL from "@/helpers/googleUrl";
 import { useRouter } from "next/navigation";
+import LoginForm from "../organisms/signup-signin/LoginForm";
 
 const Login = () => {
   const router = useRouter();

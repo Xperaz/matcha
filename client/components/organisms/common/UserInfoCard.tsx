@@ -1,13 +1,14 @@
 import Image from "next/image";
 import { IUserType } from "@/types/user";
-
-const handleClick = (id: string) => {
-  //TODO: redirect to user profile
-  alert("You clicked on the user card of " + id);
-};
+import { useRouter } from "next/navigation";
 
 const UserInfoCard = ({ user }: { user: IUserType }) => {
   const initials = `${user.first_name[0]}${user.last_name[0]}`.toUpperCase();
+  const router = useRouter();
+
+  const handleClick = (id: string) => {
+    router.push(`/${id}`);
+  };
   return (
     <div
       className="relative aspect-[3/4] w-full rounded-xl overflow-hidden shadow-xl"

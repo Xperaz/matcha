@@ -3,4 +3,5 @@ export interface Filters {
   distanceRange: number[];
   fameRatingRange: number[];
   commonInterests: number;
+  sortBy: string;
 }
