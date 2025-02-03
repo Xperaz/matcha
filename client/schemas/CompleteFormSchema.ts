@@ -38,7 +38,14 @@ const profilePictureSchema = z.union([
 
 export const completeFormSchema = z.object({
   profile_picture: profilePictureSchema,
-  biography: z.string().optional(),
+  biography: z
+    .string()
+    .min(10, {
+      message: "Biography should be between 10 and 500 characters",
+    })
+    .max(500, {
+      message: "Biography should be between 10 and 500 characters",
+    }),
   preferences: PreferenceSchema,
 
   city: z.string().min(1, { message: "City field is required" }),

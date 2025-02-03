@@ -16,22 +16,13 @@ export function Swiper() {
   const [noMoreProfiles, setNoMoreProfiles] = useState(false);
 
   const { data, isLoading, isSuccess, refetch } = useQuery({
-    queryKey: [QUERY_KEYS.usersToSwipe, filters],
+    queryKey: [QUERY_KEYS.usersToSwipe],
     queryFn: async () => {
       const retData = await getProfilesToSwipeReq(filters);
 
       return retData.data.data;
     },
   });
-
-  useEffect(() => {
-    const refetchData = async () => {
-      await refetch();
-    };
-    refetchData();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
 
   useEffect(() => {
     if (data) {
@@ -84,7 +75,9 @@ export function Swiper() {
                 src={user.profile_picture}
                 alt={user.first_name + " " + user.last_name}
                 className="h-full w-full object-cover"
-                layout="fill"
+                fill
+                sizes="100vw 100vh"
+                priority
               />
             </div>
 

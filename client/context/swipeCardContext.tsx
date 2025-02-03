@@ -30,7 +30,7 @@ export const SwipeCardProvider = ({ children }: Props) => {
     distanceRange: [0, 1000],
     fameRatingRange: [1, 100],
     commonInterests: 0,
-    sortBy: "age",
+    sortBy: "distance",
   });
 
   const swipeRight = async (userId: string) => {

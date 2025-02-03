@@ -59,9 +59,12 @@ const EmailSection = ({
         title: "Success",
         description: "Email updated successfully",
       });
+      queryClient.cancelQueries({
+        queryKey: [QUERY_KEYS.profileData, QUERY_KEYS.user],
+      });
       form.reset();
+      window.location.reload();
       onClose();
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.profileData] });
     },
     onError: () => {
       toast({

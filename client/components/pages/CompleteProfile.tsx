@@ -8,10 +8,10 @@ import { useRouter } from "next/navigation";
 import Loader from "../organisms/common/Loader";
 
 const CompleteProfile = () => {
-  const { isAuthenticated, isLoading } = useAuthData();
+  const { isAuthenticated, isLoading, userData } = useAuthData();
   const router = useRouter();
 
-  if (isAuthenticated) {
+  if (isAuthenticated && userData?.profile_completed) {
     router.replace("/home");
   }
 

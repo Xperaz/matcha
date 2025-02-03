@@ -13,6 +13,7 @@ const Register = () => {
           layout="fill"
           objectFit="cover"
           quality={100}
+          priority
         />
         <div className="absolute inset-0 bg-pink-500/20" />
       </div>

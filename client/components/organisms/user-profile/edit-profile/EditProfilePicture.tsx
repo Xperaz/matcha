@@ -57,6 +57,7 @@ const EditProfilePicture: FC<ProfilePictureUploadProps> = ({
               } rounded-full object-cover`}
               width={width > 769 ? 32 : 24}
               height={width > 769 ? 32 : 24}
+              priority
             />
           )}
           <div className="flex flex-col gap-1">

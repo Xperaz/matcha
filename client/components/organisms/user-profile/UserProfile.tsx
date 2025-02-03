@@ -71,6 +71,7 @@ const ProfileBasicInfo = () => {
                 src={user.profile_picture || avatar}
                 width={300}
                 height={300}
+                priority
               />
             </div>
             <div className="flex justify-center items-center gap-2">

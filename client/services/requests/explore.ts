@@ -15,7 +15,7 @@ export const explore = async (
   };
 
   return await axiosInstance.get(
-    `${API_ENDPOINTS.explore}?limit=10&page=${pageParam}`,
+    `${API_ENDPOINTS.explore}?limit=12&page=${pageParam}`,
     {
       params: formattedFilters,
     },

@@ -96,6 +96,7 @@ const ImagesSection = () => {
                   className={`rounded-lg transition-all duration-200 ${
                     displayLoader ? "blur-sm brightness-75" : ""
                   }`}
+                  priority
                 />
               </div>
             </div>

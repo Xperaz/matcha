@@ -49,6 +49,6 @@ export default function useGeoLocation() {
 
   return {
     lat: locationData?.lat,
-    long: locationData?.lon,
+    long: locationData?.long,
   };
 }
