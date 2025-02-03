@@ -43,7 +43,7 @@ const UserCard: FC<Props> = ({ user }) => {
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <MapPin className="w-4 h-4" />
-              {user.distance} miles away
+              {user.distance} km away
             </div>
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4" />

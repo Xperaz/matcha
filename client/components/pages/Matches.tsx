@@ -66,7 +66,6 @@ const Matches = () => {
       {!hasMore && allUsers.length > 0 && (
         <p className="text-center mt-4 text-gray-600">
           No more matches to show.
-          {allUsers.length}
         </p>
       )}
       {!isLoading && allUsers.length === 0 && (

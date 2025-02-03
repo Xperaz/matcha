@@ -78,7 +78,7 @@ export function Swiper() {
           swipeRequirementType="position"
           preventSwipe={["up", "down"]}
         >
-          <div className="relative h-full w-full rounded-xl overflow-hidden shadow-lg hover:shadow-2xl">
+          <div className="relative h-full w-full select-none rounded-xl overflow-hidden shadow-lg hover:shadow-2xl">
             <div className="absolute inset-0">
               <Image
                 src={user.profile_picture}
@@ -96,6 +96,9 @@ export function Swiper() {
                 </h2>
                 <span className="text-xl">{user.age}</span>
               </div>
+              <p className="mt-2 ml-2 text-white/90 line-clamp-2">
+                {user.interests.join(", ")}
+              </p>
               <p className="mt-2 ml-2 text-white/90 line-clamp-2">
                 Away {user.distance} km
               </p>

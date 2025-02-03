@@ -105,7 +105,6 @@ const Notifications = () => {
       {!hasMore && notifications.length > 0 && (
         <p className="text-center mt-4 text-gray-600">
           No more notifications to show.
-          {notifications.length}
         </p>
       )}
       {!isLoading && notifications.length === 0 && (
