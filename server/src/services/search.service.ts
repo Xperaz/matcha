@@ -81,6 +81,13 @@ export const getUsersSearched = async (
         ELSE u.gender::text = (SELECT sexual_preferences FROM user_data)::text
       END
     )
+    AND (
+      CASE
+        WHEN u.sexual_preferences = 'BOTH'
+        OR u.sexual_preferences IS NULL THEN true
+        ELSE u.sexual_preferences::text = (SELECT gender FROM user_data)::text
+      END
+    )
     `;
 
   const params: any[] = [userId];
@@ -132,11 +139,12 @@ export const getUsersSearched = async (
   const sorting = `
     ORDER BY
       CASE
-        WHEN $${paramCounter} = 'distance' THEN distance
-        WHEN $${paramCounter} = 'age' THEN age::float
-        WHEN $${paramCounter} = 'fame_rating' THEN fame_rating::float
-        ELSE distance
-      END DESC
+        WHEN $${paramCounter} = 'distance' THEN distance 
+        WHEN $${paramCounter} = 'age' THEN age::float 
+        WHEN $${paramCounter} = 'fame_rating' THEN fame_rating::float 
+        ELSE distance 
+      END 
+      ASC
   `;
   params.push(filters?.sortBy ?? "distance");
   paramCounter++;

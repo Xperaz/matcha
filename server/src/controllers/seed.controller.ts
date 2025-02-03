@@ -7,7 +7,7 @@ import path from "path";
 import { v4 as uuidv4 } from "uuid";
 
 const MALE_COUNT = 100;
-const FEMALE_COUNT = 200;
+const FEMALE_COUNT = 100;
 
 const Preferences = ["MALE", "FEMALE", "BOTH"];
 

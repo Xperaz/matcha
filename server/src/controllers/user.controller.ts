@@ -209,7 +209,7 @@ export const updateEmail = async (
 
     const updateEmailQuery: string = `
       UPDATE users
-      SET email = $1
+      SET email = $1, email_verified = false
       WHERE id = $2;
     `;
     await query(updateEmailQuery, [email, userId]);

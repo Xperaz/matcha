@@ -7,8 +7,6 @@ import {
   isValidPreference,
 } from "../dtos/requests/completeProfileRequest";
 import { AuthenticatedRequest } from "../middlewares/ahthenticatedRequest";
-import bcrypt from "bcryptjs";
-import exp from "constants";
 
 export const updateProfileValues = async (
   req: AuthenticatedRequest,
@@ -198,8 +196,8 @@ export const decreaseFameRating = async (
   UPDATE users
   SET fame_rating = 
     CASE 
-      WHEN fame_rating = 0 THEN 0 
-      WHEN fame_rating - $2 < 0 THEN 0
+      WHEN fame_rating = 1 THEN 1 
+      WHEN fame_rating - $2 < 1 THEN 1
       ELSE fame_rating - $2
     END
   WHERE id = $1;
