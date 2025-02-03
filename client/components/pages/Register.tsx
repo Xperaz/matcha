@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import signUpImg from "@/public/images/signup.jpg";
 import ResigterForm from "../organisms/signup-signin/ResigterForm";
+import Link from "next/link";
 
 const Register = () => {
   return (
@@ -10,10 +11,11 @@ const Register = () => {
         <Image
           src={signUpImg}
           alt="Sign up"
-          layout="fill"
-          objectFit="cover"
           quality={100}
+          fill
+          sizes="100vw 100vh"
           priority
+          crossOrigin="anonymous"
         />
         <div className="absolute inset-0 bg-pink-500/20" />
       </div>
@@ -30,6 +32,15 @@ const Register = () => {
           </div>
           <div className="w-full mt-8">
             <ResigterForm />
+            <div className="text-center text-sm">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="text-[#E51A5C] hover:underline font-medium"
+              >
+                Sign in
+              </Link>
+            </div>
           </div>
         </div>
       </div>
