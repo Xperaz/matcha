@@ -39,10 +39,11 @@ const Login = () => {
         <Image
           src={logiImg}
           alt="Sign up"
-          layout="fill"
-          objectFit="cover"
           quality={100}
+          fill
+          sizes="100vw 100vh"
           priority
+          crossOrigin="anonymous"
         />
         <div className="absolute inset-0 bg-pink-500/20" />
       </div>

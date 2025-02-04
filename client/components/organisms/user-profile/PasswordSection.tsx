@@ -98,7 +98,7 @@ const PasswordSection = ({
     <div className="flex flex-col py-2">
       <div className="flex items-center justify-end mr-10">
         <Dialog open onOpenChange={() => onClose()}>
-          <DialogContent>
+          <DialogContent aria-describedby={undefined}>
             <DialogHeader>
               <DialogTitle>Edit Password</DialogTitle>
             </DialogHeader>
@@ -116,12 +116,16 @@ const PasswordSection = ({
                 <FormField
                   control={form.control}
                   name="oldPassword"
+                  defaultValue=""
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Current Password</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
+                            className="display-none"
+                            autoComplete="current-password"
+                            hidden
                             type={showOldPassword ? "text" : "password"}
                             placeholder="Enter current password"
                             {...field}
@@ -148,6 +152,7 @@ const PasswordSection = ({
 
                 <FormField
                   control={form.control}
+                  defaultValue=""
                   name="newPassword"
                   render={({ field }) => (
                     <FormItem>
@@ -155,6 +160,8 @@ const PasswordSection = ({
                       <FormControl>
                         <div className="relative">
                           <Input
+                            autoComplete="new-password"
+                            hidden
                             type={showNewPassword ? "text" : "password"}
                             placeholder="Enter new password"
                             {...field}
@@ -182,12 +189,15 @@ const PasswordSection = ({
                 <FormField
                   control={form.control}
                   name="confirmPassword"
+                  defaultValue=""
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Confirm New Password</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Input
+                            autoComplete="new-password"
+                            hidden
                             type={showConfirmPassword ? "text" : "password"}
                             placeholder="Confirm new password"
                             {...field}

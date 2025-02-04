@@ -31,6 +31,8 @@ const PrivateHeader = ({ userData }: { userData: IUserType | null }) => {
             height={100}
             quality={100}
             className="md:w-[170px] md:h-[100px] w-[120px] h-[80px]"
+            placeholder="blur"
+            blurDataURL={logo.src}
           />
         </div>
 

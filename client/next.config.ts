@@ -7,7 +7,9 @@ const nextConfig: NextConfig = {
       http: require.resolve("stream-http"),
       https: require.resolve("https-browserify"),
       url: require.resolve("url"),
+      sourceMapsEnabled: false,
     };
+    config.devtool = false;
     return config;
   },
   experimental: {

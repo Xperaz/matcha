@@ -51,7 +51,7 @@ const PersonalInfoForm = ({ control, errors }: PersonalInfoFormProps) => {
   };
 
   return (
-    <form className="flex flex-col justify-between gap-4">
+    <div className="flex flex-col justify-between gap-4">
       <div>
         <Controller
           name="profile_picture"
@@ -106,12 +106,17 @@ const PersonalInfoForm = ({ control, errors }: PersonalInfoFormProps) => {
           name="biography"
           render={({ field }) => (
             <div className="flex flex-col gap-2">
-              <Label htmlFor="biography">Bio</Label>
+              <div className="flex gap-1 items-center">
+                <Label htmlFor="preferences">Bio</Label>
+                <span className="text-center text-red-500">*</span>
+              </div>
               <Textarea {...field} placeholder="Tell us about yourself" />
             </div>
           )}
         />
-        {errors.biography && <p>{errors.biography.message}</p>}
+        {errors.biography && (
+          <p className="text-red-500 text-sm p-2">{errors.biography.message}</p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -139,7 +144,7 @@ const PersonalInfoForm = ({ control, errors }: PersonalInfoFormProps) => {
           <p className="text-red-500 text-sm">{errors.preferences.message}</p>
         )}
       </div>
-    </form>
+    </div>
   );
 };
 

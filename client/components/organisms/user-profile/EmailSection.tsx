@@ -94,7 +94,7 @@ const EmailSection = ({
       </div>
       <div className="flex items-center justify-end mr-10">
         <Dialog open onOpenChange={() => onClose()}>
-          <DialogContent>
+          <DialogContent aria-describedby={undefined}>
             <DialogHeader>
               <DialogTitle>Edit Email</DialogTitle>
             </DialogHeader>
@@ -130,12 +130,15 @@ const EmailSection = ({
                 <FormField
                   control={form.control}
                   name="password"
+                  defaultValue=""
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
+                          autoComplete="current-password"
+                          hidden
                           placeholder="Enter your password"
                           {...field}
                         />

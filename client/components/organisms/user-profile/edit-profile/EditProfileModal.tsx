@@ -3,7 +3,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -105,22 +104,20 @@ const EditProfile: FC<EditProfileProps> = ({ user, onClose }) => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Update your info</AlertDialogTitle>
-            <AlertDialogDescription>
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="flex flex-col justify-between gap-4"
-              >
-                <EditProfilePicture
-                  control={control}
-                  errors={errors}
-                  defaultImage={user.profile_picture}
-                />
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="flex flex-col justify-between gap-4"
+            >
+              <EditProfilePicture
+                control={control}
+                errors={errors}
+                defaultImage={user.profile_picture}
+              />
 
-                <EditPersonalInfo control={control} errors={errors} />
+              <EditPersonalInfo control={control} errors={errors} />
 
-                <EditIntrests control={control} errors={errors} />
-              </form>
-            </AlertDialogDescription>
+              <EditIntrests control={control} errors={errors} />
+            </form>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={onClose}>Cancel</AlertDialogCancel>
