@@ -20,7 +20,7 @@ const HistoryItem: FC<HistoryItemProps> = ({ data }) => {
       onClick={displayUserProfile}
     >
       <Avatar>
-        <AvatarImage src="" />
+        <AvatarImage src={data.profile_picture} />
         <AvatarFallback>
           {data.sender_name
             .split(" ")

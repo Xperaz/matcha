@@ -96,7 +96,9 @@ const ImagesSection = () => {
                   className={`rounded-lg transition-all duration-200 ${
                     displayLoader ? "blur-sm brightness-75" : ""
                   }`}
-                  priority
+                  sizes="100vw 100vh"
+                  placeholder="blur"
+                  blurDataURL={image.secure_url}
                 />
               </div>
             </div>

@@ -67,11 +67,13 @@ const ProfileBasicInfo = () => {
           <div className="flex flex-col gap-1 justify-center items-center">
             <div className="w-32 h-32 rounded-full bg-center bg-cover overflow-hidden">
               <Image
+                className="relative w-full h-full"
                 alt="profile picture"
                 src={user.profile_picture || avatar}
-                width={300}
-                height={300}
-                priority
+                width={128}
+                height={128}
+                placeholder="blur"
+                blurDataURL={user.profile_picture || avatar.src}
               />
             </div>
             <div className="flex justify-center items-center gap-2">

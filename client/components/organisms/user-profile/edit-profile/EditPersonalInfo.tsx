@@ -25,6 +25,7 @@ const EditPersonalInfo: FC<PersonalInfoFormProps> = ({ control, errors }) => {
         <div className="flex-1">
           <Controller
             name="first_name"
+            defaultValue=""
             control={control}
             render={({ field }) => (
               <div className="flex flex-col gap-2">
@@ -44,6 +45,7 @@ const EditPersonalInfo: FC<PersonalInfoFormProps> = ({ control, errors }) => {
         <div className="flex-1">
           <Controller
             name="last_name"
+            defaultValue=""
             control={control}
             render={({ field }) => (
               <div className="flex flex-col gap-2">
@@ -92,6 +94,7 @@ const EditPersonalInfo: FC<PersonalInfoFormProps> = ({ control, errors }) => {
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1">
           <Controller
+            defaultValue={0}
             name="longitude"
             control={control}
             render={({ field }) => (
@@ -112,6 +115,7 @@ const EditPersonalInfo: FC<PersonalInfoFormProps> = ({ control, errors }) => {
         <div className="flex-1">
           <Controller
             name="latitude"
+            defaultValue={0}
             control={control}
             render={({ field }) => (
               <div className="flex flex-col gap-2">
