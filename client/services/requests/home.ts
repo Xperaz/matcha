@@ -17,7 +17,7 @@ export const getProfilesToSwipeReq = async (filters: Filters) => {
     distanceRange: filters.distanceRange.join(","),
     fameRatingRange: filters.fameRatingRange.join(","),
     commonInterests: filters.commonInterests,
-    sortBy: filters.sortBy,
+    sort: filters.sortBy,
   };
 
   return await axiosInstance.get(API_ENDPOINTS.profilesToSwipe, {

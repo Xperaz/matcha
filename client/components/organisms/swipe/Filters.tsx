@@ -18,6 +18,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
+import { QUERY_KEYS } from "@/constants/query_keys";
 
 interface FiltersProps {
   onClose: () => void;
@@ -25,6 +27,7 @@ interface FiltersProps {
 
 const Filters: FC<FiltersProps> = ({ onClose }) => {
   const { filters, setFilters } = useSwipeCardContext();
+  const queryClient = useQueryClient();
 
   const handleAgeRangeChange = (value: number[]) => {
     setFilters({
@@ -67,8 +70,14 @@ const Filters: FC<FiltersProps> = ({ onClose }) => {
       distanceRange: [0, 500],
       fameRatingRange: [1, 100],
       commonInterests: 0,
-      sortBy: "age",
+      sortBy: "distance",
     });
+    //invalidate getuserstoswipe cache
+    onClose();
+  };
+
+  const applyFilters = () => {
+    queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.usersToSwipe] });
     onClose();
   };
 
@@ -148,9 +157,12 @@ const Filters: FC<FiltersProps> = ({ onClose }) => {
                     <SelectValue placeholder="Sort by..." />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem value="age">Age</SelectItem>
                     <SelectItem value="distance">Distance</SelectItem>
+                    <SelectItem value="age">Age</SelectItem>
                     <SelectItem value="fame_rating">Fame Rating</SelectItem>
+                    <SelectItem value="common_interests">
+                      Common Interests
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -161,7 +173,7 @@ const Filters: FC<FiltersProps> = ({ onClose }) => {
           <Button onClick={resetFilters} variant="outline">
             Cancel
           </Button>
-          <Button onClick={onClose}>Apply Filters</Button>
+          <Button onClick={applyFilters}>Apply Filters</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

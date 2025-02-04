@@ -5,7 +5,7 @@ export interface SearchFilters {
   fameRange: [number, number];
   distance: [number, number];
   interests: string[];
-  sortBy: "age" | "location" | "fame" | "tags";
+  sort: "age" | "distance" | "fame_rating" | "interests";
 }
 
 interface ExploreContextType {
@@ -28,7 +28,7 @@ export const ExploreProvider = ({ children }: Props) => {
     fameRange: [1, 5],
     distance: [1, 500],
     interests: [],
-    sortBy: "age",
+    sort: "distance",
   });
 
   const values = {
