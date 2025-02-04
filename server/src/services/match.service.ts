@@ -322,7 +322,7 @@ export const getProfilesToSwipe = async (
         WHEN $${paramCounter} = 'common_interests' THEN common_tags_count::float
         ELSE distance
       END
-      DESC
+      ASC
       LIMIT 50;
   `;
   params.push(filters?.sortBy ?? "distance");

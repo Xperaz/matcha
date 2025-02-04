@@ -10,7 +10,8 @@ export const searchForUsers = async (
     const userId: string = req.user?.id;
     const limit: number = parseInt(req.query.limit as string) || 10;
     const page: number = parseInt(req.query.page as string) || 1;
-    const { ageRange, distanceRange, fameRatingRange, interests, sort } = req.query;
+    const { ageRange, distanceRange, fameRatingRange, interests, sort } =
+      req.query;
 
     if (!userId) {
       return res.status(401).json({
@@ -93,7 +94,6 @@ export const searchForUsers = async (
       page: page,
       limit: limit,
     });
-
 
     return res.status(200).json({
       success: true,
