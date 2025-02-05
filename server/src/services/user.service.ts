@@ -238,3 +238,60 @@ export const setUserOffline = async (userId: string): Promise<void> => {
     throw error;
   }
 };
+
+const mapBasicInfo = (data: any): any => {
+  return {
+    id: data.id,
+    first_name: data.first_name,
+    last_name: data.last_name,
+    email: data.email,
+    biography: data.biography,
+    fame_rating: data.fame_rating,
+    age: data.age,
+    profile_completed: data.profile_completed,
+    email_verified: data.email_verified,
+    gender: data.gender,
+    sexual_preferences: data.sexual_preferences,
+    has_new_messages: data.new_messages_count > 0,
+    has_new_notifications: data.new_notifications_count > 0,
+    profile_picture: data.profile_picture,
+  };
+};
+
+export const getBasicInfo = async (userId: string): Promise<any> => {
+  const getUserInfoWithCountsQuery = `
+SELECT
+  u.id,
+  u.first_name,
+  u.last_name,
+  u.profile_picture,
+  u.email,
+  u.biography,
+  u.fame_rating,
+  u.age,
+  u.profile_completed,
+  u.email_verified,
+  u.gender,
+  u.sexual_preferences,
+  (
+    SELECT COUNT(*)
+    FROM messages m
+    WHERE m.receiver_id = u.id AND m.is_read = false
+  ) AS new_messages_count,
+  (
+    SELECT COUNT(*)
+    FROM notifications n
+    WHERE n.receiver_id = u.id AND n.is_read = false
+  ) AS new_notifications_count
+FROM users u
+WHERE u.id = $1;
+`;
+
+  try {
+    const { rows } = await query(getUserInfoWithCountsQuery, [userId]);
+    return mapBasicInfo(rows[0]);
+  } catch (error) {
+    console.error("Error getting basic info: ", error);
+    throw error;
+  }
+};

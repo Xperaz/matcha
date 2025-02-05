@@ -371,3 +371,30 @@ export const updateProfile = async (
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const getUserMe = async (
+  req: AuthenticatedRequest,
+  res: Response
+): Promise<Response> => {
+  try {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized: User ID not found",
+      });
+    }
+    const result = await userService.getBasicInfo(userId);
+    return res.status(200).json({
+      success: true,
+      user: result,
+    });
+  } catch (ex) {
+    console.error("Error getting user:", ex);
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while getting the user",
+    });
+  }
+};

@@ -313,7 +313,7 @@ export const getProfilesToSwipe = async (
     paramCounter++;
   }
 
-  const sorting = `
+  let sorting = `
     ORDER BY
       CASE
         WHEN $${paramCounter} = 'distance' THEN distance
@@ -321,10 +321,15 @@ export const getProfilesToSwipe = async (
         WHEN $${paramCounter} = 'fame_rating' THEN fame_rating::float
         WHEN $${paramCounter} = 'common_interests' THEN common_tags_count::float
         ELSE distance
-      END
-      ASC
-      LIMIT 50;
+      END 
   `;
+  if (
+    filters?.sortBy === "fame_rating" ||
+    filters?.sortBy === "common_interests"
+  )
+    sorting += `ASC LIMIT 50;`;
+  else sorting += `DESC LIMIT 50;`;
+
   params.push(filters?.sortBy ?? "distance");
 
   const fullQuery = `
