@@ -37,10 +37,7 @@ export const swipeLeft = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    const canDislike: boolean = await matchService.canSwipe(
-      userId,
-      receiverId
-    );
+    const canDislike: boolean = await matchService.canSwipe(userId, receiverId);
 
     if (canDislike === false) {
       return res.status(409).json({
@@ -247,13 +244,17 @@ export const getUsersProfileToSwipe = async (
       });
     }
 
-    if (sortVar !== "distance" && sortVar !== "fame_rating" && sortVar !== "age" && sortVar !== "common_interests") {
+    if (
+      sortVar !== "distance" &&
+      sortVar !== "fame_rating" &&
+      sortVar !== "age" &&
+      sortVar !== "common_interests"
+    ) {
       return res.status(400).json({
         success: false,
         message: "Bad request: Invalid sort parameter",
       });
     }
-    
 
     const usersProfiles: UserProfilesToSwipeDto[] =
       await matchService.getProfilesToSwipe(userId, {
@@ -397,7 +398,10 @@ export const unlikeUser = async (req: AuthenticatedRequest, res: Response) => {
       });
     }
 
-    const canUnlike: boolean = await matchService.canDislike(userId, receiverId);
+    const canUnlike: boolean = await matchService.canDislike(
+      userId,
+      receiverId
+    );
 
     if (canUnlike === false) {
       return res.status(409).json({
@@ -452,7 +456,10 @@ export const unmatcheUser = async (
       });
     }
 
-    const canUnmatch: boolean = await matchService.canUnmatch(userId, receiverId);
+    const canUnmatch: boolean = await matchService.canUnmatch(
+      userId,
+      receiverId
+    );
 
     if (canUnmatch === false) {
       return res.status(409).json({
@@ -460,7 +467,7 @@ export const unmatcheUser = async (
         message: "you can not unmatch this user",
       });
     }
-    
+
     await matchService.unmatch(userId, receiverId);
 
     return res.status(200).json({

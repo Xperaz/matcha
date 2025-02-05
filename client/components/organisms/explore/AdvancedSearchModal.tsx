@@ -83,7 +83,7 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
               <label className="text-sm font-medium">Fame Rating</label>
               <DualRangeSlider
                 defaultValue={filters.fameRange}
-                max={5}
+                max={100}
                 min={1}
                 step={1}
                 onValueChange={handleFameRangeChange}
@@ -95,7 +95,7 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Distance (miles)</label>
+              <label className="text-sm font-medium">Distance (Km)</label>
               <DualRangeSlider
                 defaultValue={filters.distance}
                 max={500}
@@ -103,8 +103,9 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
                 step={1}
                 onValueChange={handleDistanceChange}
               />
-              <div className="text-sm text-muted-foreground">
-                Within {filters.distance} miles
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>{filters.distance[0]}</span>
+                <span>{filters.distance[1]}</span>
               </div>
             </div>
 
@@ -131,18 +132,19 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
             <div className="space-y-2">
               <label className="text-sm font-medium">Sort By</label>
               <Select
-                value={filters.sortBy}
-                onValueChange={(value: SearchFilters["sortBy"]) =>
-                  setFilters((prev) => ({ ...prev, sortBy: value }))
+                value={filters.sort}
+                onValueChange={(value: SearchFilters["sort"]) =>
+                  setFilters((prev) => ({ ...prev, sort: value }))
                 }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Sort by..." />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  <SelectItem value="age">Age</SelectItem>
                   <SelectItem value="distance">Distance</SelectItem>
+                  <SelectItem value="age">Age</SelectItem>
                   <SelectItem value="fame_rating">Fame Rating</SelectItem>
+                  <SelectItem value="interests">Interests</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -157,7 +159,7 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
                 fameRange: [1, 5],
                 distance: [1, 500],
                 interests: [],
-                sortBy: "age",
+                sort: "distance",
               }));
               onClose();
             }}

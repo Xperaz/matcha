@@ -2,7 +2,7 @@ import TinderCard from "react-tinder-card";
 import { useSwipeCardContext } from "@/context/swipeCardContext";
 import { useEffect, useState } from "react";
 import { NoMoreUsers } from "../../atoms/NoMoreUsers";
-import { Loader } from "lucide-react";
+import { Loader, MapPin, Star } from "lucide-react";
 import Image from "next/image";
 import { QUERY_KEYS } from "@/constants/query_keys";
 import { useQuery } from "@tanstack/react-query";
@@ -85,16 +85,23 @@ export function Swiper() {
             <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
               <div className="flex items-baseline gap-2">
                 <h2 className="text-2xl font-bold">
-                  {user.first_name} {user.last_name}
+                  {user.first_name} {user.last_name},
                 </h2>
                 <span className="text-xl">{user.age}</span>
               </div>
-              <p className="mt-2 ml-2 text-white/90 line-clamp-2">
-                {user.interests.join(", ")}
-              </p>
-              <p className="mt-2 ml-2 text-white/90 line-clamp-2">
-                Away {user.distance} km
-              </p>
+              <div className="flex flex-row gap-6 pt-4 ">
+                {user.distance && (
+                  <div className="flex items-center gap-1">
+                    <MapPin className="w-4 h-4" />
+                    {user.distance} km away
+                  </div>
+                )}
+                <div className="flex items-center gap-1">
+                  <Star className="w-4 h-4" />
+                  {user.fame_rating}
+                </div>
+                <div>{user.gender.toLowerCase()}</div>
+              </div>
             </div>
           </div>
         </TinderCard>

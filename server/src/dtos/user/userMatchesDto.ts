@@ -3,6 +3,7 @@ export interface UserMatchesDto {
   first_name: string;
   last_name: string;
   profile_picture: string;
-  longitude: number;
-  latitude: number;
+  age: number;
+  fame_rating: number;
+  gender: string;
 }

@@ -72,7 +72,10 @@ export const getUserProfile = async (
     }
 
     if (userId === receiverId) {
-      res.redirect(`${process.env.CLIENT_URL}/profile`);
+      return res.status(400).json({
+        success: false,
+        message: "You cannot view your own profile",
+      });
     }
 
     if (await profileService.checkBlockedUser(userId, receiverId)) {

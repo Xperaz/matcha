@@ -1,3 +1,4 @@
+import e from "express";
 import { query } from "../config/db";
 import { isValidInterest } from "../dtos/requests/completeProfileRequest";
 import { mapUserProfilesToSwipe } from "./match.service";
@@ -136,7 +137,7 @@ export const getUsersSearched = async (
     paramCounter += 2;
   }
 
-  const sorting = `
+  let sorting = `
     ORDER BY
       CASE
         WHEN $${paramCounter} = 'distance' THEN distance 
@@ -144,8 +145,10 @@ export const getUsersSearched = async (
         WHEN $${paramCounter} = 'fame_rating' THEN fame_rating::float 
         ELSE distance 
       END 
-      ASC
   `;
+  if (filters?.sortBy === "fame_rating") sorting += `DESC`;
+  else sorting += `ASC`;
+
   params.push(filters?.sortBy ?? "distance");
   paramCounter++;
 

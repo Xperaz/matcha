@@ -43,14 +43,17 @@ const UserCard: FC<Props> = ({ user }) => {
         </CardHeader>
         <CardContent className="p-4">
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              {user.distance} km away
-            </div>
+            {user.distance && (
+              <div className="flex items-center gap-1">
+                <MapPin className="w-4 h-4" />
+                {user.distance} km away
+              </div>
+            )}
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4" />
               {user.fame_rating}
             </div>
+            <div>{user.gender.toLowerCase()}</div>
           </div>
         </CardContent>
       </Card>

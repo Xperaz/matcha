@@ -10,8 +10,9 @@ const mapUserMatches = (rows: any[]): UserMatchesDto[] => {
       first_name: row.first_name,
       last_name: row.last_name,
       profile_picture: row.profile_picture,
-      latitude: row.latitude,
-      longitude: row.longitude,
+      age: row.age,
+      fame_rating: row.fame_rating,
+      gender: row.gender,
     };
     return user;
   });
@@ -114,7 +115,7 @@ export const getUserMatches = async (
   limit: number
 ): Promise<UserMatchesDto[]> => {
   const getMatchesQuery: string = `
-    SELECT DISTINCT u.id, u.first_name, u.last_name, u.profile_picture, u.latitude, u.longitude
+    SELECT DISTINCT u.id, u.first_name, u.last_name, u.profile_picture, u.age, u.fame_rating, u.gender
     FROM likes l
     JOIN users u 
         ON (u.id = l.initiator_id AND l.receiver_id = $1)
@@ -312,7 +313,7 @@ export const getProfilesToSwipe = async (
     paramCounter++;
   }
 
-  const sorting = `
+  let sorting = `
     ORDER BY
       CASE
         WHEN $${paramCounter} = 'distance' THEN distance
@@ -320,9 +321,15 @@ export const getProfilesToSwipe = async (
         WHEN $${paramCounter} = 'fame_rating' THEN fame_rating::float
         WHEN $${paramCounter} = 'common_interests' THEN common_tags_count::float
         ELSE distance
-      END DESC
-      LIMIT 50;
+      END 
   `;
+  if (
+    filters?.sortBy === "fame_rating" ||
+    filters?.sortBy === "common_interests"
+  )
+    sorting += `ASC LIMIT 50;`;
+  else sorting += `DESC LIMIT 50;`;
+
   params.push(filters?.sortBy ?? "distance");
 
   const fullQuery = `

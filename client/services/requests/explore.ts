@@ -11,7 +11,7 @@ export const explore = async (
     fameRatingRange: searchQuery.fameRange.join(","),
     distanceRange: searchQuery.distance.join(","),
     interests: searchQuery.interests.join(","),
-    sort: searchQuery.sortBy,
+    sort: searchQuery.sort,
   };
 
   return await axiosInstance.get(
