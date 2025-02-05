@@ -31,6 +31,8 @@ const UserCard: FC<Props> = ({ user }) => {
               className="object-cover w-full h-full"
               width={300}
               height={300}
+              placeholder="blur"
+              blurDataURL={user.profile_picture}
             />
             <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
               <CardTitle className="text-white">

@@ -57,7 +57,7 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
   }, [lat, long]);
 
   return (
-    <form className="flex flex-col justify-between gap-6">
+    <div className="flex flex-col justify-between gap-6">
       <div className="flex flex-col gap-2">
         <div className="flex gap-1 items-center">
           <Label>City</Label>
@@ -65,6 +65,7 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
         </div>
         <Controller
           name="city"
+          defaultValue=""
           control={control}
           render={({ field }) => (
             <Input
@@ -148,7 +149,7 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
           <p className="text-sm text-red-500">{errors.pictures.message}</p>
         )}
       </div>
-    </form>
+    </div>
   );
 };
 

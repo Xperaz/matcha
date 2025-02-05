@@ -21,6 +21,8 @@ export interface IUserType {
   email_verified?: boolean;
   latitude?: number;
   longitude?: number;
+  has_new_notifications: boolean;
+  has_new_messages: boolean;
 }
 
 export interface IPublicProfileType {

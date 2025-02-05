@@ -11,7 +11,14 @@ const PublicHeader = () => {
   const { isAuthenticated } = useAuthData();
   return (
     <header className="w-full flex justify-between mt-4">
-      <Image src={logo} alt="logo" width={170} height={100} quality={100} />
+      <Image
+        src={logo}
+        alt="logo"
+        style={{ width: "170px", height: "100x" }}
+        quality={100}
+        placeholder="blur"
+        blurDataURL={logo.src}
+      />
       <nav>
         <ButtonWithIcon variant="light" className="px-4">
           <Link

@@ -1,7 +1,7 @@
 import Hero from "../organisms/layout/Hero";
 import PublicHeader from "../organisms/layout/PublicHeader";
 
-const HomePage = () => {
+const LandingPage = () => {
   return (
     <main className="min-h-screen flex flex-col container px-10 max-w-[1900px] mx-auto overlay">
       <PublicHeader />
@@ -12,4 +12,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default LandingPage;
