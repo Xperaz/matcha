@@ -11,7 +11,12 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const SideBar = () => {
+interface Props {
+  hasNewMessages: boolean;
+  hasNewNotifications: boolean;
+}
+
+const SideBar = ({ hasNewMessages, hasNewNotifications }: Props) => {
   const { width } = useWindowResize();
   const isDesktop = width > 1279;
   const pathname = usePathname();
@@ -47,7 +52,14 @@ const SideBar = () => {
           href={ROUTES.notifications}
           className={`flex gap-4 items-center ${pathname.includes(ROUTES.notifications) ? "text-primary" : ""}`}
         >
-          <Bell />
+          {hasNewNotifications ? (
+            <div className="relative">
+              <Bell />
+              <span className="absolute -top-2 -right-2 h-3 w-3 bg-primary rounded-full"></span>
+            </div>
+          ) : (
+            <Bell />
+          )}
           {isDesktop ? "Notifications" : ""}
         </Link>
 
@@ -55,7 +67,14 @@ const SideBar = () => {
           href={ROUTES.messages}
           className={`flex gap-4 items-center ${pathname.includes(ROUTES.messages) ? "text-primary" : ""}`}
         >
-          <Mail />
+          {hasNewMessages ? (
+            <div className="relative">
+              <Mail />
+              <span className="absolute -top-2 -right-2 h-3 w-3 bg-primary rounded-full"></span>
+            </div>
+          ) : (
+            <Mail />
+          )}
           {isDesktop ? "Messages" : ""}
         </Link>
 
