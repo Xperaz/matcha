@@ -11,7 +11,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-const MobileNavBar = () => {
+interface Props {
+  hasNewMessages: boolean;
+  hasNewNotifications: boolean;
+}
+
+const MobileNavBar = ({ hasNewMessages, hasNewNotifications }: Props) => {
   const pathname = usePathname();
   return (
     <div className="sticky bottom-0 h-full w-full bg-background">
@@ -41,14 +46,28 @@ const MobileNavBar = () => {
           href={ROUTES.notifications}
           className={`flex gap-4 items-center ${pathname.includes(ROUTES.notifications) ? "text-primary" : ""}`}
         >
-          <Bell />
+          {hasNewNotifications ? (
+            <div className="relative">
+              <Bell />
+              <span className="absolute -top-2 -right-2 h-3 w-3 bg-primary rounded-full"></span>
+            </div>
+          ) : (
+            <Bell />
+          )}
         </Link>
 
         <Link
           href={ROUTES.messages}
           className={`flex gap-4 items-center ${pathname.includes(ROUTES.messages) ? "text-primary" : ""}`}
         >
-          <Mail />
+          {hasNewMessages ? (
+            <div className="relative">
+              <Mail />
+              <span className="absolute -top-2 -right-2 h-3 w-3 bg-primary rounded-full"></span>
+            </div>
+          ) : (
+            <Mail />
+          )}
         </Link>
 
         <Link
