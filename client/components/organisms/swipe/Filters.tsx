@@ -66,7 +66,7 @@ const Filters: FC<FiltersProps> = ({ onClose }) => {
   const resetFilters = () => {
     setFilters({
       ageRange: [18, 100],
-      distanceRange: [0, 500],
+      distanceRange: [0, 1000],
       fameRatingRange: [1, 100],
       commonInterests: 0,
       sortBy: "distance",
@@ -105,7 +105,7 @@ const Filters: FC<FiltersProps> = ({ onClose }) => {
               <label className="text-sm font-medium">Distance (km)</label>
               <DualRangeSlider
                 defaultValue={filters.distanceRange}
-                max={500}
+                max={1000}
                 min={0}
                 step={1}
                 onValueChange={handleDistanceRangeChange}
