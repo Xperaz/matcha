@@ -26,7 +26,7 @@ const EditProfilePicture: FC<ProfilePictureUploadProps> = ({
   const handleFileChange = async (
     e: ChangeEvent<HTMLInputElement>,
     // eslint-disable-next-line no-unused-vars
-    onChange: (value: any) => void,
+    onChange: (value: File | string | undefined) => void,
   ) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -57,8 +57,8 @@ const EditProfilePicture: FC<ProfilePictureUploadProps> = ({
               } rounded-full object-cover`}
               width={width > 769 ? 32 : 24}
               height={width > 769 ? 32 : 24}
-              placeholder="blur"
-              blurDataURL={profile_picture}
+              quality={100}
+              priority={false}
             />
           )}
           <div className="flex flex-col gap-1">

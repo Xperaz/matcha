@@ -1,6 +1,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -18,8 +19,11 @@ const HistoryModal: FC<IHistoryModalProps> = ({ onClose }) => {
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] h-[600px] flex flex-col overflow-auto">
-        <DialogHeader className="flex-shrink-0">
-          <DialogTitle>History</DialogTitle>
+        <DialogHeader className="flex-shrink-0 gap-2">
+          <DialogTitle className="text-center">History</DialogTitle>
+          <DialogDescription className="text-sm text-center">
+            See who viewed your profile and who liked you
+          </DialogDescription>
         </DialogHeader>
         <Tabs
           defaultValue="views"
