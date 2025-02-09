@@ -51,8 +51,8 @@ export async function signup(req: Request, res: Response): Promise<Response> {
     const token = authService.signToken(user_id);
 
     res.cookie("jwt", token, {
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      sameSite: "strict",
+      httpOnly: true, // Recommended for security (prevents client-side access)
+      sameSite: "none" , // Allows the cookie to be sent in cross-site requests
     });
 
     return res.status(201).json({
@@ -100,9 +100,10 @@ export async function signin(req: Request, res: Response): Promise<Response> {
 
     const token = authService.signToken(dbUser.id);
 
+
     res.cookie("jwt", token, {
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      sameSite: "strict",
+      httpOnly: true, // Recommended for security (prevents client-side access)
+      sameSite: "none" , // Allows the cookie to be sent in cross-site requests
     });
 
     return res.status(200).json({
