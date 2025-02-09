@@ -41,7 +41,7 @@ export interface IPublicProfileType {
   is_match: boolean;
   has_liked_you: boolean;
   is_active: boolean;
-  last_connection: Date;
+  last_connection: string;
   interests: string[];
   pictures: string[];
 }
