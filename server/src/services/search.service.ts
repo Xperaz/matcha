@@ -23,7 +23,8 @@ export const getUsersSearched = async (
       SELECT 
         sexual_preferences,
         latitude,
-        longitude
+        longitude,
+        gender
       FROM users 
       WHERE id = $1
     ),
