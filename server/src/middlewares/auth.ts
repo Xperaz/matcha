@@ -40,10 +40,19 @@ export const protectRoutes = async (
       return;
     }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.JWT_SECRET as string
-    ) as JwtPayload;
+    let decoded: JwtPayload;
+    try {
+      decoded = jwt.verify(
+        token,
+        process.env.JWT_SECRET as string
+      ) as JwtPayload;
+    } catch (error) {
+      res.status(401).json({
+        success: false,
+        message: "You are not authorized",
+      });
+      return;
+    }
 
     if (!decoded || !decoded.id) {
       res.status(401).json({
