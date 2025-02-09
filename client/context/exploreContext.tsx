@@ -25,7 +25,7 @@ const ExploreContext = createContext<ExploreContextType | null>(null);
 export const ExploreProvider = ({ children }: Props) => {
   const [filters, setFilters] = useState<SearchFilters>({
     ageRange: [18, 100],
-    fameRange: [1, 5],
+    fameRange: [1, 100],
     distance: [0, 1000],
     interests: [],
     sort: "distance",
