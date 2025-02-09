@@ -1,6 +1,8 @@
 import { query } from "../config/db";
 import { UserMatchesDto } from "../dtos/user/userMatchesDto";
 import { UserProfilesToSwipeDto } from "../dtos/user/userProfilesToSwipeDto";
+import { socketMap } from "../middlewares/socketAuthrization";
+import { io } from "../server";
 import { increaseFameRating, decreaseFameRating } from "./user.service";
 
 const mapUserMatches = (rows: any[]): UserMatchesDto[] => {
@@ -520,5 +522,13 @@ export const isMatch = async (
   } catch (error) {
     console.error("Error checking match: ", error);
     throw error;
+  }
+};
+
+export const sendMatchEvent = (user_id: string) => {
+  const recieverSocketId = socketMap.get(user_id);
+
+  if (recieverSocketId) {
+    io.to(recieverSocketId).emit("new_match", {});
   }
 };
