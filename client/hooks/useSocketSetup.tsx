@@ -11,9 +11,7 @@ const useSocketSetup = () => {
       socket.connect();
     }
 
-    const onConnect = () => {
-      console.log("Socket connected successfully");
-    };
+    const onConnect = () => {};
 
     const onConnectError = (error: Error) => {
       console.error("Socket connection error:", error.message);
@@ -30,9 +28,7 @@ const useSocketSetup = () => {
       }
     };
 
-    const onDisconnect = (reason: string) => {
-      console.log("Socket disconnected:", reason);
-    };
+    const onDisconnect = () => {};
 
     socket.on("connect", onConnect);
     socket.on("connect_error", onConnectError);
