@@ -18,6 +18,9 @@ import { completeProfile } from "@/services/requests/completeProfile";
 import { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
+import { getLocationByIp } from "@/hooks/useGeoLocation";
+import { useEffect, useState } from "react";
+import { IUserAddres } from "@/types/geoLocation";
 
 const steps = [
   {
@@ -32,6 +35,8 @@ const steps = [
 ];
 
 export default function CompleteProfileForm() {
+  const [longitude, setLongitude] = useState<number>();
+  const [latitude, setLatitude] = useState<number>();
   const {
     currentStep,
     setCurrentStep,
@@ -96,6 +101,12 @@ export default function CompleteProfileForm() {
     try {
       if (currentStep === steps.length - 1) {
         const finalData = { ...formValues, ...data };
+        if (typeof finalData.latitude === "undefined") {
+          finalData.latitude = latitude;
+        }
+        if (typeof finalData.longitude === "undefined") {
+          finalData.longitude = longitude;
+        }
 
         // eslint-disable-next-line no-unused-vars
         const transformedData = {
@@ -136,6 +147,13 @@ export default function CompleteProfileForm() {
         return null;
     }
   };
+
+  useEffect(() => {
+    getLocationByIp().then((data: IUserAddres | undefined) => {
+      setLongitude(data?.lon);
+      setLatitude(data?.lat);
+    });
+  }, []);
 
   return (
     <section className="absolute inset-0 flex flex-col gap-4 p-24">

@@ -16,7 +16,7 @@ interface AddressAndLocationProps {
 }
 
 const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
-  const { lat, long } = useGeoLocation();
+  const { lat, lon } = useGeoLocation();
   const { updateFormValues } = useCompleteFormContext();
 
   const handleFilesChange = async (
@@ -47,14 +47,14 @@ const AddressAndLocation = ({ control, errors }: AddressAndLocationProps) => {
   };
 
   useEffect(() => {
-    if (lat && long) {
+    if (typeof lat !== "undefined" && typeof lon !== "undefined") {
       updateFormValues({
-        longitude: long,
+        longitude: lon,
         latitude: lat,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lat, long]);
+  }, [lat, lon]);
 
   return (
     <div className="flex flex-col justify-between gap-6">
