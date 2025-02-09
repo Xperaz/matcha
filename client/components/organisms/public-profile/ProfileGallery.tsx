@@ -7,7 +7,7 @@ interface ProfileGalleryProps {
   profilePicture: string;
   pictures: string[];
   isActive: boolean;
-  lastConnection: string;
+  lastConnection: Date;
 }
 
 export const ProfileGallery = ({

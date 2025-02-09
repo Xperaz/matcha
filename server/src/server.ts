@@ -19,11 +19,11 @@ import searchRoutes from "./routes/search.routes";
 import blockRoutes from "./routes/block.routes";
 import historyRoutes from "./routes/history.routes";
 import reportRoutes from "./routes/report.routes";
+
 import authorizeUserSocket, {
   AuthenticatedSocket,
-  socketMap,
 } from "./middlewares/socketAuthrization";
-import { setUserOffline, setUserOnline } from "./services/user.service";
+import { report } from "process";
 
 const app: Application = express();
 const port: number = parseInt(process.env.SERVER_PORT || "5000", 10);
@@ -31,7 +31,7 @@ const server = createServer(app);
 
 export const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    origin: process.env.FRONTEND_URL || "http://localhost:3000",
     credentials: true,
   },
 });
@@ -39,7 +39,7 @@ export const io = new Server(server, {
 // CORS setup - must be before routes
 app.use(
   cors({
-    origin: ["http://10.12.8.13:3000", "http://localhost:3000"],
+    origin: ["http://10.13.4.8:3000", "http://localhost:3000"],
     optionsSuccessStatus: 200,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
@@ -75,21 +75,12 @@ app.use("/api/report", reportRoutes);
 app.use("/api/history", historyRoutes);
 
 io.use(authorizeUserSocket);
-
-io.on("connection", async (socket: AuthenticatedSocket) => {
-  console.log("User connected");
-  if (!socket.userId) {
-    return;
-  }
-  const user_id = socket.userId;
-  await setUserOnline(user_id);
-
-  socket.on("disconnect", async () => {
-    console.log("User disconnected");
-    socketMap.delete(user_id);
-    await setUserOffline(user_id);
-  });
+io.on("connection", (socket: AuthenticatedSocket) => {
+  // TODO: set user as connected userService.setUserOffline
 });
+// TODO: remove user socket from socketMap
+//TODO: set user a disconnected userService.setUserOffline
+
 server.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });

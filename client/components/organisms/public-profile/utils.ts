@@ -1,12 +1,5 @@
 "use client";
-export const formatLastConnection = (stringDate: string | undefined) => {
-  const timeZoneDate = stringDate
-    ? new Date(stringDate).toLocaleString("en-US", {
-        timeZone: "Africa/Casablanca",
-      })
-    : null;
-
-  const date = timeZoneDate ? new Date(timeZoneDate) : null;
+export const formatLastConnection = (date: Date | undefined) => {
   if (!date) return "N/A";
   const now = new Date();
   const diff = now.getTime() - date.getTime();
