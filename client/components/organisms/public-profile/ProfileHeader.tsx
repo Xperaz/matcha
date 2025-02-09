@@ -66,6 +66,7 @@ export const ProfileHeader = ({
           QUERY_KEYS.usersToSwipe,
           QUERY_KEYS.explore,
           QUERY_KEYS.publicProfile,
+          QUERY_KEYS.user,
         ],
       });
       toast({
@@ -93,7 +94,11 @@ export const ProfileHeader = ({
           QUERY_KEYS.usersToSwipe,
           QUERY_KEYS.explore,
           QUERY_KEYS.publicProfile,
+          QUERY_KEYS.user,
         ],
+      });
+      queryClient.removeQueries({
+        queryKey: QUERY_KEYS.publicProfile,
       });
       toast({
         title: "Success",
@@ -121,6 +126,7 @@ export const ProfileHeader = ({
           QUERY_KEYS.usersToSwipe,
           QUERY_KEYS.explore,
           QUERY_KEYS.publicProfile,
+          QUERY_KEYS.user,
         ],
       });
       toast({
@@ -192,7 +198,7 @@ export const ProfileHeader = ({
         </div>
         <div className="flex gap-2">
           {renderMatchButton()}
-          {user.is_match && (
+          {user.is_match && matchStatus === "MATCHED" && (
             <Button
               variant="default"
               onClick={() => setIsMessageModalOpen(true)}

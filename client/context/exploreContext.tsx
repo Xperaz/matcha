@@ -26,7 +26,7 @@ export const ExploreProvider = ({ children }: Props) => {
   const [filters, setFilters] = useState<SearchFilters>({
     ageRange: [18, 100],
     fameRange: [1, 5],
-    distance: [1, 500],
+    distance: [0, 1000],
     interests: [],
     sort: "distance",
   });

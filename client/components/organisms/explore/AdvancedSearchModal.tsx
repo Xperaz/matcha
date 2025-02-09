@@ -98,8 +98,8 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
               <label className="text-sm font-medium">Distance (Km)</label>
               <DualRangeSlider
                 defaultValue={filters.distance}
-                max={500}
-                min={1}
+                max={1000}
+                min={0}
                 step={1}
                 onValueChange={handleDistanceChange}
               />
