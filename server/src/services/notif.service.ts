@@ -43,7 +43,9 @@ const sendNotification = async (
       is_read: false,
       sender_id: senderId,
       sender_name: senderName,
-      created_at: new Date().toISOString(),
+      created_at: new Date().toLocaleString("en-US", {
+        timeZone: "Europe/Paris",
+      }),
     };
     io.to(recieverSocketId).emit("new_notification", {
       notification,
@@ -88,7 +90,7 @@ export const getAllNotifications = async (
       JOIN users u ON n.sender_id = u.id
       WHERE n.receiver_id = $1
     `;
-    
+
   if (last_notif) {
     getNotificationsQuery += ` AND n.created_at < $3`;
     params.push(last_notif);
@@ -133,15 +135,19 @@ export const createNotificationAndSendMessage = async (
   message: string
 ): Promise<void> => {
   const createNotifQuery = `
-        INSERT INTO notifications (sender_id, receiver_id, message)
-        VALUES ($1, $2, $3)
+        INSERT INTO notifications (sender_id, receiver_id, message, created_at)
+        VALUES ($1, $2, $3, $4)
         RETURNING id;
     `;
   try {
+    const nowTime = new Date().toLocaleString("en-US", {
+      timeZone: "Europe/Paris",
+    });
     const { rows } = await query(createNotifQuery, [
       senderId,
       receiverId,
       message,
+      nowTime,
     ]);
     await sendNotification(senderId, receiverId, message, rows[0].id);
   } catch (error) {

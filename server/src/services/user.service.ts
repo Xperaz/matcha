@@ -231,8 +231,11 @@ export const setUserOffline = async (userId: string): Promise<void> => {
   WHERE id = $2;
   `;
   try {
-    const nowTime = new Date().toISOString();
-    await query(setUserOfflineQuery, [userId, nowTime]);
+    // generate time in paris
+    const nowTime = new Date().toLocaleString("en-US", {
+      timeZone: "Europe/Paris",
+    });
+    await query(setUserOfflineQuery, [nowTime, userId]);
   } catch (error) {
     console.error("Error setting user offline: ", error);
     throw error;
@@ -276,19 +279,32 @@ SELECT
   (
     SELECT COUNT(*)
     FROM messages m
-    WHERE m.receiver_id = u.id AND m.is_read = false
+    WHERE m.receiver_id = $1
+      AND m.is_read = false
+      AND EXISTS (
+        SELECT 1
+        FROM likes l
+        WHERE (
+               (l.initiator_id = $1 AND l.receiver_id = m.sender_id)
+            OR (l.initiator_id = m.sender_id AND l.receiver_id = $1)
+        )
+        AND l.status = 'MATCH'
+      )
   ) AS new_messages_count,
   (
     SELECT COUNT(*)
     FROM notifications n
     WHERE n.receiver_id = u.id AND n.is_read = false
   ) AS new_notifications_count
-FROM users u
+  FROM users u
 WHERE u.id = $1;
 `;
 
   try {
     const { rows } = await query(getUserInfoWithCountsQuery, [userId]);
+    if (rows.length === 0) {
+      return null;
+    }
     return mapBasicInfo(rows[0]);
   } catch (error) {
     console.error("Error getting basic info: ", error);
