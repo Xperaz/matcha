@@ -500,3 +500,25 @@ export const insertLike = async (
     throw error;
   }
 };
+
+export const isMatch = async (
+  userId: string,
+  receiverId: string
+): Promise<boolean> => {
+  const isMatchQuery: string = `
+    SELECT 1
+    FROM likes
+    WHERE (initiator_id = $1 AND receiver_id = $2 AND status = 'MATCH')
+    OR (initiator_id = $2 AND receiver_id = $1 AND status = 'MATCH');
+  `;
+  try {
+    const { rows } = await query(isMatchQuery, [userId, receiverId]);
+    if (rows.length > 0) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error("Error checking match: ", error);
+    throw error;
+  }
+};

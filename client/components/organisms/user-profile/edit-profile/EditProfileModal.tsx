@@ -20,6 +20,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateProfile } from "@/services/requests/profile";
 import { QUERY_KEYS } from "@/constants/query_keys";
 import { toast } from "@/hooks/use-toast";
+import { AlertDialogDescription } from "@radix-ui/react-alert-dialog";
 
 interface EditProfileProps {
   user: IUserType;
@@ -103,7 +104,12 @@ const EditProfile: FC<EditProfileProps> = ({ user, onClose }) => {
         <AlertDialogTrigger>Open</AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Update your info</AlertDialogTitle>
+            <AlertDialogTitle className="text-center">
+              Update your info
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center text-sm">
+              Update your profile picture, personal info, and interests
+            </AlertDialogDescription>
             <form
               onSubmit={handleSubmit(onSubmit)}
               className="flex flex-col justify-between gap-4"

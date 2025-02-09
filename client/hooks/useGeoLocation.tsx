@@ -3,6 +3,18 @@ import { GeolocationPosition, IUserAddres } from "@/types/geoLocation";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+export const getLocationByIp = async () => {
+  try {
+    const res = await axios.get("http://ip-api.com/json");
+    if (res.status === 200) {
+      return res.data as IUserAddres;
+    }
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("Error fetching location data:", error);
+  }
+};
+
 export default function useGeoLocation() {
   const [locationData, setLocationData] = useState<IUserAddres | null>(null);
 
@@ -15,40 +27,30 @@ export default function useGeoLocation() {
     const { latitude, longitude } = position.coords;
     setLocationData({
       lat: latitude,
-      long: longitude,
+      lon: longitude,
     });
   }
 
   const error = async () => {
-    getLocationByIp();
-  };
-
-  /**
-   * Fetch location data by IP address, if user denies location access
-   */
-
-  const getLocationByIp = async () => {
-    try {
-      const res = await axios.get("http://ip-api.com/json");
-      if (res.status === 200) {
-        setLocationData(res.data);
-      }
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error("Error fetching location data:", error);
+    const res = await getLocationByIp();
+    if (res) {
+      setLocationData(res);
     }
   };
 
-  function getLocation() {
+  async function getLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(success, error);
     } else {
-      getLocationByIp();
+      const res = await getLocationByIp();
+      if (res) {
+        setLocationData(res);
+      }
     }
   }
 
   return {
     lat: locationData?.lat,
-    long: locationData?.long,
+    lon: locationData?.lon,
   };
 }

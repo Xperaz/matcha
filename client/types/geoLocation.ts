@@ -1,6 +1,6 @@
 export interface IUserAddres {
   lat: number;
-  long: number;
+  lon: number;
   [key: string]: any;
 }
 

@@ -4,6 +4,7 @@ import { io } from "../server";
 
 import { socketMap } from "../middlewares/socketAuthrization";
 import * as chatService from "../services/chat.service";
+import { isMatch } from "../services/match.service";
 
 export const getMessages = async (req: AuthenticatedRequest, res: Response) => {
   try {
@@ -47,6 +48,14 @@ export const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
       return res
         .status(400)
         .json({ error: "Content and receiver_id are required" });
+    }
+
+    const isMatched = await isMatch(sender_id, receiver_id);
+
+    if (!isMatched) {
+      return res
+        .status(400)
+        .json({ error: "You are not matched with this user" });
     }
 
     const message = await chatService.createMessage({

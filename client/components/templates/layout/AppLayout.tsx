@@ -27,7 +27,7 @@ const AppLayout: FC<PropsWithChildren<AppLayoutProps>> = ({ children }) => {
       <nav
         className={`${width < 768 ? "bg-background border-t-2 border-t-[#E5E8EB]" : "bg-transparent border-r-2 border-r-[#E5E8EB]"}`}
       >
-        <NavBar />
+        <NavBar userData={data} />
       </nav>
       <main>{children}</main>
     </div>

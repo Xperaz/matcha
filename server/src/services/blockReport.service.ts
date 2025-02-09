@@ -1,4 +1,5 @@
 import { query } from "../config/db";
+import { isMatch, unmatch } from "./match.service";
 
 export const blockUser = async (
   userId: string,
@@ -10,6 +11,10 @@ export const blockUser = async (
     `;
   try {
     await query(blockUserQuery, [userId, receiverId]);
+    const isMatched = await isMatch(userId, receiverId);
+    if (isMatched) {
+      await unmatch(userId, receiverId);
+    }
   } catch (error) {
     console.error("Error blocking user: ", error);
     throw error;
@@ -41,7 +46,10 @@ export const isUserBlocked = async (
   }
 };
 
-export const reportUser = async ( userId: string, receiverId: string): Promise<void> => {
+export const reportUser = async (
+  userId: string,
+  receiverId: string
+): Promise<void> => {
   const reportUserQuery: string = `
     INSERT INTO reports (reporter_id, reported_id, reason)
     VALUES ($1, $2, $3);
@@ -52,7 +60,7 @@ export const reportUser = async ( userId: string, receiverId: string): Promise<v
     console.error("Error reporting user: ", error);
     throw error;
   }
-}
+};
 
 export const isUserReported = async (
   userId: string,
