@@ -14,10 +14,10 @@ const InvalidResetLink = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center text-red-500">
-            Invalid Reset Link
+            Invalid Link
           </CardTitle>
           <CardDescription className="text-center">
-            This password reset link is invalid or has expired.
+            This link is invalid or has expired.
           </CardDescription>
         </CardHeader>
         <CardFooter className="flex justify-center">
