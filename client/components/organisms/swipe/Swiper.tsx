@@ -19,7 +19,6 @@ export function Swiper() {
     queryKey: [QUERY_KEYS.usersToSwipe],
     queryFn: async () => {
       const retData = await getProfilesToSwipeReq(filters);
-
       return retData.data.data;
     },
   });
@@ -35,12 +34,13 @@ export function Swiper() {
   }, [data, isSuccess]);
 
   const handleSwipe = async (dir: String, user: UserSwipeCard) => {
+    let swipeResponse: boolean;
     if (dir === "right") {
-      swipeRight(user.id);
+      swipeResponse = await swipeRight(user.id);
     } else {
-      swipeLeft(user.id);
+      swipeResponse = await swipeLeft(user.id);
     }
-    setUsersCount(usersCount + 1);
+    setUsersCount(swipeResponse ? usersCount + 1 : usersCount);
     if (usersCount === userProfiles.length - 1) {
       await refetch();
       setUsersCount(0);
