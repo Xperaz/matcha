@@ -23,7 +23,6 @@ import reportRoutes from "./routes/report.routes";
 import authorizeUserSocket, {
   AuthenticatedSocket,
 } from "./middlewares/socketAuthrization";
-import { report } from "process";
 
 const app: Application = express();
 const port: number = parseInt(process.env.SERVER_PORT || "5000", 10);
@@ -31,7 +30,7 @@ const server = createServer(app);
 
 export const io = new Server(server, {
   cors: {
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
     credentials: true,
   },
 });
@@ -39,7 +38,7 @@ export const io = new Server(server, {
 // CORS setup - must be before routes
 app.use(
   cors({
-    origin: ["http://10.13.4.8:3000", "http://localhost:3000"],
+    origin: ["http://10.12.8.13:3000", "http://localhost:3000"],
     optionsSuccessStatus: 200,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
