@@ -6,8 +6,8 @@ import bcrypt from "bcryptjs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 
-const MALE_COUNT = 10;
-const FEMALE_COUNT = 10;
+const MALE_COUNT = 250;
+const FEMALE_COUNT = 250;
 
 const Preferences = ["MALE", "FEMALE", "BOTH"];
 
@@ -185,7 +185,7 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
     if (userEmail != "aboudoun.aouhadou.matcha@gmail.com") {
       return res.status(403).json({
         success: false,
-        message: "unothorized",
+        message: "oho!",
       });
     }
 
