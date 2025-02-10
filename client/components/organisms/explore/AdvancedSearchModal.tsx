@@ -156,7 +156,7 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
               setFilters((prev) => ({
                 ...prev,
                 ageRange: [18, 100],
-                fameRange: [1, 5],
+                fameRange: [1, 100],
                 distance: [1, 500],
                 interests: [],
                 sort: "distance",

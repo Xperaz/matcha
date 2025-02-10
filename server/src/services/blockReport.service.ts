@@ -51,11 +51,11 @@ export const reportUser = async (
   receiverId: string
 ): Promise<void> => {
   const reportUserQuery: string = `
-    INSERT INTO reports (reporter_id, reported_id, reason)
-    VALUES ($1, $2, $3);
+    INSERT INTO reports (reporter_id, reported_id)
+    VALUES ($1, $2);
   `;
   try {
-    await query(reportUserQuery, [userId, receiverId, "Fake account"]);
+    await query(reportUserQuery, [userId, receiverId]);
   } catch (error) {
     console.error("Error reporting user: ", error);
     throw error;

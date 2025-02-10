@@ -6,8 +6,8 @@ import bcrypt from "bcryptjs";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 
-const MALE_COUNT = 100;
-const FEMALE_COUNT = 100;
+const MALE_COUNT = 250;
+const FEMALE_COUNT = 250;
 
 const Preferences = ["MALE", "FEMALE", "BOTH"];
 
@@ -185,7 +185,7 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
     if (userEmail != "aboudoun.aouhadou.matcha@gmail.com") {
       return res.status(403).json({
         success: false,
-        message: "unothorized",
+        message: "oho!",
       });
     }
 
@@ -206,16 +206,16 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
         { length: 8 },
         () => Interests[Math.floor(Math.random() * Interests.length)]
       );
-      const preferences =
-        Preferences[Math.floor(Math.random() * Preferences.length)];
+      const preferences = "FEMALE";
+      // Preferences[Math.floor(Math.random() * Preferences.length)];
       const gender = "MALE";
       const { latitude, longitude } = generateRandomLocation();
       const email = `${firstName}${lastName}${i}@gmail.com`;
-      const password = `${firstName}${lastName}${i}`;
+      const password = `${firstName}#A${lastName}${i}`;
       const biography = "this is random biography lorem ipsum dolor sit amet";
       const encryptedPassword = await bcrypt.hash(password, 10);
       const profileCompleted = true;
-      const user_pictures = Array.from({ length: 5 }, () =>
+      const user_pictures = Array.from({ length: 4 }, () =>
         path.resolve(pictures[Math.floor(Math.random() * pictures.length)])
       );
       const username = generateRandomUsername(firstName, lastName);
@@ -275,8 +275,7 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
             ON CONFLICT DO NOTHING;
             `;
       await query(insertUserInterestsQuery, [userId, interests]);
-
-      console.log("User added successfully", firstName, lastName);
+      // console.log("user added", username, password);
     }
 
     for (let i = 0; i < FEMALE_COUNT; i++) {
@@ -296,18 +295,18 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
         { length: 5 },
         () => Interests[Math.floor(Math.random() * Interests.length)]
       );
-      const preferences =
-        Preferences[Math.floor(Math.random() * Preferences.length)];
+      const preferences = "MALE";
+      // Preferences[Math.floor(Math.random() * Preferences.length)];
       const gender = "FEMALE";
       const { latitude, longitude } = generateRandomLocation();
       const email = `${firstName}${lastName}${i}@gmail.com`;
-      const password = `${firstName}${lastName}${i}`;
+      const password = `${firstName}#A${lastName}${i}`;
       const biography = "this is random biography lorem ipsum dolor sit amet";
       const encryptedPassword = await bcrypt.hash(password, 10);
       const profileCompleted = true;
       const username = generateRandomUsername(firstName, lastName);
 
-      const user_pictures = Array.from({ length: 6 }, () =>
+      const user_pictures = Array.from({ length: 4 }, () =>
         path.resolve(pictures[Math.floor(Math.random() * pictures.length)])
       );
 
@@ -366,12 +365,11 @@ export const seedDb = async (req: AuthenticatedRequest, res: Response) => {
             ON CONFLICT DO NOTHING;
             `;
       await query(insertUserInterestsQuery, [userId, interests]);
-
-      console.log("User added successfully", firstName, lastName);
+      // console.log("user added", username, password);
     }
     return res.status(200).json({
       success: true,
-      message: "Database seeded successfully",
+      message: `Database seeded successfully with ${MALE_COUNT} MALE and ${FEMALE_COUNT} FEMALE users`,
     });
   } catch (error) {
     console.error("Error adding image: ", error);

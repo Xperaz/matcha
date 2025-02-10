@@ -77,7 +77,6 @@ app.use("/api/history", historyRoutes);
 io.use(authorizeUserSocket);
 
 io.on("connection", async (socket: AuthenticatedSocket) => {
-  console.log("User connected");
   if (!socket.userId) {
     return;
   }
@@ -85,11 +84,11 @@ io.on("connection", async (socket: AuthenticatedSocket) => {
   await setUserOnline(user_id);
 
   socket.on("disconnect", async () => {
-    console.log("User disconnected");
     socketMap.delete(user_id);
     await setUserOffline(user_id);
   });
 });
+
 server.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });

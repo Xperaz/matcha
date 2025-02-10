@@ -119,6 +119,7 @@ export const swipeRight = async (req: AuthenticatedRequest, res: Response) => {
         userId,
         "is your match now! Say hi to start a conversation."
       );
+      matchService.sendMatchEvent(userId);
       return res.status(200).json({
         success: true,
         message: "Match created successfully",

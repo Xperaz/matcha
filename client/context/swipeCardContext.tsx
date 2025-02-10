@@ -7,9 +7,9 @@ import { Filters } from "@/types/filters";
 interface SwipeCardContextType {
   swipeFeedbackState: string;
   // eslint-disable-next-line no-unused-vars
-  swipeRight: (userId: string) => void;
+  swipeRight: (userId: string) => Promise<boolean>;
   // eslint-disable-next-line no-unused-vars
-  swipeLeft: (userId: string) => void;
+  swipeLeft: (userId: string) => Promise<boolean>;
   filters: Filters;
   // eslint-disable-next-line no-unused-vars
   setFilters: (filters: Filters) => void;
@@ -33,13 +33,15 @@ export const SwipeCardProvider = ({ children }: Props) => {
     sortBy: "distance",
   });
 
-  const swipeRight = async (userId: string) => {
+  const swipeRight = async (userId: string): Promise<boolean> => {
     try {
       setSwipeFeedbackState("right");
-      await swipeRightReq(userId);
+      const result = await swipeRightReq(userId);
+      return result.data.success;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error);
+      return false;
     } finally {
       setTimeout(() => {
         setSwipeFeedbackState("");
@@ -47,13 +49,15 @@ export const SwipeCardProvider = ({ children }: Props) => {
     }
   };
 
-  const swipeLeft = async (userId: string) => {
+  const swipeLeft = async (userId: string): Promise<boolean> => {
     try {
       setSwipeFeedbackState("left");
-      await swipeLeftReq(userId);
+      const result = await swipeLeftReq(userId);
+      return result.data.success;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log(error);
+      return false;
     } finally {
       setTimeout(() => {
         setSwipeFeedbackState("");

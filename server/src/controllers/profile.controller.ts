@@ -72,9 +72,9 @@ export const getUserProfile = async (
     }
 
     if (userId === receiverId) {
-      return res.status(400).json({
+      return res.status(301).json({
         success: false,
-        message: "You cannot view your own profile",
+        message: "view your own profile",
       });
     }
 

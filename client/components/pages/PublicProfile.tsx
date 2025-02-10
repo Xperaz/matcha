@@ -70,6 +70,13 @@ export const PublicProfile = () => {
       });
       router.replace("/home");
     }
+    if (customError.response?.status === 301) {
+      toast({
+        title: "Success",
+        description: "redirecting to your profile",
+      });
+      router.replace("/profile");
+    }
   }
   if (!user && !isLoading) return null;
 
