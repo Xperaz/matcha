@@ -9,6 +9,7 @@ const mapVisits = (rows: any[]): visits[] => {
       sender_id: row.visitor_id,
       sender_name: `${row.first_name} ${row.last_name}`,
       created_at: row.visit_timestamp,
+      profile_picture: row.profile_picture,
     };
     return visit;
   });
@@ -21,6 +22,7 @@ const mapLikes = (rows: any[]): likes[] => {
       sender_id: row.initiator_id,
       sender_name: `${row.first_name} ${row.last_name}`,
       created_at: row.created_at,
+      profile_picture: row.profile_picture,
     };
     return like;
   });
@@ -32,7 +34,7 @@ export const getLikesHistory = async (
   page: number
 ): Promise<likes[]> => {
   const getLikesQuery: string = `
-            SELECT likes.id, likes.initiator_id, users.first_name, users.last_name, likes.created_at
+            SELECT likes.id, likes.initiator_id, users.first_name, users.last_name, users.profile_picture, likes.created_at
             FROM likes
             JOIN users ON likes.initiator_id = users.id
             WHERE likes.receiver_id = $1
@@ -58,7 +60,7 @@ export const getVisitsHistory = async (
   page: number
 ): Promise<visits[]> => {
   const getVisitsQuery: string = `
-            SELECT visits.id, visits.visitor_id, users.first_name, users.last_name, visits.visit_timestamp
+            SELECT visits.id, visits.visitor_id, users.first_name, users.last_name, users.profile_picture, visits.visit_timestamp
             FROM visits
             JOIN users ON visits.visitor_id = users.id
             WHERE visits.visited_id = $1

@@ -3,6 +3,7 @@ export interface visits {
     sender_id: string;
     sender_name: string;
     created_at: string;
+    profile_picture: string;
 }
 
 export interface likes {
@@ -10,4 +11,5 @@ export interface likes {
     sender_id: string;
     sender_name: string;
     created_at: string;
+    profile_picture: string;
 }
