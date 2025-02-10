@@ -56,7 +56,7 @@ export const SwipeCardProvider = ({ children }: Props) => {
       return result.data.success;
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.log(error);
+      console.error(error);
       return false;
     } finally {
       setTimeout(() => {
