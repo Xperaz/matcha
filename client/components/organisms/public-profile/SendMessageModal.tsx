@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { QUERY_KEYS } from "@/constants/query_keys";
 import { MessageFormValue } from "@/schemas/MessageSchema";
 import { sendMessage } from "@/services/requests/messages";
+import { Description } from "@radix-ui/react-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -48,9 +49,10 @@ export const SendMessageModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>Send Message to {recipientName}</DialogTitle>
+          <Description>{""}</Description>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <Textarea

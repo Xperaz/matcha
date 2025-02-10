@@ -1,11 +1,4 @@
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { DualRangeSlider } from "@/components/ui/dual-range-slider";
 import { INTERESTS } from "@/constants/interests";
 import { SearchFilters, useExploreContext } from "@/context/exploreContext";
@@ -21,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import CustomSelect from "./CustomSelect";
 
 interface Props {
   onClose: () => void;
@@ -129,24 +123,9 @@ export const AdvancedSearch: FC<Props> = ({ onClose }) => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Sort By</label>
-              <Select
-                value={filters.sort}
-                onValueChange={(value: SearchFilters["sort"]) =>
-                  setFilters((prev) => ({ ...prev, sort: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Sort by..." />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="distance">Distance</SelectItem>
-                  <SelectItem value="age">Age</SelectItem>
-                  <SelectItem value="fame_rating">Fame Rating</SelectItem>
-                  <SelectItem value="interests">Interests</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="space-y-4">
+              <p className="text-sm font-medium">Sort By</p>
+              <CustomSelect />
             </div>
           </div>
         </DialogHeader>

@@ -2,13 +2,7 @@ import { FC } from "react";
 
 import { DualRangeSlider } from "@/components/ui/dual-range-slider";
 import { useSwipeCardContext } from "@/context/swipeCardContext";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import {
   Dialog,
   DialogContent,
@@ -19,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "@/constants/query_keys";
+import CustomSelect from "./CustomSelect";
 
 interface FiltersProps {
   onClose: () => void;
@@ -53,13 +48,6 @@ const Filters: FC<FiltersProps> = ({ onClose }) => {
     setFilters({
       ...filters,
       commonInterests: value[1],
-    });
-  };
-
-  const handleSortByChange = (value: string) => {
-    setFilters({
-      ...filters,
-      sortBy: value,
     });
   };
 
@@ -145,25 +133,9 @@ const Filters: FC<FiltersProps> = ({ onClose }) => {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Sort By</label>
-              <Select
-                defaultValue={filters.sortBy}
-                value={filters.sortBy}
-                onValueChange={handleSortByChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Sort by..." />
-                </SelectTrigger>
-                <SelectContent className="bg-white">
-                  <SelectItem value="distance">Distance</SelectItem>
-                  <SelectItem value="age">Age</SelectItem>
-                  <SelectItem value="common_interests">
-                    Common interests
-                  </SelectItem>
-                  <SelectItem value="fame_rating">Fame Rating</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="space-y-4">
+              <p className="text-sm font-medium">Sort By</p>
+              <CustomSelect />
             </div>
           </div>
         </DialogHeader>
