@@ -11,7 +11,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import UserCard from "../organisms/explore/UserCard";
 import { Loader2 } from "lucide-react";
 
-const LIMIT = 10;
+const LIMIT = 12;
 
 const Matches = () => {
   const { data, status, fetchNextPage, isFetchingNextPage, hasNextPage } =

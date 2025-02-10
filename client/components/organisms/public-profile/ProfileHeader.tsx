@@ -97,9 +97,7 @@ export const ProfileHeader = ({
           QUERY_KEYS.user,
         ],
       });
-      queryClient.removeQueries({
-        queryKey: QUERY_KEYS.publicProfile,
-      });
+
       toast({
         title: "Success",
         description: "You Unliked user successfully",
@@ -128,6 +126,10 @@ export const ProfileHeader = ({
           QUERY_KEYS.publicProfile,
           QUERY_KEYS.user,
         ],
+      });
+
+      queryClient.prefetchQuery({
+        queryKey: [QUERY_KEYS.matches],
       });
       toast({
         title: "Success",

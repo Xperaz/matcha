@@ -55,7 +55,7 @@ export const ProfileGallery = ({
       </div>
     </div>
     <div className="grid grid-cols-2 gap-2">
-      {pictures.slice(0, 2).map((img, idx) => (
+      {pictures.slice(2, 4).map((img, idx) => (
         <Image
           key={idx}
           src={img ?? null}
