@@ -6,7 +6,7 @@ export const logout = async () => {
   const res = await axiosPublicInstance.post(API_ENDPOINTS.logout);
 
   if (res.status === 200) {
-    Cookies.remove("jwt");
+    Cookies.remove("jwt", { sameSite: "Lax", secure: true });
   }
   return res;
 };
