@@ -52,7 +52,7 @@ export async function signup(req: Request, res: Response): Promise<Response> {
 
     res.cookie("jwt", token, {
       httpOnly: true, // Recommended for security (prevents client-side access)
-      sameSite: "none" , // Allows the cookie to be sent in cross-site requests
+      sameSite: "lax", // Cookie is only sent for same-site requests
     });
 
     return res.status(201).json({
@@ -100,10 +100,9 @@ export async function signin(req: Request, res: Response): Promise<Response> {
 
     const token = authService.signToken(dbUser.id);
 
-
     res.cookie("jwt", token, {
       httpOnly: true, // Recommended for security (prevents client-side access)
-      sameSite: "none" , // Allows the cookie to be sent in cross-site requests
+      sameSite: "lax", // Cookie is only sent for same-site requests
     });
 
     return res.status(200).json({
@@ -136,7 +135,7 @@ export const googleOauthHandler = async (req: Request, res: Response) => {
 
     res.cookie("jwt", token, {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      sameSite: "strict",
+      sameSite: "lax",
     });
 
     res.redirect(`${process.env.CLIENT_URL}/home`);
@@ -150,7 +149,12 @@ export const singout = async (
   req: Request,
   res: Response
 ): Promise<Response> => {
-  res.clearCookie("jwt");
+  res.clearCookie("jwt",
+    {
+      httpOnly: true,
+      sameSite: "lax",
+    }
+  );
   return res.status(200).json({
     success: true,
     message: "Signout successful",
