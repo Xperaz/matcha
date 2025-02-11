@@ -8,6 +8,10 @@
   box-sizing: border-box;
 }
 
+body {
+  background-color: #fcf7fa;
+}
+
 .primary-gradient {
   background: radial-gradient(
     934px at 6% 39.5%,
@@ -41,4 +45,126 @@
   background-position: center;
   z-index: -1;
   background-repeat: no-repeat;
+}
+
+/* dark blue gradient color */
+
+.dark-blue-gradient {
+  background: rgb(2, 0, 36);
+  background: linear-gradient(
+    90deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(9, 26, 121, 1) 100%,
+    rgba(0, 212, 255, 1) 100%
+  );
+}
+
+/* debugging styles */
+.db-red {
+  border: 1px solid red;
+}
+
+.db-blue {
+  border: 1px solid blue;
+}
+
+.db-all {
+  border: 1px solid red;
+}
+
+.db-all * {
+  border: 1px solid blue;
+}
+
+/* end debugging styles */
+
+.appLayout {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: 5rem repeat(13, 1fr);
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  height: 100vh;
+}
+
+header,
+footer,
+nav {
+  padding: 1rem;
+}
+
+header {
+  grid-area: 1 / 1 / 1 / 9;
+}
+
+nav {
+  grid-area: 2 / 1 / 15 / 2;
+}
+
+main {
+  grid-area: 2 / 2 / 15 / 9;
+  overflow: auto;
+}
+
+.tabs-content[data-state="active"] {
+  display: flex;
+  flex-direction: column;
+}
+
+.overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--muted)) transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--muted));
+  border-radius: 3px;
+}
+
+/* Responsive design for small devices */
+@media (max-width: 768px) {
+  .appLayout {
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: 4rem repeat(13, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    height: 100vh;
+  }
+
+  header,
+  footer,
+  nav {
+    padding: 1rem;
+  }
+
+  header {
+    grid-area: 1 / 1 / 2 / 9;
+  }
+
+  nav {
+    grid-area: 15 / 1 / 15 / 9;
+  }
+
+  main {
+    grid-area: 2 / 1 / 15 / 9;
+    overflow: auto;
+  }
+}
+
+.disableSelection {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  outline: 0;
 }

@@ -16,9 +16,32 @@ export default {
         "secondary-foreground": "#171212",
         destructive: "#FF4D4D",
         "destructive-foreground": "#FFFFFF",
+        background: "#FCF7FA",
+        warning: "#FFA500",
       },
       fontFamily: {
         readex_pro: ["var(--font-readex-pro)"],
+      },
+      keyframes: {
+        "spinner-leaf-fade": {
+          "0%, 100%": {
+            opacity: "0",
+          },
+          "50%": {
+            opacity: "1",
+          },
+        },
+        shimmer: {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+      },
+      animation: {
+        "spinner-leaf-fade": "spinner-leaf-fade 800ms linear infinite",
+        shimmer: "shimmer 1.5s infinite linear",
+      },
+      backgroundSize: {
+        "200%": "200% 100%",
       },
     },
   },

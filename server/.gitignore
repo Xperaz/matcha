@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/dist
 /.pnp
 .pnp.*
 
@@ -17,3 +18,7 @@ npm-debug.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+
+/dist
+/todo
+/.vscode

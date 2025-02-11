@@ -5,6 +5,7 @@ export const readex_pro = Readex_Pro({
   display: "swap",
   variable: "--font-readex-pro",
   weight: ["200", "300", "400", "500", "700"],
+  preload: false,
 });
 
 export const fontReadexPro = readex_pro.variable;
