@@ -1,3 +1,7 @@
 # Matcha-42
 
-Web project from school 42, It’s a dating WebSite where the user can create his profile, search other users, like them and begin a conversation with a chat if the person liked him back.
+The web project from School 42 is a dating website where the user can create his profile, search for other users, like them, and begin a conversation with a chat if the person likes him back.
+
+# Stack
+- Frontend: Nextjs15, React19, Tanstack Query, Tailwind Css, ShadCn, Zod, React Hook Form
+- Backend: Express Js, Postgresal (No ORM), Cloudinary for picture storage.
