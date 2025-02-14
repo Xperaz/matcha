@@ -4,4 +4,4 @@ The web project from School 42 is a dating website where the user can create his
 
 # Stack
 - Frontend: Nextjs15, React19, Tanstack Query, Tailwind Css, ShadCn, Zod, React Hook Form
-- Backend: Express Js, Postgresal (No ORM), Cloudinary for picture storage.
+- Backend: Express Js, Postgresql (No ORM), Cloudinary for picture storage.
